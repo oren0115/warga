@@ -13,7 +13,14 @@ import {
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Loader2, Users, FileText, Clock, CheckCircle2, Bell } from "lucide-react";
+import {
+  Users,
+  FileText,
+  Clock,
+  CheckCircle2,
+  Building2,
+  User,
+} from "lucide-react";
 
 import {
   BarChart,
@@ -35,7 +42,8 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const currentUserName = "user 2";
+  // dummy sementara, bisa pakai dari context auth
+  const currentUserName = "";
 
   useEffect(() => {
     fetchDashboardData();
@@ -55,14 +63,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
-      </div>
-    );
-  }
-
   // Dummy data grafik - nanti bisa diambil dari API
   const monthlyFees = [
     { month: "Jan", total: 500000 },
@@ -79,31 +79,62 @@ const Dashboard: React.FC = () => {
 
   const COLORS = ["#8b5cf6", "#facc15"];
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6 space-y-8">
-      {/* Header */}
-      <div className="flex sticky top-0 items-center justify-between bg-white shadow-sm border rounded-2xl p-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Dashboard Tagihan
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Halo, {currentUserName} —{" "}
-            {new Date().toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        {/* Skeleton loader */}
+        <div className="animate-pulse space-y-6">
+          <div className="h-24 bg-gray-200 rounded-2xl"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-2xl"></div>
+            ))}
+          </div>
+          <div className="h-64 bg-gray-200 rounded-2xl"></div>
         </div>
-        <div className="flex gap-3">
-          <Button
-            onClick={() => navigate("/admin/broadcast")}
-            className="gap-2"
-            variant="outline">
-            <Bell className="w-4 h-4" />
-            Broadcast Notifikasi
-          </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden  mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <div className="relative p-4 md:p-6">
+          <div className="hidden md:flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold">
+                Dashboard Manajemen Iuran RT/RW
+              </h1>
+              <p className="text-green-100 text-sm">
+                Sistem Pembayaran Digital
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                  <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-1">
+                    Halo, {currentUserName}! 👋
+                  </h2>
+                  <p className="text-green-100 text-xs md:text-sm">
+                    Kelola iuran RT/RW Anda dengan mudah
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -121,48 +152,48 @@ const Dashboard: React.FC = () => {
         <>
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="hover:shadow-md transition">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
               <CardContent className="flex items-center justify-between p-6">
-                <div className="p-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl">
+                <div className="p-4 bg-blue-100 rounded-xl">
                   <Users className="w-8 h-8 text-blue-600" />
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 text-right">
                   <p className="text-sm text-gray-500">Total Pengguna</p>
                   <p className="text-3xl font-bold">{stats.totalUsers}</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition">
-              <CardContent className="flex items-center p-6">
-                <div className="p-4 bg-gradient-to-br from-green-100 to-green-50 rounded-xl">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
+              <CardContent className="flex items-center justify-between p-6">
+                <div className="p-4 bg-green-100 rounded-xl">
                   <FileText className="w-8 h-8 text-green-600" />
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 text-right">
                   <p className="text-sm text-gray-500">Total Iuran</p>
                   <p className="text-3xl font-bold">{stats.totalFees}</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition">
-              <CardContent className="flex items-center p-6">
-                <div className="p-4 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
+              <CardContent className="flex items-center justify-between p-6">
+                <div className="p-4 bg-yellow-100 rounded-xl">
                   <Clock className="w-8 h-8 text-yellow-600" />
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 text-right">
                   <p className="text-sm text-gray-500">Menunggu Verifikasi</p>
                   <p className="text-3xl font-bold">{stats.pendingPayments}</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition">
-              <CardContent className="flex items-center p-6">
-                <div className="p-4 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
+              <CardContent className="flex items-center justify-between p-6">
+                <div className="p-4 bg-purple-100 rounded-xl">
                   <CheckCircle2 className="w-8 h-8 text-purple-600" />
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 text-right">
                   <p className="text-sm text-gray-500">Pembayaran Berhasil</p>
                   <p className="text-3xl font-bold">{stats.approvedPayments}</p>
                 </div>
@@ -171,7 +202,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Status Pengumpulan */}
-          <Card className="hover:shadow-md transition">
+          <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
             <CardHeader>
               <CardTitle>Status Pengumpulan Bulan Ini</CardTitle>
               <CardDescription>
@@ -200,7 +231,7 @@ const Dashboard: React.FC = () => {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Bar Chart */}
-            <Card className="hover:shadow-md transition">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
               <CardHeader>
                 <CardTitle>Grafik Iuran Bulanan</CardTitle>
                 <CardDescription>
@@ -221,7 +252,7 @@ const Dashboard: React.FC = () => {
             </Card>
 
             {/* Pie Chart */}
-            <Card className="hover:shadow-md transition">
+            <Card className="rounded-2xl shadow-lg hover:shadow-xl transition">
               <CardHeader>
                 <CardTitle>Status Pembayaran</CardTitle>
                 <CardDescription>Distribusi status pembayaran</CardDescription>
@@ -235,8 +266,10 @@ const Dashboard: React.FC = () => {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
+                      innerRadius={50}
                       outerRadius={90}
-                      label>
+                      label
+                    >
                       {paymentStatus.map((_entry, index) => (
                         <Cell
                           key={index}
@@ -256,21 +289,24 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div
               onClick={() => navigate("/admin/users")}
-              className="cursor-pointer rounded-xl border p-6 bg-white hover:shadow-md transition flex flex-col items-center space-y-3">
+              className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3"
+            >
               <Users className="w-8 h-8 text-blue-600" />
               <span className="font-medium text-gray-700">Kelola Pengguna</span>
             </div>
 
             <div
               onClick={() => navigate("/admin/fees")}
-              className="cursor-pointer rounded-xl border p-6 bg-white hover:shadow-md transition flex flex-col items-center space-y-3">
+              className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3"
+            >
               <FileText className="w-8 h-8 text-green-600" />
               <span className="font-medium text-gray-700">Generate Iuran</span>
             </div>
 
             <div
               onClick={() => navigate("/admin/payments")}
-              className="cursor-pointer rounded-xl border p-6 bg-white hover:shadow-md transition flex flex-col items-center space-y-3">
+              className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3"
+            >
               <CheckCircle2 className="w-8 h-8 text-purple-600" />
               <span className="font-medium text-gray-700">
                 Review Pembayaran

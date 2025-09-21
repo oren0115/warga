@@ -24,7 +24,7 @@ const BottomNav: React.FC = () => {
   const userNavItems = [
     { path: "/", label: "Home", icon: Home },
     { path: "/iuran", label: "Iuran", icon: CreditCard },
-    { path: "/payments", label: "Pembayaran", icon: History },
+    { path: "/riwayat", label: "Riwayat", icon: History },
     { path: "/profile", label: "Profil", icon: User },
   ];
 

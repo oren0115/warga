@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { userService } from "../services/user.service";
 import type { Notification } from "../types";
 
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
-import { Bell, Volume2, CreditCard, Clock, Info, Check, X } from "lucide-react";
+import {
+  Bell,
+  Volume2,
+  CreditCard,
+  Clock,
+  Info,
+  Check,
+  X,
+} from "lucide-react";
 
 interface NotificationPopupProps {
   isOpen: boolean;
@@ -12,7 +21,11 @@ interface NotificationPopupProps {
   onNotificationRead?: () => void;
 }
 
-const NotificationPopup: React.FC<NotificationPopupProps> = ({ isOpen, onClose, onNotificationRead }) => {
+const NotificationPopup: React.FC<NotificationPopupProps> = ({
+  isOpen,
+  onClose,
+  onNotificationRead,
+}) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,26 +96,13 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ isOpen, onClose, 
   const getTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "pengumuman":
-        return <Volume2 className="w-4 h-4 text-blue-600" />;
+        return <Volume2 className="w-5 h-5 text-blue-600" />;
       case "pembayaran":
-        return <CreditCard className="w-4 h-4 text-green-600" />;
+        return <CreditCard className="w-5 h-5 text-green-600" />;
       case "reminder":
-        return <Clock className="w-4 h-4 text-yellow-600" />;
+        return <Clock className="w-5 h-5 text-yellow-600" />;
       default:
-        return <Info className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "pengumuman":
-        return "bg-blue-100 text-blue-800";
-      case "pembayaran":
-        return "bg-green-100 text-green-800";
-      case "reminder":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+        return <Info className="w-5 h-5 text-gray-600" />;
     }
   };
 
@@ -111,115 +111,89 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({ isOpen, onClose, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black bg-opacity-50" 
-        onClick={onClose}
-      />
-      
-      {/* Popup Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] mx-4 flex flex-col">
+    <div className="fixed top-14 right-4 z-50 w-96">
+      <div className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden flex flex-col max-h-[70vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Notifikasi</h2>
+            <Bell className="w-5 h-5 text-gray-700" />
+            <h2 className="text-sm font-semibold text-gray-800">Notifikasi</h2>
             {unreadCount > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                 {unreadCount}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} size="sm" variant="outline" className="gap-1">
-                <Check className="w-4 h-4" />
-                Tandai Semua Dibaca
+              <Button
+                onClick={markAllAsRead}
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-xs text-gray-600 hover:bg-gray-200"
+              >
+                <Check className="w-3 h-3 mr-1" /> Semua
               </Button>
             )}
-            <Button onClick={onClose} size="sm" variant="ghost">
+            <Button
+              onClick={onClose}
+              size="sm"
+              variant="ghost"
+              className="h-7 px-2 text-gray-600 hover:bg-gray-200"
+            >
               <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Bell className="w-8 h-8 animate-bounce text-blue-500" />
+              <Bell className="w-6 h-6 animate-bounce text-green-500" />
             </div>
           ) : error ? (
             <div className="text-center py-8">
-              <Info className="w-12 h-12 text-red-400 mx-auto mb-4" />
-              <p className="text-red-600">{error}</p>
-              <Button onClick={fetchNotifications} className="mt-2" size="sm">
+              <Info className="w-10 h-10 text-red-400 mx-auto mb-3" />
+              <p className="text-red-600 text-sm">{error}</p>
+              <Button onClick={fetchNotifications} className="mt-3" size="sm">
                 Coba Lagi
               </Button>
             </div>
           ) : notifications.length > 0 ? (
-            <div className="space-y-3">
+            <ul className="divide-y divide-gray-200">
               {notifications.map((notification) => (
-                <div
+                <li
                   key={notification.id}
-                  className={`bg-gray-50 rounded-lg p-4 border ${
-                    !notification.is_read
-                      ? "border-l-4 border-l-blue-500 bg-blue-50"
-                      : "border-gray-200"
-                  }`}>
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {getTypeIcon(notification.type)}
-                    </div>
-
+                  className={`${
+                    !notification.is_read ? "bg-green-50" : ""
+                  } hover:bg-gray-50`}
+                >
+                  <Link
+                    to={notification.url || "/notifications"}
+                    onClick={() => markAsRead(notification.id)}
+                    className="flex items-start gap-3 px-4 py-3"
+                  >
+                    <div className="mt-1">{getTypeIcon(notification.type)}</div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-sm font-semibold text-gray-900">
-                          {notification.title}
-                        </h3>
-                        <div className="flex items-center space-x-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                              notification.type
-                            )}`}>
-                            {notification.type}
-                          </span>
-                          {!notification.is_read && (
-                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                          )}
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-gray-700 mb-2">{notification.message}</p>
-
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500">
-                          {formatDate(notification.created_at)}
-                        </span>
-
-                        {!notification.is_read && (
-                          <Button
-                            onClick={() => markAsRead(notification.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-blue-600 hover:text-blue-700 text-xs">
-                            Tandai Dibaca
-                          </Button>
-                        )}
-                      </div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {notification.title}
+                      </p>
+                      <p className="text-sm text-gray-600 truncate">
+                        {notification.message}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {formatDate(notification.created_at)}
+                      </span>
                     </div>
-                  </div>
-                </div>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
             <div className="text-center py-8">
-              <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-sm font-medium text-gray-900 mb-2">
-                Belum Ada Notifikasi
-              </h3>
-              <p className="text-sm text-gray-600">Notifikasi akan muncul di sini</p>
+              <Bell className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+              <p className="text-sm text-gray-600">Belum ada notifikasi</p>
             </div>
           )}
         </div>

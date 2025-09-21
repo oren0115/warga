@@ -43,6 +43,7 @@ export interface Payment {
 }
 
 export interface Notification {
+  url: string;
   read: any;
   id: string;
   user_id: string;

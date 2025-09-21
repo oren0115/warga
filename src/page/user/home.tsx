@@ -162,6 +162,13 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Notification Popup */}
+      <NotificationPopup 
+        isOpen={showNotificationPopup} 
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={() => setNotificationRefreshKey(prev => prev + 1)}
+      />
+      
       {/* Enhanced Header with Branding - Responsive */}
       <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
@@ -221,13 +228,9 @@ const Home: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   className="text-white hover:bg-white/20"
-                  onClick={() => navigate("/notifications")}>
+                  onClick={() => setShowNotificationPopup(true)}>
                   <Bell className="w-5 h-5" />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                      {unreadNotifications}
-                    </span>
-                  )}
+                  <NotificationBadge refreshKey={notificationRefreshKey} />
                 </Button>
               </div>
             </div>
@@ -260,7 +263,7 @@ const Home: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Calendar className="w-4 h-4" />
-                    <span className="font-medium">{getMonthName(currentFee.bulan)} 2024</span>
+                    <span className="font-medium">{getMonthName(currentFee.bulan)} {new Date(currentFee.created_at).getFullYear()}</span>
                   </div>
                   <Badge
                     className={`${getStatusColor(

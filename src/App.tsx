@@ -65,7 +65,7 @@ function App() {
           }
         />
         <Route
-          path="/payments"
+          path="/riwayat"
           element={
             <ProtectedRoute>
               <Layout>

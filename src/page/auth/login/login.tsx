@@ -49,55 +49,63 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl border border-gray-100">
+        <CardHeader className="text-center space-y-2">
+          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm">
             <Home className="w-8 h-8 text-blue-600" />
           </div>
-          <CardTitle className="text-2xl font-bold">Selamat Datang</CardTitle>
-          <CardDescription>
-            Masuk ke akun RT/RW Fee Management Anda
+          <CardTitle className="text-3xl font-extrabold text-gray-800">
+            Selamat Datang
+          </CardTitle>
+          <CardDescription className="text-gray-500 text-sm">
+            Masuk ke akun <span className="font-medium">RT/RW Fee Management</span>
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="text-sm">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             {/* Username */}
-            <div className="space-y-1">
-              <Label htmlFor="username">Username</Label>
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                Username
+              </Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
                 autoComplete="username"
-                placeholder="Masukkan username"
+                placeholder="contoh: budi123"
                 value={formData.username}
                 onChange={handleChange}
+                className="rounded-xl focus:ring-2 focus:ring-blue-500 transition"
               />
             </div>
 
             {/* Password */}
-            <div className="space-y-1 relative">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2 relative">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Password
+              </Label>
               <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                placeholder="Masukkan password"
+                placeholder="Minimal 6 karakter"
                 value={formData.password}
                 onChange={handleChange}
+                className="rounded-xl focus:ring-2 focus:ring-blue-500 transition pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-8 text-gray-500 hover:text-gray-700">
+                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
@@ -105,21 +113,21 @@ const Login: React.FC = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full"
+              className="w-full rounded-xl py-2 text-base font-medium shadow-md hover:shadow-lg transition"
               disabled={authState.isLoading}>
               {authState.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {authState.isLoading ? "Memproses..." : "Masuk"}
+              {authState.isLoading ? "Memproses..." : "Masuk Sekarang"}
             </Button>
           </form>
         </CardContent>
 
-        <CardFooter className="flex justify-center text-sm">
-          Belum punya akun?{" "}
+        <CardFooter className="flex justify-center text-sm text-gray-600">
+          Belum punya akun?
           <Link
             to="/register"
-            className="ml-1 font-medium text-blue-600 hover:underline">
+            className="ml-1 font-semibold text-blue-600 hover:underline">
             Daftar di sini
           </Link>
         </CardFooter>

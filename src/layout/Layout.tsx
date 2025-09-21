@@ -34,9 +34,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -47,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const userNavItems = [
     { path: "/", label: "Home", icon: LuHouse },
     { path: "/iuran", label: "Iuran", icon: LuReceipt },
-    { path: "/payments", label: "Pembayaran", icon: LuHistory },
+    { path: "/riwayat", label: "Riwayat", icon: LuHistory },
     { path: "/profile", label: "Profil", icon: LuUser },
   ];
 
@@ -70,17 +67,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {authState.user?.is_admin ? "Admin Panel" : "RT/RW Managemen iuran"}
           </h1>
           <div className="flex items-center gap-2">
-            {/* Notification Icon for Mobile */}
-            {!authState.user?.is_admin && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowNotificationPopup(true)}
-                className="relative">
-                <LuBell className="h-6 w-6" />
-                <NotificationBadge refreshKey={notificationRefreshKey} />
-              </Button>
-            )}
+            {/* Notification Icon for Mobile - Removed from Layout */}
             <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -170,17 +157,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            {/* Notification Icon for Desktop */}
-            {!authState.user?.is_admin && (
-              <Button
-                onClick={() => setShowNotificationPopup(true)}
-                variant="ghost"
-                size="icon"
-                className="relative">
-                <LuBell className="h-5 w-5" />
-                <NotificationBadge refreshKey={notificationRefreshKey} />
-              </Button>
-            )}
+            {/* Notification Icon for Desktop - Removed from Layout */}
             <Button
               onClick={handleLogout}
               variant="ghost"
@@ -204,12 +181,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Add bottom padding for mobile bottom nav */}
       <div className="lg:hidden h-16"></div>
 
-      {/* Notification Popup */}
-      <NotificationPopup 
-        isOpen={showNotificationPopup} 
-        onClose={() => setShowNotificationPopup(false)}
-        onNotificationRead={() => setNotificationRefreshKey(prev => prev + 1)}
-      />
+
     </div>
   );
 };
