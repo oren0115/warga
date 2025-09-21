@@ -10,10 +10,13 @@ import Dashboard from "./page/admin/dashboard";
 import UserManagement from "./page/admin/user.management";
 import GenerateFees from "./page/admin/generate.fees";
 import PaymentReview from "./page/admin/payment.review";
+import BroadcastNotification from "./components/admin/BroadcastNotification";
 
 // user pages
 import Home from "./page/user/home";
 import Iuran from "./page/user/iuran";
+import IuranDetail from "./page/user/iuran.detail";
+import Payments from "./page/user/payments";
 import PaymentHistory from "./page/user/payment.history";
 import Notifications from "./page/user/notifications";
 import Profile from "./page/user/profile";
@@ -47,6 +50,26 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Iuran />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/iuran/:id"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <IuranDetail />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payments"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Payments />
               </Layout>
             </ProtectedRoute>
           }
@@ -119,6 +142,16 @@ function App() {
             <AdminRoute>
               <Layout>
                 <PaymentReview />
+              </Layout>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/broadcast"
+          element={
+            <AdminRoute>
+              <Layout>
+                <BroadcastNotification />
               </Layout>
             </AdminRoute>
           }

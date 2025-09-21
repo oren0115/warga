@@ -9,6 +9,7 @@ import { Bell, Volume2, CreditCard, Clock, Info, Check } from "lucide-react";
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNotifications();
@@ -16,11 +17,13 @@ const Notifications: React.FC = () => {
 
   const fetchNotifications = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const notificationsData = await userService.getNotifications();
       setNotifications(notificationsData);
     } catch (error) {
       console.error("Error fetching notifications:", error);
+      setError("Gagal memuat notifikasi");
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +102,23 @@ const Notifications: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Bell className="w-8 h-8 animate-bounce text-blue-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Info className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Terjadi Kesalahan
+          </h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={fetchNotifications}>
+            Coba Lagi
+          </Button>
+        </div>
       </div>
     );
   }

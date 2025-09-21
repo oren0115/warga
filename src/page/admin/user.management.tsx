@@ -85,7 +85,7 @@ const UserManagement: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
+      <div className="sticky top-0 bg-white p-6 rounded-xl shadow-sm border">
         <div className="flex items-center space-x-3 mb-2">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">

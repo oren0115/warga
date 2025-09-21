@@ -12,6 +12,7 @@ export interface User {
 }
 
 export interface Fee {
+  payment_method: string;
   id: string;
   user_id: string;
   kategori: string;

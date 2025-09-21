@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
-import { AlertTriangle, Info, Users, Loader2 } from "lucide-react";
+import { AlertTriangle, Info, Users, Loader2, Receipt } from "lucide-react";
 
 const GenerateFees: React.FC = () => {
   const [formData, setFormData] = useState({ bulan: "" });
@@ -25,6 +25,7 @@ const GenerateFees: React.FC = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const currentYear = new Date().getFullYear();
 
@@ -69,14 +70,41 @@ const GenerateFees: React.FC = () => {
     setShowConfirm(true);
   };
 
+  const triggerDownload = (blob: Blob, filename: string) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async (format: "excel" | "pdf") => {
+    if (!formData.bulan) {
+      setError("Pilih bulan terlebih dahulu untuk mengekspor laporan");
+      return;
+    }
+    try {
+      setIsExporting(true);
+      const bulanStr = `${currentYear}-${String(formData.bulan).padStart(2, "0")}`;
+      const blob = await adminService.exportFeesReport(bulanStr, format);
+      const filename = `fees_${bulanStr}.${format === "excel" ? "xlsx" : "pdf"}`;
+      triggerDownload(blob, filename);
+    } catch (e) {
+      console.error(e);
+      setError("Gagal mengekspor laporan iuran");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-8">
       {/* Header */}
       <div className="bg-white p-6 rounded-xl shadow-sm border">
         <div className="flex items-center space-x-3">
-          <div className="p-3 bg-gray-100 rounded-xl">
-            <Users className="w-6 h-6 text-gray-700" />
-          </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Kelola Tagihan</h1>
             <p className="text-gray-600 mt-1">Kelola tagihan warga</p>
@@ -149,13 +177,33 @@ const GenerateFees: React.FC = () => {
                 </AlertDescription>
               </Alert>
 
-              <Button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2"
-                disabled={isLoading}>
-                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                {isLoading ? "Memproses..." : "Generate Iuran"}
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="submit"
+                  className="flex-1 flex items-center justify-center gap-2"
+                  disabled={isLoading}>
+                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isLoading ? "Memproses..." : "Generate Iuran"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 flex items-center justify-center gap-2"
+                  onClick={() => handleExport("excel")}
+                  disabled={isExporting}>
+                  <Receipt className="w-4 h-4" />
+                  {isExporting ? "Mengekspor..." : "Export Excel"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 flex items-center justify-center gap-2"
+                  onClick={() => handleExport("pdf")}
+                  disabled={isExporting}>
+                  <Receipt className="w-4 h-4" />
+                  PDF
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>

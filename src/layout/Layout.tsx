@@ -22,6 +22,8 @@ import {
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import BottomNav from "../components/common/buttom.navigasi";
+import NotificationPopup from "../components/NotificationPopup";
+import NotificationBadge from "../components/NotificationBadge";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,6 +34,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
 
   const handleLogout = () => {
     logout();
@@ -43,8 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const userNavItems = [
     { path: "/", label: "Home", icon: LuHouse },
     { path: "/iuran", label: "Iuran", icon: LuReceipt },
-    { path: "/payments", label: "Riwayat", icon: LuHistory },
-    { path: "/notifications", label: "Notifikasi", icon: LuBell },
+    { path: "/payments", label: "Pembayaran", icon: LuHistory },
     { path: "/profile", label: "Profil", icon: LuUser },
   ];
 
@@ -53,24 +56,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: "/admin/users", label: "Pengguna", icon: LuUser },
     { path: "/admin/fees", label: "Generate Iuran", icon: LuReceipt },
     { path: "/admin/payments", label: "Review Pembayaran", icon: LuHistory },
+    { path: "/admin/broadcast", label: "Broadcast", icon: LuBell },
   ];
 
   const navItems = authState.user?.is_admin ? adminNavItems : userNavItems;
 
   return (
     <div className="min-h-screen bg-main-background">
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
+      {/* Mobile Header - Hidden to save space */}
+      <div className="hidden lg:hidden bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
           <h1 className="text-lg font-semibold text-main-dark">
-            {authState.user?.is_admin ? "Admin Panel" : "RT/RW Fee Management"}
+            {authState.user?.is_admin ? "Admin Panel" : "RT/RW Managemen iuran"}
           </h1>
-          <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <LuMenu className="h-6 w-6" />
+          <div className="flex items-center gap-2">
+            {/* Notification Icon for Mobile */}
+            {!authState.user?.is_admin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowNotificationPopup(true)}
+                className="relative">
+                <LuBell className="h-6 w-6" />
+                <NotificationBadge refreshKey={notificationRefreshKey} />
               </Button>
-            </SheetTrigger>
+            )}
+            <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <LuMenu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
@@ -106,6 +122,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </nav>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
       </div>
 
@@ -152,13 +169,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {authState.user?.is_admin ? "Admin" : "User"}
             </p>
           </div>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            size="icon"
-            className="ml-auto">
-            <LuLogOut className="h-5 w-5" />
-          </Button>
+          <div className="ml-auto flex items-center gap-2">
+            {/* Notification Icon for Desktop */}
+            {!authState.user?.is_admin && (
+              <Button
+                onClick={() => setShowNotificationPopup(true)}
+                variant="ghost"
+                size="icon"
+                className="relative">
+                <LuBell className="h-5 w-5" />
+                <NotificationBadge refreshKey={notificationRefreshKey} />
+              </Button>
+            )}
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              size="icon">
+              <LuLogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -174,6 +203,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Add bottom padding for mobile bottom nav */}
       <div className="lg:hidden h-16"></div>
+
+      {/* Notification Popup */}
+      <NotificationPopup 
+        isOpen={showNotificationPopup} 
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={() => setNotificationRefreshKey(prev => prev + 1)}
+      />
     </div>
   );
 };

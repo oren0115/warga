@@ -38,6 +38,36 @@ export const adminService = {
     return response.data;
   },
 
+  // Export reports
+  exportFeesReport: async (
+    bulan: string,
+    format: "excel" | "pdf" = "excel"
+  ): Promise<Blob> => {
+    const response = await api.get(
+      "/admin/reports/fees/export",
+      {
+        params: { bulan, format },
+        responseType: "blob",
+      }
+    );
+    return response.data as Blob;
+  },
+
+  exportPaymentsReport: async (
+    start: string, // YYYY-MM-DD
+    end: string, // YYYY-MM-DD
+    format: "excel" | "pdf" = "excel"
+  ): Promise<Blob> => {
+    const response = await api.get(
+      "/admin/reports/payments/export",
+      {
+        params: { start, end, format },
+        responseType: "blob",
+      }
+    );
+    return response.data as Blob;
+  },
+
   broadcastNotification: async (
     data: BroadcastNotificationRequest
   ): Promise<any> => {

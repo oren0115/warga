@@ -13,7 +13,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Loader2, Users, FileText, Clock, CheckCircle2 } from "lucide-react";
+import { Loader2, Users, FileText, Clock, CheckCircle2, Bell } from "lucide-react";
 
 import {
   BarChart,
@@ -82,7 +82,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between bg-white shadow-sm border rounded-2xl p-6">
+      <div className="flex sticky top-0 items-center justify-between bg-white shadow-sm border rounded-2xl p-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">
             Dashboard Tagihan
@@ -95,6 +95,15 @@ const Dashboard: React.FC = () => {
               year: "numeric",
             })}
           </p>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate("/admin/broadcast")}
+            className="gap-2"
+            variant="outline">
+            <Bell className="w-4 h-4" />
+            Broadcast Notifikasi
+          </Button>
         </div>
       </div>
 

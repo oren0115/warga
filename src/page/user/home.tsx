@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth.context";
 import { userService } from "../../services/user.service";
-import type { Fee, Payment, Notification } from "../../types";
+import type { Fee, Notification } from "../../types";
 import {
   Card,
   CardContent,
@@ -15,22 +15,28 @@ import {
   Calendar,
   Clock,
   CreditCard,
-  TrendingUp,
   AlertCircle,
   CheckCircle,
   Bell,
-  Eye,
-  ArrowRight,
+  Building2,
+  User,
 } from "lucide-react";
+import {
+  LuBell,
+
+} from "react-icons/lu"
+import NotificationBadge from "@/components/NotificationBadge";
+import NotificationPopup from "@/components/NotificationPopup";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
   const [fees, setFees] = useState<Fee[]>([]);
-  const [payments, setPayments] = useState<Payment[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -40,13 +46,11 @@ const Home: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const [feesData, paymentsData, notificationsData] = await Promise.all([
+      const [feesData, notificationsData] = await Promise.all([
         userService.getFees(),
-        userService.getPayments(),
         userService.getNotifications(),
       ]);
       setFees(feesData);
-      setPayments(paymentsData);
       setNotifications(notificationsData);
     } catch (error) {
       console.error("Error fetching home data:", error);
@@ -153,64 +157,97 @@ const Home: React.FC = () => {
     (fee) => parseInt(fee.bulan) === new Date().getMonth() + 1
   );
 
-  const latestPayments = payments
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
-    .slice(0, 3);
-
   const unreadNotifications = notifications.filter((n) => !n.read).length;
   const daysUntilDue = currentFee ? getDaysUntilDueDate(currentFee.bulan) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Enhanced Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-5">
-        {/* <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div> */}
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full "></div>
+      {/* Enhanced Header with Branding - Responsive */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
-        <div className="relative p-6 ">
-          <div className="flex justify-between items-start">
+        <div className="relative p-4 md:p-6">
+          {/* Branding Section - Hidden on mobile, visible on desktop */}
+          <div className="hidden md:flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold mb-1">
-                Halo, {authState.user?.nama}! 👋
-              </h1>
-              <p className="text-green-100 text-sm">
-                Kelola iuran RT/RW Anda dengan mudah
-              </p>
+              <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
+              <p className="text-green-100 text-sm">Sistem Pembayaran Digital</p>
+            </div>
+          </div>
+
+          {/* Compact Mobile Header - Only visible on mobile */}
+          <div className="md:hidden flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-white/20 rounded-lg">
+                <Building2 className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-semibold">RT/RW</span>
             </div>
             <div className="relative">
-              <Button
+            <Button
+                onClick={() => setShowNotificationPopup(true)}
                 variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/20"
-                onClick={() => navigate("/notifications")}>
-                <Bell className="w-5 h-5" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {unreadNotifications}
-                  </span>
-                )}
+                className="relative">
+                <LuBell className="h-5 w-5" />
+                <NotificationBadge refreshKey={notificationRefreshKey} />
               </Button>
+            </div>
+          </div>
+
+          {/* Enhanced Greeting Section */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                  <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-1">
+                    Halo, {authState.user?.nama}! 👋
+                  </h2>
+                  <p className="text-green-100 text-xs md:text-sm">
+                    Kelola iuran RT/RW Anda dengan mudah
+                  </p>
+                </div>
+              </div>
+              {/* Desktop notification button - hidden on mobile */}
+              <div className="hidden md:block relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20"
+                  onClick={() => navigate("/notifications")}>
+                  <Bell className="w-5 h-5" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      {unreadNotifications}
+                    </span>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-4 space-y-6 -mt-4">
+      <div className="p-4 space-y-6 -mt-2">
         {/* Current Fee - Enhanced */}
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2 text-lg font-bold">
                 <CreditCard className="w-5 h-5 text-green-600" />
                 Iuran Bulan Ini
               </CardTitle>
               {currentFee && daysUntilDue > 0 && daysUntilDue <= 7 && (
                 <Badge
                   variant="outline"
-                  className="bg-orange-50 text-orange-700 border-orange-200">
+                  className="bg-orange-100 text-orange-800 border-orange-300 font-semibold px-3 py-1">
                   <Clock className="w-3 h-3 mr-1" />
                   {daysUntilDue} hari lagi
                 </Badge>
@@ -223,12 +260,12 @@ const Home: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Calendar className="w-4 h-4" />
-                    <span>{getMonthName(currentFee.bulan)} 2024</span>
+                    <span className="font-medium">{getMonthName(currentFee.bulan)} 2024</span>
                   </div>
                   <Badge
                     className={`${getStatusColor(
                       currentFee.status
-                    )} flex items-center gap-1`}>
+                    )} flex items-center gap-1 font-semibold px-3 py-1`}>
                     {getStatusIcon(currentFee.status)}
                     {currentFee.status}
                   </Badge>
@@ -240,15 +277,19 @@ const Home: React.FC = () => {
 
                 {daysUntilDue > 0 && daysUntilDue <= 30 && (
                   <div
-                    className={`p-3 rounded-lg ${
+                    className={`p-4 rounded-lg border-2 ${
                       daysUntilDue <= 7
-                        ? "bg-orange-50 border border-orange-200"
-                        : "bg-blue-50 border border-blue-200"
+                        ? "bg-red-50 border-red-200"
+                        : daysUntilDue <= 14
+                        ? "bg-orange-50 border-orange-200"
+                        : "bg-blue-50 border-blue-200"
                     }`}>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
                       <AlertCircle
-                        className={`w-4 h-4 ${
+                        className={`w-5 h-5 ${
                           daysUntilDue <= 7
+                            ? "text-red-600"
+                            : daysUntilDue <= 14
                             ? "text-orange-600"
                             : "text-blue-600"
                         }`}
@@ -256,6 +297,8 @@ const Home: React.FC = () => {
                       <span
                         className={
                           daysUntilDue <= 7
+                            ? "text-red-800"
+                            : daysUntilDue <= 14
                             ? "text-orange-800"
                             : "text-blue-800"
                         }>
@@ -265,12 +308,12 @@ const Home: React.FC = () => {
                   </div>
                 )}
 
-                {currentFee.status.toLowerCase() === "belum bayar" && (
+                {(currentFee.status.toLowerCase() === "belum bayar" || currentFee.status.toLowerCase() === "pending") && (
                   <Button
                     onClick={() => navigate(`/iuran/${currentFee.id}`)}
-                    className="w-full bg-green-600 hover:bg-green-700 shadow-md"
+                    className="w-full bg-green-600 hover:bg-green-700 shadow-lg text-white font-semibold py-3 text-lg"
                     size="lg">
-                    <CreditCard className="w-4 h-4 mr-2" />
+                    <CreditCard className="w-5 h-5 mr-2" />
                     Bayar Sekarang
                   </Button>
                 )}
@@ -286,7 +329,7 @@ const Home: React.FC = () => {
         </Card>
 
         {/* Payment History - Enhanced */}
-        <Card className="shadow-lg border-0">
+        {/* <Card className="shadow-lg border-0">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -377,43 +420,46 @@ const Home: React.FC = () => {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
-        {/* Quick Stats */}
+        {/* Enhanced Quick Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="shadow-md border-0">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-full">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-500 rounded-full shadow-md">
+                  <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Lunas</p>
-                  <p className="font-bold text-lg">
-                    {
-                      fees.filter((f) => f.status.toLowerCase() === "lunas")
-                        .length
-                    }
+                  <p className="text-sm text-green-700 font-medium">Lunas</p>
+                  <p className="font-bold text-2xl text-green-800">
+                    {fees.filter((f) => f.status.toLowerCase() === "lunas").length}
+                  </p>
+                  <p className="text-xs text-green-600">
+                    {fees.filter((f) => f.status.toLowerCase() === "lunas").length === 0 
+                      ? "Belum ada data" 
+                      : "Pembayaran selesai"}
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md border-0">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-100 rounded-full">
-                  <Clock className="w-5 h-5 text-orange-600" />
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-red-50 to-red-100">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-500 rounded-full shadow-md">
+                  <AlertCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Tertunggak</p>
-                  <p className="font-bold text-lg">
-                    {
-                      fees.filter(
-                        (f) => f.status.toLowerCase() === "belum bayar"
-                      ).length
-                    }
+                  <p className="text-sm text-red-700 font-medium">Tertunggak</p>
+                  <p className="font-bold text-2xl text-red-800">
+                    {fees.filter((f) => f.status.toLowerCase() === "belum bayar").length}
+                  </p>
+                  <p className="text-xs text-red-600">
+                    {fees.filter((f) => f.status.toLowerCase() === "belum bayar").length === 0 
+                      ? "Semua lunas" 
+                      : "Perlu dibayar"}
                   </p>
                 </div>
               </div>
