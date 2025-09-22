@@ -5,15 +5,7 @@ import type { Notification } from "../types";
 
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
-import {
-  Bell,
-  Volume2,
-  CreditCard,
-  Clock,
-  Info,
-  Check,
-  X,
-} from "lucide-react";
+import { Bell, Volume2, CreditCard, Clock, Info, Check, X } from "lucide-react";
 
 interface NotificationPopupProps {
   isOpen: boolean;
@@ -112,14 +104,19 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
 
   return (
     <div className="fixed top-14 right-4 z-50 w-96">
-      <div className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden flex flex-col max-h-[70vh]">
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[70vh] backdrop-blur-sm">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
-          <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-gray-700" />
-            <h2 className="text-sm font-semibold text-gray-800">Notifikasi</h2>
+        <div className="flex items-center justify-between px-5 py-4 border-b bg-gradient-to-r from-green-50 to-emerald-50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-full">
+              <Bell className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800">Notifikasi</h2>
+              <p className="text-xs text-gray-500">Pemberitahuan terbaru</p>
+            </div>
             {unreadCount > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-red-500 text-white text-xs px-2.5 py-1 rounded-full font-bold animate-pulse">
                 {unreadCount}
               </span>
             )}
@@ -130,17 +127,15 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                 onClick={markAllAsRead}
                 size="sm"
                 variant="ghost"
-                className="h-7 px-2 text-xs text-gray-600 hover:bg-gray-200"
-              >
-                <Check className="w-3 h-3 mr-1" /> Semua
+                className="h-8 px-3 text-xs text-green-600 hover:bg-green-100 rounded-lg font-medium">
+                <Check className="w-3 h-3 mr-1" /> Tandai Semua
               </Button>
             )}
             <Button
               onClick={onClose}
               size="sm"
               variant="ghost"
-              className="h-7 px-2 text-gray-600 hover:bg-gray-200"
-            >
+              className="h-8 w-8 text-gray-500 hover:bg-gray-100 rounded-lg">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -149,40 +144,67 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Bell className="w-6 h-6 animate-bounce text-green-500" />
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="p-4 bg-green-100 rounded-full mb-4">
+                <Bell className="w-8 h-8 animate-bounce text-green-600" />
+              </div>
+              <p className="text-sm text-gray-600 font-medium">
+                Memuat notifikasi...
+              </p>
             </div>
           ) : error ? (
-            <div className="text-center py-8">
-              <Info className="w-10 h-10 text-red-400 mx-auto mb-3" />
-              <p className="text-red-600 text-sm">{error}</p>
-              <Button onClick={fetchNotifications} className="mt-3" size="sm">
+            <div className="text-center py-12 px-6">
+              <div className="p-4 bg-red-100 rounded-full w-fit mx-auto mb-4">
+                <Info className="w-8 h-8 text-red-500" />
+              </div>
+              <p className="text-red-600 text-sm font-medium mb-4">{error}</p>
+              <Button
+                onClick={fetchNotifications}
+                className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg"
+                size="sm">
                 Coba Lagi
               </Button>
             </div>
           ) : notifications.length > 0 ? (
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-100">
               {notifications.map((notification) => (
                 <li
                   key={notification.id}
                   className={`${
-                    !notification.is_read ? "bg-green-50" : ""
-                  } hover:bg-gray-50`}
-                >
+                    !notification.is_read
+                      ? "bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-l-green-400"
+                      : "hover:bg-gray-50"
+                  } transition-all duration-200`}>
                   <Link
                     to={notification.url || "/notifications"}
                     onClick={() => markAsRead(notification.id)}
-                    className="flex items-start gap-3 px-4 py-3"
-                  >
-                    <div className="mt-1">{getTypeIcon(notification.type)}</div>
+                    className="flex items-start gap-4 px-5 py-4 group">
+                    <div
+                      className={`mt-1 p-2 rounded-full ${
+                        !notification.is_read
+                          ? "bg-green-100"
+                          : "bg-gray-100 group-hover:bg-green-100"
+                      } transition-colors duration-200`}>
+                      {getTypeIcon(notification.type)}
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
-                        {notification.title}
-                      </p>
-                      <p className="text-sm text-gray-600 truncate">
+                      <div className="flex items-start justify-between">
+                        <p
+                          className={`text-sm font-semibold ${
+                            !notification.is_read
+                              ? "text-gray-900"
+                              : "text-gray-700"
+                          } group-hover:text-gray-900 transition-colors duration-200`}>
+                          {notification.title}
+                        </p>
+                        {!notification.is_read && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2 ml-2"></div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
                         {notification.message}
                       </p>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 mt-2 block">
                         {formatDate(notification.created_at)}
                       </span>
                     </div>
@@ -191,9 +213,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
               ))}
             </ul>
           ) : (
-            <div className="text-center py-8">
-              <Bell className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm text-gray-600">Belum ada notifikasi</p>
+            <div className="text-center py-12 px-6">
+              <div className="p-4 bg-gray-100 rounded-full w-fit mx-auto mb-4">
+                <Bell className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Belum ada notifikasi
+              </h3>
+              <p className="text-xs text-gray-500">
+                Notifikasi akan muncul di sini
+              </p>
             </div>
           )}
         </div>

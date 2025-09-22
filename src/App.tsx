@@ -16,7 +16,6 @@ import BroadcastNotification from "./components/admin/BroadcastNotification";
 import Home from "./page/user/home";
 import Iuran from "./page/user/iuran";
 import IuranDetail from "./page/user/iuran.detail";
-import Payments from "./page/user/payments";
 import PaymentHistory from "./page/user/payment.history";
 import Notifications from "./page/user/notifications";
 import Profile from "./page/user/profile";
@@ -69,12 +68,12 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Payments />
+                <PaymentHistory />
               </Layout>
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/payment-history"
           element={
             <ProtectedRoute>
@@ -83,7 +82,7 @@ function App() {
               </Layout>
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="/notifications"
           element={

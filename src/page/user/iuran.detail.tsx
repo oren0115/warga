@@ -15,7 +15,14 @@ import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import { Label } from "../../components/ui/label";
 import type { VariantProps } from "class-variance-authority";
 import { badgeVariants } from "../../components/ui/badge";
-import { CalendarDays, CreditCard, Wallet, Banknote, Building2, User } from "lucide-react";
+import {
+  CalendarDays,
+  CreditCard,
+  Wallet,
+  Banknote,
+  Building2,
+  User,
+} from "lucide-react";
 
 type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
 
@@ -27,6 +34,8 @@ const IuranDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
   const fetchFee = useCallback(async () => {
     setIsLoading(true);
@@ -56,7 +65,12 @@ const IuranDetail: React.FC = () => {
       };
       const paymentResponse = await userService.createPayment(paymentData);
       if (paymentResponse.payment_url) {
+        // Store payment ID for status checking
+        setLastPaymentId(paymentResponse.payment_id);
         window.open(paymentResponse.payment_url, "_blank");
+
+        // Start polling for payment status
+        startPaymentStatusPolling(paymentResponse.payment_id);
       }
     } catch (error) {
       console.error("Error creating payment:", error);
@@ -64,6 +78,71 @@ const IuranDetail: React.FC = () => {
     } finally {
       setIsProcessingPayment(false);
     }
+  };
+
+  const checkPaymentStatus = async (paymentId: string) => {
+    if (!paymentId) return;
+
+    setIsCheckingPayment(true);
+    try {
+      const statusResponse = await userService.checkPaymentStatus(paymentId);
+
+      // If payment is successful or failed, stop polling and refresh fee data
+      if (
+        statusResponse.status === "Success" ||
+        statusResponse.status === "Failed"
+      ) {
+        setLastPaymentId(null);
+        await fetchFee(); // Refresh fee data
+        return true; // Stop polling
+      }
+
+      return false; // Continue polling
+    } catch (error) {
+      console.error("Error checking payment status:", error);
+      return false;
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  };
+
+  const forceCheckPaymentStatus = async () => {
+    if (!lastPaymentId) return;
+
+    setIsCheckingPayment(true);
+    try {
+      const statusResponse = await userService.forceCheckPaymentStatus(
+        lastPaymentId
+      );
+
+      if (statusResponse.updated) {
+        setLastPaymentId(null);
+        await fetchFee(); // Refresh fee data
+        alert("Status pembayaran berhasil diperbarui!");
+      } else {
+        alert(statusResponse.message || "Status pembayaran sudah up to date");
+      }
+    } catch (error) {
+      console.error("Error force checking payment status:", error);
+      alert("Gagal memeriksa status pembayaran. Silakan coba lagi.");
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  };
+
+  const startPaymentStatusPolling = (paymentId: string) => {
+    const pollInterval = setInterval(async () => {
+      const shouldStop = await checkPaymentStatus(paymentId);
+      if (shouldStop) {
+        clearInterval(pollInterval);
+      }
+    }, 5000); // Check every 5 seconds
+
+    // Stop polling after 10 minutes
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      setLastPaymentId(null);
+    }, 600000);
   };
 
   const getStatusVariant = (status: string): BadgeVariant => {
@@ -118,7 +197,7 @@ const IuranDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Enhanced Header with Branding - Responsive */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-6">
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
         <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
@@ -130,7 +209,9 @@ const IuranDetail: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
-              <p className="text-green-100 text-sm">Sistem Pembayaran Digital</p>
+              <p className="text-green-100 text-sm">
+                Sistem Pembayaran Digital
+              </p>
             </div>
           </div>
 
@@ -311,7 +392,12 @@ const IuranDetail: React.FC = () => {
         {fee.status !== "Belum Bayar" && (
           <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
             <CardHeader>
-              <CardTitle>Status Pembayaran</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                Status Pembayaran
+                {isCheckingPayment && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
               <Badge
@@ -330,6 +416,23 @@ const IuranDetail: React.FC = () => {
                   ? "Pembayaran sedang dalam proses verifikasi"
                   : "Pembayaran gagal, silakan coba lagi"}
               </p>
+              {lastPaymentId && fee.status === "Pending" && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm text-blue-600">
+                    🔄 Memeriksa status pembayaran secara otomatis...
+                  </p>
+                  <Button
+                    onClick={forceCheckPaymentStatus}
+                    disabled={isCheckingPayment}
+                    variant="outline"
+                    size="sm"
+                    className="w-full">
+                    {isCheckingPayment
+                      ? "Memeriksa..."
+                      : "Paksa Periksa Status"}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

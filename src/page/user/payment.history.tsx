@@ -10,11 +10,12 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { Skeleton } from "../../components/ui/skeleton";
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "../../components/ui/tabs";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import {
   CreditCard,
   Landmark,
@@ -28,8 +29,11 @@ import {
   Link2,
   BarChart2,
   DollarSign,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import NotificationPopup from "../../components/NotificationPopup";
+import NotificationBadge from "../../components/NotificationBadge";
 
 // Mappings untuk status dan metode pembayaran
 const STATUS_MAP: Record<
@@ -40,6 +44,11 @@ const STATUS_MAP: Record<
     icon: JSX.Element;
   }
 > = {
+  Success: {
+    text: "Berhasil",
+    variant: "default",
+    icon: <CheckCircle className="text-green-600 w-5 h-5" />,
+  },
   success: {
     text: "Berhasil",
     variant: "default",
@@ -50,10 +59,20 @@ const STATUS_MAP: Record<
     variant: "default",
     icon: <CheckCircle className="text-green-600 w-5 h-5" />,
   },
+  Pending: {
+    text: "Menunggu",
+    variant: "secondary",
+    icon: <Clock className="text-amber-500 w-5 h-5" />,
+  },
   pending: {
     text: "Menunggu",
     variant: "secondary",
     icon: <Clock className="text-amber-500 w-5 h-5" />,
+  },
+  Failed: {
+    text: "Gagal",
+    variant: "destructive",
+    icon: <XCircle className="text-red-600 w-5 h-5" />,
   },
   deny: {
     text: "Ditolak",
@@ -113,8 +132,8 @@ const PaymentCard: React.FC<{ payment: Payment }> = ({ payment }) => {
   };
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500 bg-white w-full sm:w-auto">
-      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 bg-green-50 px-4 sm:px-6">
+    <Card className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 bg-gradient-to-br from-white to-gray-50 w-full sm:w-auto">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 sm:px-6 rounded-t-lg">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
           <div>{method.icon}</div>
           <div>
@@ -136,10 +155,12 @@ const PaymentCard: React.FC<{ payment: Payment }> = ({ payment }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 pt-4 px-4 sm:px-6">
-        <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-100">
-          <span className="text-gray-600 font-medium">Nominal Pembayaran:</span>
-          <span className="font-bold text-lg text-green-700">
+      <CardContent className="space-y-4 pt-4 px-4 sm:px-6">
+        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 shadow-sm">
+          <span className="text-gray-700 font-semibold">
+            Nominal Pembayaran:
+          </span>
+          <span className="font-bold text-xl text-green-700">
             Rp {payment.amount.toLocaleString("id-ID")}
           </span>
         </div>
@@ -175,7 +196,7 @@ const PaymentCard: React.FC<{ payment: Payment }> = ({ payment }) => {
           <div className="pt-4">
             <Button
               asChild
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors duration-200 shadow-sm">
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
               <a
                 href={payment.payment_url}
                 target="_blank"
@@ -198,13 +219,13 @@ const Row: React.FC<{
   isCode?: boolean;
   color?: string;
 }> = ({ label, value, isCode = false, color = "text-gray-800" }) => (
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100">
-    <span className="text-gray-600 font-medium">{label}:</span>
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100 last:border-b-0">
+    <span className="text-gray-600 font-semibold text-sm">{label}:</span>
     <span
       className={`${color} font-medium mt-1 sm:mt-0 ${
         isCode
-          ? "font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs"
-          : ""
+          ? "font-mono text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-xs border border-blue-100"
+          : "text-gray-800"
       }`}>
       {value}
     </span>
@@ -214,13 +235,16 @@ const Row: React.FC<{
 const PaymentHistory: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState("all");
 
   useEffect(() => {
     (async () => {
       setIsLoading(true);
       try {
-        const data = await userService.getPayments();
-        setPayments(data);
+        const paymentsData = await userService.getPayments();
+        setPayments(paymentsData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -229,19 +253,26 @@ const PaymentHistory: React.FC = () => {
     })();
   }, []);
 
+  const handleNotificationRead = () => {
+    setNotificationRefreshKey((prev) => prev + 1);
+    // This will trigger NotificationBadge to refresh its data
+  };
+
   const filterPayments = (status: string) => {
     switch (status) {
       case "all":
         return payments;
       case "success":
         return payments.filter((p) =>
-          ["settlement", "success"].includes(p.status.toLowerCase())
+          ["Success", "success", "settlement"].includes(p.status)
         );
       case "pending":
-        return payments.filter((p) => p.status.toLowerCase() === "pending");
+        return payments.filter((p) =>
+          ["Pending", "pending"].includes(p.status)
+        );
       case "failed":
         return payments.filter((p) =>
-          ["deny", "cancel", "expire"].includes(p.status.toLowerCase())
+          ["Failed", "deny", "cancel", "expire"].includes(p.status)
         );
       default:
         return [];
@@ -270,12 +301,18 @@ const PaymentHistory: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b shadow-sm p-6">
-          <Skeleton className="h-7 w-48 mb-2" />
-          <Skeleton className="h-4 w-64" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
+          <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+          <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+          <div className="relative p-4 md:p-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+              <Skeleton className="h-6 w-48 mb-2 bg-white/20" />
+              <Skeleton className="h-4 w-64 bg-white/20" />
+            </div>
+          </div>
         </div>
-        <div className="p-6 space-y-4">
+        <div className="p-4 md:p-6 space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="p-6 space-y-4 shadow-sm w-full">
               <Skeleton className="h-5 w-32" />
@@ -289,74 +326,190 @@ const PaymentHistory: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg">
-        <div className="px-6 py-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mb-2">
-            <CreditCard className="w-8 h-8" />
-            <h1 className="text-2xl font-bold">Riwayat Pembayaran</h1>
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <div className="relative p-4 md:p-6">
+          {/* Branding desktop */}
+          <div className="hidden md:flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
+              <p className="text-green-100 text-sm">
+                Sistem Pembayaran Digital
+              </p>
+            </div>
           </div>
-          <p className="text-green-100 text-base max-w-full sm:max-w-lg">
-            Pantau semua transaksi pembayaran iuran warga dengan transparan
-          </p>
-          <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
-            <div className="flex items-center space-x-2">
-              <BarChart2 className="w-4 h-4 text-green-200" />
-              <span>Total Transaksi: {payments.length}</span>
+
+          {/* Branding mobile */}
+          <div className="md:hidden flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-white/20 rounded-lg">
+                <CreditCard className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-semibold">RT/RW</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4 text-green-200" />
-              <span>
-                Total Berhasil: Rp{" "}
-                {payments
-                  .filter((p) =>
-                    ["settlement", "success"].includes(p.status.toLowerCase())
-                  )
-                  .reduce((sum, p) => sum + p.amount, 0)
-                  .toLocaleString("id-ID")}
-              </span>
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/20"
+                onClick={() => setShowNotificationPopup(true)}>
+                <Bell className="w-5 h-5" />
+                <NotificationBadge refreshKey={notificationRefreshKey} />
+              </Button>
             </div>
+          </div>
+
+          {/* Greeting */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                  <BarChart2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-1">
+                    Riwayat Pembayaran
+                  </h2>
+                  <p className="text-green-100 text-xs md:text-sm">
+                    Pantau semua transaksi pembayaran iuran warga
+                  </p>
+                </div>
+              </div>
+              {/* Notifikasi Desktop */}
+              <div className="hidden md:block relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20"
+                  onClick={() => setShowNotificationPopup(true)}>
+                  <Bell className="w-5 h-5" />
+                  <NotificationBadge refreshKey={notificationRefreshKey} />
+                </Button>
+              </div>
+            </div>
+
+            {/* Stats */}
+            {/* <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
+              <div className="flex items-center space-x-2">
+                <BarChart2 className="w-4 h-4 text-green-200" />
+                <span>Total Transaksi: {payments.length}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-4 h-4 text-green-200" />
+                <span>
+                  Total Berhasil: Rp{" "}
+                  {payments
+                    .filter((p) =>
+                      ["settlement", "success"].includes(p.status.toLowerCase())
+                    )
+                    .reduce((sum, p) => sum + p.amount, 0)
+                    .toLocaleString("id-ID")}
+                </span>
+              </div>
+            </div> */}
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="p-6">
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="mb-4 bg-white shadow-sm p-1 rounded-lg overflow-x-auto sm:overflow-x-visible whitespace-nowrap">
-            {tabData.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="data-[state=active]:bg-green-600 data-[state=active]:text-white px-3 py-1 rounded flex items-center space-x-1 text-xs sm:text-sm min-w-[70px] sm:min-w-0">
-                {tab.icon}
-                <span>{tab.label}</span>
-                <Badge className="ml-1 bg-gray-100 text-gray-700 text-xs">
-                  {tabCounts[tab.value]}
-                </Badge>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {tabData.map((tab) => (
-            <TabsContent
-              key={tab.value}
-              value={tab.value}
-              className="space-y-6">
-              {filterPayments(tab.value).length > 0 ? (
-                <div className="space-y-4">
-                  {filterPayments(tab.value).map((p) => (
-                    <PaymentCard key={p.id} payment={p} />
-                  ))}
+      {/* Filter dan Content */}
+      <div className="p-4 md:p-6">
+        {/* Filter Dropdown */}
+        <div className="mb-6">
+          <div className="bg-white shadow-lg rounded-xl p-4 border border-gray-100">
+            <div className="flex flex-col gap-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                  Filter Pembayaran
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Pilih status pembayaran untuk melihat riwayat
+                </p>
+                {/* Filter Status Indicator */}
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-gray-500">Status aktif:</span>
+                  <Badge className="bg-green-100 text-green-700 text-xs font-medium">
+                    {tabData.find((tab) => tab.value === selectedFilter)
+                      ?.label || "Semua"}
+                  </Badge>
+                  <span className="text-xs text-gray-500">
+                    ({filterPayments(selectedFilter).length} item)
+                  </span>
                 </div>
-              ) : (
-                <EmptyState tab={tab.value} />
-              )}
-            </TabsContent>
-          ))}
-        </Tabs>
+              </div>
+              <div className="w-full flex gap-2">
+                <Select
+                  value={selectedFilter}
+                  onValueChange={setSelectedFilter}>
+                  <SelectTrigger className="flex-1 bg-gray-50 border-gray-200 focus:ring-green-500 focus:border-green-500">
+                    <SelectValue placeholder="Pilih status pembayaran" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tabData.map((tab) => (
+                      <SelectItem key={tab.value} value={tab.value}>
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center space-x-2">
+                            {tab.icon}
+                            <span>{tab.label}</span>
+                          </div>
+                          <Badge className="ml-2 bg-green-100 text-green-700 text-xs">
+                            {tabCounts[tab.value]}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedFilter !== "all" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedFilter("all")}
+                    className="px-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50">
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="space-y-6">
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-6 space-y-4 shadow-sm">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </Card>
+              ))}
+            </div>
+          ) : filterPayments(selectedFilter).length > 0 ? (
+            <div className="space-y-4">
+              {filterPayments(selectedFilter).map((p) => (
+                <PaymentCard key={p.id} payment={p} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState tab={selectedFilter} />
+          )}
+        </div>
       </div>
+
+      {/* Notifikasi Popup */}
+      <NotificationPopup
+        isOpen={showNotificationPopup}
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={handleNotificationRead}
+      />
     </div>
   );
 };
@@ -378,13 +531,13 @@ const EmptyState: React.FC<{ tab: string }> = ({ tab }) => {
 
   return (
     <div className="text-center py-16 sm:py-20 px-4">
-      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-sm">
+      <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center shadow-lg">
         {iconMap[tab]}
       </div>
-      <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-800">
+      <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
         Tidak Ada Transaksi
       </h3>
-      <p className="text-gray-500 max-w-full sm:max-w-md mx-auto leading-relaxed">
+      <p className="text-gray-600 max-w-full sm:max-w-md mx-auto leading-relaxed text-sm sm:text-base">
         {messageMap[tab]}
       </p>
     </div>

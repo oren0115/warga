@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../../services/user.service";
-import type { Fee, Notification } from "../../types";
+import type { Fee } from "../../types";
 import {
   Clock,
   CheckCircle,
@@ -22,12 +22,15 @@ import {
 } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
+import NotificationPopup from "../../components/NotificationPopup";
+import NotificationBadge from "../../components/NotificationBadge";
 
 const IuranList: React.FC = () => {
   const navigate = useNavigate();
   const [fees, setFees] = useState<Fee[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -36,12 +39,8 @@ const IuranList: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [feesData, notificationsData] = await Promise.all([
-        userService.getFees(),
-        userService.getNotifications(),
-      ]);
+      const feesData = await userService.getFees();
       setFees(feesData);
-      setNotifications(notificationsData);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -49,6 +48,10 @@ const IuranList: React.FC = () => {
     }
   };
 
+  const handleNotificationRead = () => {
+    setNotificationRefreshKey((prev) => prev + 1);
+    // This will trigger NotificationBadge to refresh its data
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
@@ -78,8 +81,18 @@ const IuranList: React.FC = () => {
 
   const getMonthName = (monthNum: string) => {
     const months = [
-      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
     ];
     return months[parseInt(monthNum) - 1] || monthNum;
   };
@@ -123,24 +136,26 @@ const IuranList: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Enhanced Header with Branding - Responsive */}
-      <div className=" sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-6">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
         <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
         <div className="relative p-4 md:p-6">
-          {/* Branding Section - Hidden on mobile, visible on desktop */}
+          {/* Branding desktop */}
           <div className="hidden md:flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
-              <p className="text-green-100 text-sm">Sistem Pembayaran Digital</p>
+              <p className="text-green-100 text-sm">
+                Sistem Pembayaran Digital
+              </p>
             </div>
           </div>
 
-          {/* Compact Mobile Header - Only visible on mobile */}
+          {/* Branding mobile */}
           <div className="md:hidden flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-white/20 rounded-lg">
@@ -153,18 +168,14 @@ const IuranList: React.FC = () => {
                 variant="ghost"
                 size="icon"
                 className="text-white hover:bg-white/20"
-                onClick={() => navigate("/notifications")}>
+                onClick={() => setShowNotificationPopup(true)}>
                 <Bell className="w-5 h-5" />
-                {notifications.filter((n) => !n.read).length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                    {notifications.filter((n) => !n.read).length}
-                  </span>
-                )}
+                <NotificationBadge refreshKey={notificationRefreshKey} />
               </Button>
             </div>
           </div>
 
-          {/* Enhanced Greeting Section */}
+          {/* Greeting */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2 md:gap-3">
@@ -180,19 +191,15 @@ const IuranList: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {/* Desktop notification button - hidden on mobile */}
+              {/* Notifikasi Desktop */}
               <div className="hidden md:block relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="text-white hover:bg-white/20"
-                  onClick={() => navigate("/notifications")}>
+                  onClick={() => setShowNotificationPopup(true)}>
                   <Bell className="w-5 h-5" />
-                  {notifications.filter((n) => !n.read).length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                      {notifications.filter((n) => !n.read).length}
-                    </span>
-                  )}
+                  <NotificationBadge refreshKey={notificationRefreshKey} />
                 </Button>
               </div>
             </div>
@@ -200,26 +207,39 @@ const IuranList: React.FC = () => {
         </div>
       </div>
 
+      {/* Notifikasi Popup */}
+      <NotificationPopup
+        isOpen={showNotificationPopup}
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={handleNotificationRead}
+      />
+
+      {/* Daftar Iuran */}
       <div className="p-4 md:p-6">
         {fees.length > 0 ? (
           <div className="space-y-6">
             {fees.map((fee) => (
-              <Card key={fee.id} className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+              <Card
+                key={fee.id}
+                className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
                         {fee.kategori}
-                      </CardTitle>                     
+                      </CardTitle>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
-                        <span>{getMonthName(fee.bulan)} {new Date(fee.created_at).getFullYear()}</span>
+                        <span>
+                          {getMonthName(fee.bulan)}{" "}
+                          {new Date(fee.created_at).getFullYear()}
+                        </span>
                       </div>
-                      
-                      
                     </div>
-                    <Badge 
-                      className={`${getStatusColor(fee.status)} flex items-center gap-1 px-3 py-1 font-semibold`}
+                    <Badge
+                      className={`${getStatusColor(
+                        fee.status
+                      )} flex items-center gap-1 px-3 py-1 font-semibold`}
                       variant="outline">
                       {getStatusIcon(fee.status)}
                       {fee.status}
@@ -233,27 +253,36 @@ const IuranList: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">Jatuh tempo:</span>
-                    <span className={`text-sm ${getDueDateColor(fee.due_date)}`}>
+                    <span
+                      className={`text-sm ${getDueDateColor(fee.due_date)}`}>
                       {formatDate(fee.due_date)}
                     </span>
-                    {getDaysUntilDue(fee.due_date) <= 7 && getDaysUntilDue(fee.due_date) > 0 && (
-                      <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
-                        {getDaysUntilDue(fee.due_date)} hari lagi
-                      </span>
-                    )}
+                    {getDaysUntilDue(fee.due_date) <= 7 &&
+                      getDaysUntilDue(fee.due_date) > 0 && (
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
+                          {getDaysUntilDue(fee.due_date)} hari lagi
+                        </span>
+                      )}
                   </div>
                 </CardContent>
 
                 <CardFooter className="pt-3">
                   <Button
                     className={`w-full ${
-                      fee.status.toLowerCase() === "belum bayar" || fee.status.toLowerCase() === "pending"
+                      fee.status.toLowerCase() === "belum bayar" ||
+                      fee.status.toLowerCase() === "pending"
                         ? "bg-green-600 hover:bg-green-700 text-white font-semibold"
                         : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                     }`}
-                    variant={fee.status.toLowerCase() === "belum bayar" || fee.status.toLowerCase() === "pending" ? "default" : "outline"}
+                    variant={
+                      fee.status.toLowerCase() === "belum bayar" ||
+                      fee.status.toLowerCase() === "pending"
+                        ? "default"
+                        : "outline"
+                    }
                     onClick={() => navigate(`/iuran/${fee.id}`)}>
-                    {fee.status.toLowerCase() === "belum bayar" || fee.status.toLowerCase() === "pending"
+                    {fee.status.toLowerCase() === "belum bayar" ||
+                    fee.status.toLowerCase() === "pending"
                       ? "Bayar Sekarang"
                       : "Lihat Detail"}
                   </Button>

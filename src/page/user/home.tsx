@@ -21,10 +21,7 @@ import {
   Building2,
   User,
 } from "lucide-react";
-import {
-  LuBell,
-
-} from "react-icons/lu"
+import { LuBell } from "react-icons/lu";
 import NotificationBadge from "@/components/NotificationBadge";
 import NotificationPopup from "@/components/NotificationPopup";
 
@@ -163,14 +160,14 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Notification Popup */}
-      <NotificationPopup 
-        isOpen={showNotificationPopup} 
+      <NotificationPopup
+        isOpen={showNotificationPopup}
         onClose={() => setShowNotificationPopup(false)}
-        onNotificationRead={() => setNotificationRefreshKey(prev => prev + 1)}
+        onNotificationRead={() => setNotificationRefreshKey((prev) => prev + 1)}
       />
-      
+
       {/* Enhanced Header with Branding - Responsive */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden mb-6">
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white  overflow-hidden mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
         <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
@@ -182,7 +179,9 @@ const Home: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
-              <p className="text-green-100 text-sm">Sistem Pembayaran Digital</p>
+              <p className="text-green-100 text-sm">
+                Sistem Pembayaran Digital
+              </p>
             </div>
           </div>
 
@@ -195,7 +194,7 @@ const Home: React.FC = () => {
               <span className="text-lg font-semibold">RT/RW</span>
             </div>
             <div className="relative">
-            <Button
+              <Button
                 onClick={() => setShowNotificationPopup(true)}
                 variant="ghost"
                 size="icon"
@@ -263,7 +262,10 @@ const Home: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Calendar className="w-4 h-4" />
-                    <span className="font-medium">{getMonthName(currentFee.bulan)} {new Date(currentFee.created_at).getFullYear()}</span>
+                    <span className="font-medium">
+                      {getMonthName(currentFee.bulan)}{" "}
+                      {new Date(currentFee.created_at).getFullYear()}
+                    </span>
                   </div>
                   <Badge
                     className={`${getStatusColor(
@@ -311,7 +313,8 @@ const Home: React.FC = () => {
                   </div>
                 )}
 
-                {(currentFee.status.toLowerCase() === "belum bayar" || currentFee.status.toLowerCase() === "pending") && (
+                {(currentFee.status.toLowerCase() === "belum bayar" ||
+                  currentFee.status.toLowerCase() === "pending") && (
                   <Button
                     onClick={() => navigate(`/iuran/${currentFee.id}`)}
                     className="w-full bg-green-600 hover:bg-green-700 shadow-lg text-white font-semibold py-3 text-lg"
@@ -436,11 +439,15 @@ const Home: React.FC = () => {
                 <div>
                   <p className="text-sm text-green-700 font-medium">Lunas</p>
                   <p className="font-bold text-2xl text-green-800">
-                    {fees.filter((f) => f.status.toLowerCase() === "lunas").length}
+                    {
+                      fees.filter((f) => f.status.toLowerCase() === "lunas")
+                        .length
+                    }
                   </p>
                   <p className="text-xs text-green-600">
-                    {fees.filter((f) => f.status.toLowerCase() === "lunas").length === 0 
-                      ? "Belum ada data" 
+                    {fees.filter((f) => f.status.toLowerCase() === "lunas")
+                      .length === 0
+                      ? "Belum ada data"
                       : "Pembayaran selesai"}
                   </p>
                 </div>
@@ -457,11 +464,17 @@ const Home: React.FC = () => {
                 <div>
                   <p className="text-sm text-red-700 font-medium">Tertunggak</p>
                   <p className="font-bold text-2xl text-red-800">
-                    {fees.filter((f) => f.status.toLowerCase() === "belum bayar").length}
+                    {
+                      fees.filter(
+                        (f) => f.status.toLowerCase() === "belum bayar"
+                      ).length
+                    }
                   </p>
                   <p className="text-xs text-red-600">
-                    {fees.filter((f) => f.status.toLowerCase() === "belum bayar").length === 0 
-                      ? "Semua lunas" 
+                    {fees.filter(
+                      (f) => f.status.toLowerCase() === "belum bayar"
+                    ).length === 0
+                      ? "Semua lunas"
                       : "Perlu dibayar"}
                   </p>
                 </div>
