@@ -120,7 +120,8 @@ const formatDate = (dateString: string) =>
     minute: "2-digit",
   });
 
-const PaymentCard: React.FC<{ payment: Payment }> = ({ payment }) => {
+const PaymentCard: React.FC<{ payment: Payment; onRefresh: () => Promise<void> }> = ({ payment, onRefresh }) => {
+  const [isForceChecking, setIsForceChecking] = useState(false);
   const status = STATUS_MAP[payment.status.toLowerCase()] || {
     text: payment.status,
     variant: "outline",
@@ -192,19 +193,36 @@ const PaymentCard: React.FC<{ payment: Payment }> = ({ payment }) => {
           )}
         </div>
 
-        {payment.payment_url && payment.status.toLowerCase() === "pending" && (
-          <div className="pt-4">
+        {payment.status.toLowerCase() === "pending" && (
+          <div className="pt-4 flex flex-col sm:flex-row gap-2">
+            {payment.payment_url && (
+              <Button
+                asChild
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                <a
+                  href={payment.payment_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-2">
+                  <Link2 className="w-5 h-5" />
+                  <span>Lanjutkan Pembayaran</span>
+                </a>
+              </Button>
+            )}
             <Button
-              asChild
-              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-              <a
-                href={payment.payment_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center space-x-2">
-                <Link2 className="w-5 h-5" />
-                <span>Lanjutkan Pembayaran</span>
-              </a>
+              disabled={isForceChecking}
+              onClick={async () => {
+                try {
+                  setIsForceChecking(true);
+                  await userService.forceCheckPaymentStatus(payment.id);
+                  await onRefresh();
+                } catch (e) {
+                } finally {
+                  setIsForceChecking(false);
+                }
+              }}
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+              {isForceChecking ? "Memeriksa..." : "Perbarui Status"}
             </Button>
           </div>
         )}
@@ -239,18 +257,34 @@ const PaymentHistory: React.FC = () => {
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState("all");
 
+  const fetchPayments = async () => {
+    try {
+      const paymentsData = await userService.getPayments();
+      setPayments(paymentsData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       setIsLoading(true);
       try {
-        const paymentsData = await userService.getPayments();
-        setPayments(paymentsData);
+        await fetchPayments();
       } catch (err) {
         console.error(err);
       } finally {
         setIsLoading(false);
       }
     })();
+  }, []);
+
+  // Auto refresh payments every 15s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchPayments();
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleNotificationRead = () => {
@@ -420,7 +454,7 @@ const PaymentHistory: React.FC = () => {
 
       {/* Filter dan Content */}
       <div className="p-4 md:p-6">
-        {/* Filter Dropdown */}
+        {/* Filter & Actions */}
         <div className="mb-6">
           <div className="bg-white shadow-lg rounded-xl p-4 border border-gray-100">
             <div className="flex flex-col gap-4">
@@ -443,7 +477,7 @@ const PaymentHistory: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="w-full flex gap-2">
+              <div className="w-full flex flex-col sm:flex-row gap-2">
                 <Select
                   value={selectedFilter}
                   onValueChange={setSelectedFilter}>
@@ -475,6 +509,13 @@ const PaymentHistory: React.FC = () => {
                     Reset
                   </Button>
                 )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchPayments}
+                  className="px-3 ml-auto text-gray-600 hover:text-gray-800 hover:bg-gray-50">
+                  Refresh
+                </Button>
               </div>
             </div>
           </div>
@@ -495,7 +536,7 @@ const PaymentHistory: React.FC = () => {
           ) : filterPayments(selectedFilter).length > 0 ? (
             <div className="space-y-4">
               {filterPayments(selectedFilter).map((p) => (
-                <PaymentCard key={p.id} payment={p} />
+                <PaymentCard key={p.id} payment={p} onRefresh={fetchPayments} />
               ))}
             </div>
           ) : (
