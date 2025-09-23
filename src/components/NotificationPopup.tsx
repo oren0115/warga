@@ -78,11 +78,24 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatRelativeTime = (dateString: string) => {
+    const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
+    const now = new Date();
+    const then = new Date(dateString);
+    const diffMs = then.getTime() - now.getTime();
+    const minutes = Math.round(diffMs / 60000);
+    const hours = Math.round(minutes / 60);
+    const days = Math.round(hours / 24);
+    if (Math.abs(minutes) < 60) return rtf.format(minutes, "minute");
+    if (Math.abs(hours) < 24) return rtf.format(hours, "hour");
+    return rtf.format(days, "day");
   };
 
   const getTypeIcon = (type: string) => {
@@ -96,6 +109,31 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       default:
         return <Info className="w-5 h-5 text-gray-600" />;
     }
+  };
+
+  const getTypeBadge = (type: string) => {
+    const t = type.toLowerCase();
+    const styles =
+      t === "pembayaran"
+        ? "bg-green-100 text-green-700"
+        : t === "pengumuman"
+        ? "bg-blue-100 text-blue-700"
+        : t === "reminder"
+        ? "bg-yellow-100 text-yellow-800"
+        : "bg-gray-100 text-gray-700";
+    const label =
+      t === "pembayaran"
+        ? "Tagihan"
+        : t === "pengumuman"
+        ? "Pengumuman"
+        : t === "reminder"
+        ? "Pengingat"
+        : "Info";
+    return (
+      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${styles}`}>
+        {label}
+      </span>
+    );
   };
 
   const unreadCount = notifications.filter((notif) => !notif.is_read).length;
@@ -174,7 +212,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                     !notification.is_read
                       ? "bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-l-green-400"
                       : "hover:bg-gray-50"
-                  } transition-all duration-200`}>
+                  } transition-all duration-200`}
+                >
                   <Link
                     to={notification.url || "/notifications"}
                     onClick={() => markAsRead(notification.id)}
@@ -187,25 +226,31 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                       } transition-colors duration-200`}>
                       {getTypeIcon(notification.type)}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0 leading-relaxed">
+                      <div className="flex items-start justify-between gap-3">
                         <p
-                          className={`text-sm font-semibold ${
+                          className={`text-[13px] md:text-sm font-bold ${
                             !notification.is_read
                               ? "text-gray-900"
                               : "text-gray-700"
                           } group-hover:text-gray-900 transition-colors duration-200`}>
                           {notification.title}
                         </p>
-                        {!notification.is_read && (
-                          <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2 ml-2"></div>
-                        )}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {getTypeBadge(notification.type)}
+                          {!notification.is_read && (
+                            <div className="w-2 h-2 bg-green-500 rounded-full mt-1"></div>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
+                      <p className="text-[13px] md:text-sm text-gray-600 mt-1 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
                         {notification.message}
                       </p>
-                      <span className="text-xs text-gray-500 mt-2 block">
-                        {formatDate(notification.created_at)}
+                      <span
+                        className="text-[11px] text-gray-500 mt-2 block"
+                        title={formatDate(notification.created_at)}
+                      >
+                        {formatRelativeTime(notification.created_at)}
                       </span>
                     </div>
                   </Link>

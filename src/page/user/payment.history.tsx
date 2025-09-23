@@ -45,17 +45,17 @@ const STATUS_MAP: Record<
   }
 > = {
   Success: {
-    text: "Berhasil",
+    text: "Lunas",
     variant: "default",
     icon: <CheckCircle className="text-green-600 w-5 h-5" />,
   },
   success: {
-    text: "Berhasil",
+    text: "Lunas",
     variant: "default",
     icon: <CheckCircle className="text-green-600 w-5 h-5" />,
   },
   settlement: {
-    text: "Berhasil",
+    text: "Lunas",
     variant: "default",
     icon: <CheckCircle className="text-green-600 w-5 h-5" />,
   },
@@ -321,8 +321,8 @@ const PaymentHistory: React.FC = () => {
       icon: <Clock className="w-4 h-4" />,
     },
     {
-      value: "success",
-      label: "Berhasil",
+      value: "lunas",
+      label: "Lunas",
       icon: <CheckCircle className="w-4 h-4" />,
     },
     { value: "failed", label: "Gagal", icon: <XCircle className="w-4 h-4" /> },

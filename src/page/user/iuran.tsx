@@ -215,7 +215,7 @@ const IuranList: React.FC = () => {
       />
 
       {/* Daftar Iuran */}
-      <div className="p-4 md:p-6">
+      <div className="p-4 space-y-6 -mt-2">
         {fees.length > 0 ? (
           <div className="space-y-6">
             {fees.map((fee) => (

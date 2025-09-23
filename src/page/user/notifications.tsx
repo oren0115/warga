@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { userService } from "../../services/user.service";
 import type { Notification } from "../../types";
-
+import NotificationPopup from "../../components/NotificationPopup";
+import NotificationBadge from "../../components/NotificationBadge";
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
-import { Bell, Volume2, CreditCard, Clock, Info, Check } from "lucide-react";
+import { Bell, Volume2, CreditCard, Clock, Info } from "lucide-react";
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
 
   useEffect(() => {
     fetchNotifications();
@@ -37,6 +40,8 @@ const Notifications: React.FC = () => {
           notif.id === notificationId ? { ...notif, is_read: true } : notif
         )
       );
+      // Refresh badge count in header
+      setNotificationRefreshKey((prev) => prev + 1);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -55,6 +60,7 @@ const Notifications: React.FC = () => {
       setNotifications((prev) =>
         prev.map((notif) => ({ ...notif, is_read: true }))
       );
+      setNotificationRefreshKey((prev) => prev + 1);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -96,7 +102,7 @@ const Notifications: React.FC = () => {
     }
   };
 
-  const unreadCount = notifications.filter((notif) => !notif.is_read).length;
+  // const unreadCount = notifications.filter((notif) => !notif.is_read).length;
 
   if (isLoading) {
     return (
@@ -124,29 +130,62 @@ const Notifications: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                <Bell className="w-6 h-6 text-blue-600" />
-                Notifikasi
-              </h1>
-              <p className="text-sm text-gray-600">
-                {unreadCount > 0
-                  ? `${unreadCount} notifikasi belum dibaca`
-                  : "Semua notifikasi telah dibaca"}
-              </p>
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <div className="relative p-4 md:p-6">
+          {/* Header konsisten dengan halaman lain */}
+          <div className="flex items-center justify-between mb-2">
+            {/* Kiri: Title & subtitle */}
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Bell className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Notifikasi</h1>
+                <p className="text-green-100 text-sm">Informasi terbaru untuk Anda</p>
+              </div>
             </div>
-            {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} size="sm" className="gap-1">
-                <Check className="w-4 h-4" />
-                Tandai Semua Dibaca
-              </Button>
-            )}
+
+            {/* Kanan: Aksi cepat (badge + tombol) */}
+            {/* <div className="hidden md:flex items-center gap-2">
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20"
+                  onClick={() => setShowNotificationPopup(true)}>
+                  <Bell className="w-5 h-5" />
+                  <NotificationBadge refreshKey={notificationRefreshKey} />
+                </Button>
+              </div>
+              {notifications.some((n) => !n.is_read) && (
+                <Button
+                  variant="outline"
+                  className="border-white/40 text-white hover:bg-white/10"
+                  onClick={markAllAsRead}>
+                  Tandai semua dibaca
+                </Button>
+              )}
+            </div> */}
           </div>
+
+          {/* Mobile quick action */}
+          {/* <div className="md:hidden flex items-center justify-end mt-2">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/20"
+                onClick={() => setShowNotificationPopup(true)}>
+                <Bell className="w-5 h-5" />
+                <NotificationBadge refreshKey={notificationRefreshKey} />
+              </Button>
+            </div>
+          </div> */}
         </div>
       </div>
 
@@ -217,6 +256,12 @@ const Notifications: React.FC = () => {
           </div>
         )}
       </div>
+      {/* Notifikasi Popup */}
+      <NotificationPopup
+        isOpen={showNotificationPopup}
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={() => setNotificationRefreshKey((k) => k + 1)}
+      />
     </div>
   );
 };
