@@ -97,33 +97,15 @@ const IuranList: React.FC = () => {
     return months[parseInt(monthNum) - 1] || monthNum;
   };
 
-  const getDaysUntilDue = (dueDate: string) => {
+  // Samakan perhitungan jatuh tempo dengan halaman Home:
+  // Last day of the month berdasarkan nilai fee.bulan ("1".."12") di tahun berjalan
+  const getDaysUntilDueDate = (month: string) => {
     const currentDate = new Date();
-    const due = new Date(dueDate);
-    const timeDiff = due.getTime() - currentDate.getTime();
+    const currentYear = currentDate.getFullYear();
+    const dueDate = new Date(currentYear, parseInt(month), 0);
+    const timeDiff = dueDate.getTime() - currentDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return daysDiff;
-  };
-
-  const getDueDateColor = (dueDate: string) => {
-    const daysUntilDue = getDaysUntilDue(dueDate);
-    if (daysUntilDue <= 0) {
-      return "text-red-600 font-semibold"; // Overdue
-    } else if (daysUntilDue <= 7) {
-      return "text-orange-600 font-medium"; // Urgent
-    } else if (daysUntilDue <= 30) {
-      return "text-yellow-600"; // Warning
-    } else {
-      return "text-gray-500"; // Normal
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   if (isLoading) {
@@ -221,7 +203,7 @@ const IuranList: React.FC = () => {
             {fees.map((fee) => (
               <Card
                 key={fee.id}
-                className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+                className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -253,16 +235,14 @@ const IuranList: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">Jatuh tempo:</span>
-                    <span
-                      className={`text-sm ${getDueDateColor(fee.due_date)}`}>
-                      {formatDate(fee.due_date)}
-                    </span>
-                    {getDaysUntilDue(fee.due_date) <= 7 &&
-                      getDaysUntilDue(fee.due_date) > 0 && (
+                    {(() => {
+                      const days = getDaysUntilDueDate(fee.bulan);
+                      return days <= 7 && days > 0 ? (
                         <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
-                          {getDaysUntilDue(fee.due_date)} hari lagi
+                          {days} hari lagi
                         </span>
-                      )}
+                      ) : null;
+                    })()}
                   </div>
                 </CardContent>
 

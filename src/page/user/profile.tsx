@@ -11,6 +11,7 @@ import {
   CardDescription,
   CardContent,
 } from "../../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Badge } from "../../components/ui/badge";
 import { Alert, AlertDescription } from "../../components/ui/alert";
 import {
@@ -23,6 +24,9 @@ import {
   Camera,
   CheckCircle,
   Home,
+  Phone,
+  MapPin,
+  Hash,
 } from "lucide-react";
 
 const Profile: React.FC = () => {
@@ -144,19 +148,19 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-4 space-y-6 -mt-2 max-w-4xl mx-auto">
+      <div className="p-4 space-y-6 -mt-2 max-w-5xl mx-auto">
         {/* Profile Header */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
           <CardContent className="p-4 md:p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative flex-shrink-0">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                  <UserIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-4 ring-white/60">
+                  <UserIcon className="w-9 h-9 md:w-11 md:h-11 text-white" />
                 </div>
                 <Button
                   size="icon"
-                  className="absolute -bottom-1 -right-1 w-6 h-6 md:w-8 md:h-8 bg-green-600 hover:bg-green-700 rounded-full shadow-lg">
-                  <Camera className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                  className="absolute -bottom-1 -right-1 w-7 h-7 md:w-9 md:h-9 bg-green-600 hover:bg-green-700 rounded-full shadow-lg">
+                  <Camera className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                 </Button>
               </div>
               <div className="flex-1 min-w-0 w-full">
@@ -179,21 +183,22 @@ const Profile: React.FC = () => {
                     {authState.user?.is_admin ? "Administrator" : "Warga"}
                   </Badge>
                 </div>
-                <p className="text-sm md:text-base text-gray-600 mb-1">
-                  Bergabung:{" "}
-                  {new Date(
-                    authState.user?.created_at || ""
-                  ).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <p className="text-xs md:text-sm text-gray-500 truncate">
-                  Username: {authState.user?.username}
-                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Hash className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.username}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Phone className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.nomor_hp || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <MapPin className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.alamat || '-'}</span>
+                  </div>
+                </div>
               </div>
-              <div className="w-full sm:w-auto">
+              <div className="w-full sm:w-auto flex gap-2">
                 <Button
                   onClick={() => setIsEditing(!isEditing)}
                   variant={isEditing ? "secondary" : "default"}
@@ -206,27 +211,42 @@ const Profile: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Pencil className="w-4 h-4 mr-2" /> Edit
+                      <Pencil className="w-4 h-4 mr-2" /> Edit Profil
                     </>
                   )}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => alert("Fitur ubah password akan segera hadir.")}
+                >
+                  Ubah Password
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Profile Form */}
-        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-          <CardHeader className="pb-4 px-4 md:px-6">
-            <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-              <UserIcon className="w-5 h-5 text-blue-600" />
-              Informasi Pribadi
-            </CardTitle>
-            <CardDescription className="text-sm md:text-base text-gray-600">
-              Ubah detail profil Anda sesuai kebutuhan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-4 md:px-6">
+        {/* Tabs Sections */}
+        <Tabs defaultValue="detail" className="w-full">
+          <TabsList className="bg-white/70 backdrop-blur border shadow-sm">
+            <TabsTrigger value="detail">Detail Profil</TabsTrigger>
+            <TabsTrigger value="aktivitas">Aktivitas</TabsTrigger>
+            <TabsTrigger value="pengaturan">Pengaturan</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="detail" className="mt-4 space-y-6">
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="pb-4 px-4 md:px-6">
+                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <UserIcon className="w-5 h-5 text-blue-600" />
+                  Informasi Pribadi
+                </CardTitle>
+                <CardDescription className="text-sm md:text-base text-gray-600">
+                  Ubah detail profil Anda sesuai kebutuhan
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-4 md:px-6">
             {error && (
               <Alert variant="destructive" className="mb-6">
                 <AlertDescription className="text-sm">{error}</AlertDescription>
@@ -333,21 +353,20 @@ const Profile: React.FC = () => {
                 </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* Account Info */}
-        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-          <CardHeader className="pb-4 px-4 md:px-6">
-            <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              Informasi Akun
-            </CardTitle>
-            <CardDescription className="text-sm md:text-base text-gray-600">
-              Detail informasi akun dan status keanggotaan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-4 md:px-6">
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+              <CardHeader className="pb-4 px-4 md:px-6">
+                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Informasi Akun
+                </CardTitle>
+                <CardDescription className="text-sm md:text-base text-gray-600">
+                  Detail informasi akun dan status keanggotaan
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-4 md:px-6">
             <div className="space-y-3 md:space-y-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 md:p-4 bg-gray-50 rounded-lg">
                 <span className="text-sm md:text-base text-gray-700 font-medium">
@@ -383,8 +402,36 @@ const Profile: React.FC = () => {
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="aktivitas" className="mt-4">
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 text-sm text-gray-600">
+                Aktivitas terbaru akan ditampilkan di sini.
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="pengaturan" className="mt-4">
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 space-y-4">
+                <h3 className="text-lg font-bold text-gray-900">Pengaturan Akun</h3>
+                <div className="text-sm text-gray-600">Fitur pengaturan lanjutan akan segera hadir.</div>
+                <div className="h-px bg-gray-200" />
+                <div className="flex justify-end">
+                  <Button
+                    variant="destructive"
+                    onClick={handleLogout}
+                    className="bg-red-600 hover:bg-red-700">
+                    <LogOut className="w-4 h-4 mr-2" /> Keluar Akun
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -133,7 +133,7 @@ const PaymentCard: React.FC<{ payment: Payment; onRefresh: () => Promise<void> }
   };
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 bg-gradient-to-br from-white to-gray-50 w-full sm:w-auto">
+    <Card className="shadow-xl hover:shadow-2xl transition-all duration-200 border-0 bg-gradient-to-br from-white to-gray-50 w-full sm:w-auto">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 sm:px-6 rounded-t-lg">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
           <div>{method.icon}</div>
@@ -453,10 +453,10 @@ const PaymentHistory: React.FC = () => {
       </div>
 
       {/* Filter dan Content */}
-      <div className="p-4 md:p-6">
+      <div className="p-4 space-y-6 -mt-2">
         {/* Filter & Actions */}
         <div className="mb-6">
-          <div className="bg-white shadow-lg rounded-xl p-4 border border-gray-100">
+          <div className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 rounded-xl p-4">
             <div className="flex flex-col gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
