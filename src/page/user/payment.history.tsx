@@ -522,9 +522,8 @@ const PaymentHistory: React.FC = () => {
       {/* Popup Notifikasi */}
       <NotificationPopup
         isOpen={showNotificationPopup}
-        onOpenChange={setShowNotificationPopup}
-        onRead={handleNotificationRead}
-        refreshKey={notificationRefreshKey}
+        onClose={() => setShowNotificationPopup(false)}
+        onNotificationRead={handleNotificationRead}
       />
     </div>
   );
