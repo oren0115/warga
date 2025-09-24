@@ -22,9 +22,6 @@ import {
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import BottomNav from "../components/common/buttom.navigasi";
-import NotificationPopup from "../components/NotificationPopup";
-import NotificationBadge from "../components/NotificationBadge";
-
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -74,41 +71,41 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <LuMenu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
-              </SheetHeader>
-              <nav className="mt-4 space-y-2">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Button
-                      key={item.path}
-                      variant={isActive(item.path) ? "secondary" : "ghost"}
-                      className={`w-full justify-start space-x-3 ${
-                        isActive(item.path)
-                          ? "bg-green-100 text-primary-green"
-                          : "hover:bg-green-50 hover:text-primary-green"
-                      }`}
-                      onClick={() => {
-                        navigate(item.path);
-                        setShowMobileMenu(false);
-                      }}>
-                      <Icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </Button>
-                  );
-                })}
-                <Button
-                  variant="destructive"
-                  className="w-full justify-start space-x-3"
-                  onClick={handleLogout}>
-                  <LuLogOut className="h-5 w-5" />
-                  <span>Logout</span>
-                </Button>
-              </nav>
-            </SheetContent>
-          </Sheet>
+              <SheetContent side="right" className="w-64">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-4 space-y-2">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Button
+                        key={item.path}
+                        variant={isActive(item.path) ? "secondary" : "ghost"}
+                        className={`w-full justify-start space-x-3 ${
+                          isActive(item.path)
+                            ? "bg-green-100 text-primary-green"
+                            : "hover:bg-green-50 hover:text-primary-green"
+                        }`}
+                        onClick={() => {
+                          navigate(item.path);
+                          setShowMobileMenu(false);
+                        }}>
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </Button>
+                    );
+                  })}
+                  <Button
+                    variant="destructive"
+                    className="w-full justify-start space-x-3"
+                    onClick={handleLogout}>
+                    <LuLogOut className="h-5 w-5" />
+                    <span>Logout</span>
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
@@ -158,10 +155,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           <div className="ml-auto flex items-center gap-2">
             {/* Notification Icon for Desktop - Removed from Layout */}
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              size="icon">
+            <Button onClick={handleLogout} variant="ghost" size="icon">
               <LuLogOut className="h-5 w-5" />
             </Button>
           </div>
@@ -180,8 +174,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Add bottom padding for mobile bottom nav */}
       <div className="lg:hidden h-16"></div>
-
-
     </div>
   );
 };

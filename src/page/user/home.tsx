@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
   const [fees, setFees] = useState<Fee[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
@@ -154,7 +154,6 @@ const Home: React.FC = () => {
     (fee) => parseInt(fee.bulan) === new Date().getMonth() + 1
   );
 
-  const unreadNotifications = notifications.filter((n) => !n.read).length;
   const daysUntilDue = currentFee ? getDaysUntilDueDate(currentFee.bulan) : 0;
 
   return (

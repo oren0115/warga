@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { userService } from "../../services/user.service";
 import type { Notification } from "../../types";
 import NotificationPopup from "../../components/NotificationPopup";
-import NotificationBadge from "../../components/NotificationBadge";
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
 import { Bell, Volume2, CreditCard, Clock, Info } from "lucide-react";
@@ -12,7 +11,7 @@ const Notifications: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
+  const [, setNotificationRefreshKey] = useState(0);
 
   useEffect(() => {
     fetchNotifications();
@@ -44,25 +43,6 @@ const Notifications: React.FC = () => {
       setNotificationRefreshKey((prev) => prev + 1);
     } catch (error) {
       console.error("Error marking notification as read:", error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      const unreadNotifications = notifications.filter(
-        (notif) => !notif.is_read
-      );
-      await Promise.all(
-        unreadNotifications.map((notif) =>
-          userService.markNotificationAsRead(notif.id)
-        )
-      );
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, is_read: true }))
-      );
-      setNotificationRefreshKey((prev) => prev + 1);
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
     }
   };
 
@@ -121,9 +101,7 @@ const Notifications: React.FC = () => {
             Terjadi Kesalahan
           </h3>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={fetchNotifications}>
-            Coba Lagi
-          </Button>
+          <Button onClick={fetchNotifications}>Coba Lagi</Button>
         </div>
       </div>
     );
@@ -146,7 +124,9 @@ const Notifications: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold">Notifikasi</h1>
-                <p className="text-green-100 text-sm">Informasi terbaru untuk Anda</p>
+                <p className="text-green-100 text-sm">
+                  Informasi terbaru untuk Anda
+                </p>
               </div>
             </div>
 
