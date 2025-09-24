@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardContent,
 } from "../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Badge } from "../../components/ui/badge";
 import { Alert, AlertDescription } from "../../components/ui/alert";
 import {
@@ -23,10 +22,6 @@ import {
   LogOut,
   Camera,
   CheckCircle,
-  Home,
-  Phone,
-  MapPin,
-  Hash,
 } from "lucide-react";
 
 const Profile: React.FC = () => {
@@ -82,14 +77,10 @@ const Profile: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Enhanced Header with Branding - Responsive */}
+      {/* Header */}
       <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
         <div className="relative p-4 md:p-6">
-          {/* Branding Section - Hidden on mobile, visible on desktop */}
-          <div className="hidden md:flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
               <Building2 className="w-6 h-6 text-white" />
             </div>
@@ -101,31 +92,14 @@ const Profile: React.FC = () => {
             </div>
           </div>
 
-          {/* Compact Mobile Header - Only visible on mobile */}
-          <div className="md:hidden flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-white/20 rounded-lg">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-semibold">RT/RW</span>
-            </div>
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-              className="text-white hover:bg-white/20 p-2">
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-
-          {/* Enhanced Greeting Section */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <div className="p-1.5 md:p-2 bg-white/20 rounded-full flex-shrink-0">
-                  <UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 bg-white/20 rounded-full">
+                  <UserIcon className="w-6 h-6 text-white" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-lg md:text-xl font-semibold mb-1 truncate">
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold">
                     Profil - {authState.user?.nama} 👋
                   </h2>
                   <p className="text-green-100 text-xs md:text-sm">
@@ -133,16 +107,12 @@ const Profile: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {/* Desktop logout button - hidden on mobile */}
-              <div className="hidden md:block">
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="text-white hover:bg-white/20">
-                  <LogOut className="w-5 h-5 mr-2" />
-                  Logout
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="text-white hover:bg-white/20">
+                <LogOut className="w-5 h-5 mr-2" /> Logout
+              </Button>
             </div>
           </div>
         </div>
@@ -160,278 +130,132 @@ const Profile: React.FC = () => {
                 <Button
                   size="icon"
                   className="absolute -bottom-1 -right-1 w-7 h-7 md:w-9 md:h-9 bg-green-600 hover:bg-green-700 rounded-full shadow-lg">
-                  <Camera className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                  <Camera className="w-4 h-4 text-white" />
                 </Button>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
-                    {authState.user?.nama}
-                  </h2>
-                  <Badge
-                    variant={authState.user?.is_admin ? "secondary" : "outline"}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs w-fit ${
-                      authState.user?.is_admin
-                        ? "bg-purple-100 text-purple-800 border-purple-200"
-                        : "bg-blue-100 text-blue-800 border-blue-200"
-                    }`}>
-                    {authState.user?.is_admin ? (
-                      <CheckCircle className="w-3 h-3" />
-                    ) : (
-                      <Home className="w-3 h-3" />
-                    )}
-                    {authState.user?.is_admin ? "Administrator" : "Warga"}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Hash className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.username}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.nomor_hp || '-'}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm md:text-base font-medium truncate">{authState.user?.alamat || '-'}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="w-full sm:w-auto flex gap-2">
-                <Button
-                  onClick={() => setIsEditing(!isEditing)}
-                  variant={isEditing ? "secondary" : "default"}
-                  className={`w-full sm:w-auto ${
-                    isEditing ? "" : "bg-green-600 hover:bg-green-700"
-                  }`}>
-                  {isEditing ? (
-                    <>
-                      <X className="w-4 h-4 mr-2" /> Batal
-                    </>
-                  ) : (
-                    <>
-                      <Pencil className="w-4 h-4 mr-2" /> Edit Profil
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  onClick={() => alert("Fitur ubah password akan segera hadir.")}
-                >
-                  Ubah Password
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tabs Sections */}
-        <Tabs defaultValue="detail" className="w-full">
-          <TabsList className="bg-white/70 backdrop-blur border shadow-sm">
-            <TabsTrigger value="detail">Detail Profil</TabsTrigger>
-            <TabsTrigger value="aktivitas">Aktivitas</TabsTrigger>
-            <TabsTrigger value="pengaturan">Pengaturan</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="detail" className="mt-4 space-y-6">
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="pb-4 px-4 md:px-6">
-                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <UserIcon className="w-5 h-5 text-blue-600" />
-                  Informasi Pribadi
-                </CardTitle>
-                <CardDescription className="text-sm md:text-base text-gray-600">
-                  Ubah detail profil Anda sesuai kebutuhan
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="px-4 md:px-6">
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertDescription className="text-sm">{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-4 md:space-y-6">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 md:mb-3">
-                  Username
-                </label>
-                <Input
-                  type="text"
-                  value={authState.user?.username || ""}
-                  disabled
-                  className="bg-gray-50 text-sm md:text-base"
-                />
-                <p className="text-xs text-gray-500 mt-1 md:mt-2">
-                  Username tidak dapat diubah
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 md:mb-3">
-                  Nama Lengkap
-                </label>
-                <Input
-                  type="text"
-                  name="nama"
-                  value={formData.nama}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className={`text-sm md:text-base ${
-                    !isEditing ? "bg-gray-50" : ""
-                  }`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 md:mb-3">
-                  Alamat
-                </label>
-                <Textarea
-                  name="alamat"
-                  value={formData.alamat}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  rows={3}
-                  className={`text-sm md:text-base ${
-                    !isEditing ? "bg-gray-50" : ""
-                  }`}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2 md:mb-3">
-                    Nomor Rumah
-                  </label>
-                  <Input
-                    type="text"
-                    name="nomor_rumah"
-                    value={formData.nomor_rumah}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`text-sm md:text-base ${
-                      !isEditing ? "bg-gray-50" : ""
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2 md:mb-3">
-                    Nomor HP
-                  </label>
-                  <Input
-                    type="tel"
-                    name="nomor_hp"
-                    value={formData.nomor_hp}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`text-sm md:text-base ${
-                      !isEditing ? "bg-gray-50" : ""
-                    }`}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {isEditing && (
-              <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-200">
-                <Button
-                  onClick={handleSave}
-                  disabled={isLoading}
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 shadow-lg text-sm md:text-base">
-                  <Save className="w-4 h-4 mr-2" />
-                  {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
-                </Button>
-                <Button
-                  onClick={handleCancel}
-                  variant="secondary"
-                  className="w-full sm:w-auto text-sm md:text-base">
-                  <X className="w-4 h-4 mr-2" /> Batal
-                </Button>
-              </div>
-            )}
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-              <CardHeader className="pb-4 px-4 md:px-6">
-                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  Informasi Akun
-                </CardTitle>
-                <CardDescription className="text-sm md:text-base text-gray-600">
-                  Detail informasi akun dan status keanggotaan
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="px-4 md:px-6">
-            <div className="space-y-3 md:space-y-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 md:p-4 bg-gray-50 rounded-lg">
-                <span className="text-sm md:text-base text-gray-700 font-medium">
-                  Status Akun:
-                </span>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
+                  {authState.user?.nama}
+                </h2>
                 <Badge
                   variant={authState.user?.is_admin ? "secondary" : "outline"}
-                  className={`flex items-center gap-1 px-2 py-1 text-xs w-fit ${
+                  className={`mt-2 px-2 py-1 text-xs ${
                     authState.user?.is_admin
                       ? "bg-purple-100 text-purple-800 border-purple-200"
                       : "bg-blue-100 text-blue-800 border-blue-200"
                   }`}>
-                  {authState.user?.is_admin ? (
-                    <CheckCircle className="w-3 h-3" />
-                  ) : (
-                    <Home className="w-3 h-3" />
-                  )}
                   {authState.user?.is_admin ? "Administrator" : "Warga"}
                 </Badge>
               </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 md:p-4 bg-gray-50 rounded-lg">
-                <span className="text-sm md:text-base text-gray-700 font-medium">
-                  Bergabung:
-                </span>
-                <span className="text-sm md:text-base text-gray-900 font-medium">
-                  {new Date(
-                    authState.user?.created_at || ""
-                  ).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
+              <Button
+                onClick={() => setIsEditing(!isEditing)}
+                variant={isEditing ? "secondary" : "default"}
+                className={`${
+                  isEditing ? "" : "bg-green-600 hover:bg-green-700"
+                }`}>
+                {isEditing ? (
+                  <>
+                    <X className="w-4 h-4 mr-2" /> Batal
+                  </>
+                ) : (
+                  <>
+                    <Pencil className="w-4 h-4 mr-2" /> Edit Profil
+                  </>
+                )}
+              </Button>
             </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="aktivitas" className="mt-4">
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-              <CardContent className="p-6 text-sm text-gray-600">
-                Aktivitas terbaru akan ditampilkan di sini.
-              </CardContent>
-            </Card>
-          </TabsContent>
+        {/* Informasi Pribadi */}
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserIcon className="w-5 h-5 text-blue-600" />
+              Informasi Pribadi
+            </CardTitle>
+            <CardDescription>Ubah detail profil Anda</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <div className="space-y-4">
+              <Input
+                type="text"
+                value={authState.user?.username || ""}
+                disabled
+                className="bg-gray-50"
+              />
+              <Input
+                type="text"
+                name="nama"
+                value={formData.nama}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <Textarea
+                name="alamat"
+                value={formData.alamat}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <Input
+                type="text"
+                name="nomor_rumah"
+                value={formData.nomor_rumah}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+              <Input
+                type="tel"
+                name="nomor_hp"
+                value={formData.nomor_hp}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
+            </div>
 
-          <TabsContent value="pengaturan" className="mt-4">
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-bold text-gray-900">Pengaturan Akun</h3>
-                <div className="text-sm text-gray-600">Fitur pengaturan lanjutan akan segera hadir.</div>
-                <div className="h-px bg-gray-200" />
-                <div className="flex justify-end">
-                  <Button
-                    variant="destructive"
-                    onClick={handleLogout}
-                    className="bg-red-600 hover:bg-red-700">
-                    <LogOut className="w-4 h-4 mr-2" /> Keluar Akun
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            {isEditing && (
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  className="bg-green-600 hover:bg-green-700">
+                  <Save className="w-4 h-4 mr-2" />
+                  {isLoading ? "Menyimpan..." : "Simpan"}
+                </Button>
+                <Button onClick={handleCancel} variant="secondary">
+                  <X className="w-4 h-4 mr-2" /> Batal
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Informasi Akun */}
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              Informasi Akun
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              Status: {authState.user?.is_admin ? "Administrator" : "Warga"}
+            </p>
+            <p>
+              Bergabung:{" "}
+              {new Date(authState.user?.created_at || "").toLocaleDateString(
+                "id-ID",
+                { year: "numeric", month: "long", day: "numeric" }
+              )}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
