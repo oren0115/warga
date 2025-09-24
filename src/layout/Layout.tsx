@@ -9,18 +9,10 @@ import {
   LuUser,
   LuStar,
   LuLogOut,
-  LuMenu,
   LuChevronLeft,
   LuChevronRight,
 } from "react-icons/lu";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../components/ui/sheet";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import BottomNav from "../components/common/buttom.navigasi";
@@ -33,7 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { authState, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const handleLogout = () => {
@@ -62,65 +53,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-main-background">
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
-        <div className="flex items-center justify-between p-4">
-          <h1 className="text-lg font-semibold text-main-dark">
-            {authState.user?.is_admin ? "Admin Panel" : "RT/RW Management"}
-          </h1>
-          <div className="flex items-center gap-2">
-            <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green">
-                  <LuMenu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-64 bg-white">
-                <SheetHeader className="border-b border-gray-100 pb-4">
-                  <SheetTitle className="text-main-dark">Menu</SheetTitle>
-                </SheetHeader>
-                <nav className="mt-6 space-y-1">
-                  {navItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Button
-                        key={item.path}
-                        variant="ghost"
-                        className={`w-full justify-start gap-3 h-11 px-3 transition-all duration-200 focus:ring-0 focus:outline-none ${
-                          isActive(item.path)
-                            ? "bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
-                            : "text-gray-700 hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green"
-                        }`}
-                        onClick={() => {
-                          navigate(item.path);
-                          setShowMobileMenu(false);
-                        }}>
-                        <Icon className="h-5 w-5 flex-shrink-0" />
-                        <span className="truncate">{item.label}</span>
-                      </Button>
-                    );
-                  })}
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-100 my-4"></div>
-
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-3 h-11 px-3 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200"
-                    onClick={handleLogout}>
-                    <LuLogOut className="h-5 w-5 flex-shrink-0" />
-                    <span>Logout</span>
-                  </Button>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-      </div>
-
       {/* Desktop Sidebar */}
       <div
         className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200 lg:shadow-sm transition-all duration-300 ease-in-out ${
@@ -130,13 +62,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
           {isSidebarOpen && (
             <h1 className="text-xl font-bold text-main-dark truncate">
-              {authState.user?.is_admin ? "Admin Panel" : "RT/RW Fee"}
+              {authState.user?.is_admin ? "Admin Panel" : "Iuran RT/RW"}
             </h1>
           )}
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green focus:ring-0 focus:outline-none transition-all duration-200 ml-auto"
+            className="hover:bg-green-200 hover:text-primary-green focus:bg-green-200 focus:text-primary-green focus:ring-0 focus:outline-none transition-all duration-200 ml-auto"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             {isSidebarOpen ? (
               <LuChevronLeft className="h-5 w-5" />
@@ -163,7 +95,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   } ${
                     active
                       ? "bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
-                      : "text-gray-700 hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green"
+                      : "text-gray-700 hover:bg-green-200 hover:text-primary-green focus:bg-green-200 focus:text-primary-green"
                   }`}
                   onClick={() => navigate(item.path)}>
                   <Icon className="h-5 w-5 flex-shrink-0" />
