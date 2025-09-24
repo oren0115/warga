@@ -207,7 +207,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support and questions:
 
-1. Check the [Issues](https://github.com/your-repo/issues) page
+1. Check the [Issues](https://github.com/oren0115/warga/issues) page
 2. Create a new issue if your problem isn't already reported
 3. Contact the development team
 
