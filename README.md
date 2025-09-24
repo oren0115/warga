@@ -203,14 +203,6 @@ The application is configured for production deployment with:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-For support and questions:
-
-1. Check the [Issues](https://github.com/oren0115/warga/issues) page
-2. Create a new issue if your problem isn't already reported
-3. Contact the development team
-
 ## 🔄 Version History
 
 - **v0.0.0** - Initial release with basic functionality
