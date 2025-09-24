@@ -8,7 +8,6 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Skeleton } from "../../components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -35,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import NotificationPopup from "../../components/NotificationPopup";
 import NotificationBadge from "../../components/NotificationBadge";
 
-// Mappings untuk status dan metode pembayaran
+// Mapping status pembayaran
 const STATUS_MAP: Record<
   string,
   {
@@ -44,11 +43,6 @@ const STATUS_MAP: Record<
     icon: JSX.Element;
   }
 > = {
-  Success: {
-    text: "Lunas",
-    variant: "default",
-    icon: <CheckCircle className="text-green-600 w-5 h-5" />,
-  },
   success: {
     text: "Lunas",
     variant: "default",
@@ -59,17 +53,12 @@ const STATUS_MAP: Record<
     variant: "default",
     icon: <CheckCircle className="text-green-600 w-5 h-5" />,
   },
-  Pending: {
-    text: "Menunggu",
-    variant: "secondary",
-    icon: <Clock className="text-amber-500 w-5 h-5" />,
-  },
   pending: {
     text: "Menunggu",
     variant: "secondary",
     icon: <Clock className="text-amber-500 w-5 h-5" />,
   },
-  Failed: {
+  failed: {
     text: "Gagal",
     variant: "destructive",
     icon: <XCircle className="text-red-600 w-5 h-5" />,
@@ -91,6 +80,7 @@ const STATUS_MAP: Record<
   },
 };
 
+// Mapping metode pembayaran
 const PAYMENT_METHOD_MAP: Record<string, { text: string; icon: JSX.Element }> =
   {
     credit_card: {
@@ -120,13 +110,19 @@ const formatDate = (dateString: string) =>
     minute: "2-digit",
   });
 
-const PaymentCard: React.FC<{ payment: Payment; onRefresh: () => Promise<void> }> = ({ payment, onRefresh }) => {
+// ===================== PaymentCard =====================
+const PaymentCard: React.FC<{
+  payment: Payment;
+  onRefresh: () => Promise<void>;
+}> = ({ payment, onRefresh }) => {
   const [isForceChecking, setIsForceChecking] = useState(false);
+
   const status = STATUS_MAP[payment.status.toLowerCase()] || {
     text: payment.status,
     variant: "outline",
     icon: <Clipboard className="w-5 h-5" />,
   };
+
   const method = PAYMENT_METHOD_MAP[payment.payment_method.toLowerCase()] || {
     text: payment.payment_method,
     icon: <DollarSign className="w-6 h-6 text-gray-700" />,
@@ -216,7 +212,6 @@ const PaymentCard: React.FC<{ payment: Payment; onRefresh: () => Promise<void> }
                   setIsForceChecking(true);
                   await userService.forceCheckPaymentStatus(payment.id);
                   await onRefresh();
-                } catch (e) {
                 } finally {
                   setIsForceChecking(false);
                 }
@@ -231,6 +226,7 @@ const PaymentCard: React.FC<{ payment: Payment; onRefresh: () => Promise<void> }
   );
 };
 
+// ===================== Row =====================
 const Row: React.FC<{
   label: string;
   value: string;
@@ -250,9 +246,11 @@ const Row: React.FC<{
   </div>
 );
 
+// ===================== PaymentHistory =====================
 const PaymentHistory: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -261,8 +259,10 @@ const PaymentHistory: React.FC = () => {
     try {
       const paymentsData = await userService.getPayments();
       setPayments(paymentsData);
-    } catch (err) {
+      setError(null);
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || "Gagal memuat data");
     }
   };
 
@@ -271,15 +271,12 @@ const PaymentHistory: React.FC = () => {
       setIsLoading(true);
       try {
         await fetchPayments();
-      } catch (err) {
-        console.error(err);
       } finally {
         setIsLoading(false);
       }
     })();
   }, []);
 
-  // Auto refresh payments every 15s
   useEffect(() => {
     const interval = setInterval(() => {
       fetchPayments();
@@ -289,7 +286,6 @@ const PaymentHistory: React.FC = () => {
 
   const handleNotificationRead = () => {
     setNotificationRefreshKey((prev) => prev + 1);
-    // This will trigger NotificationBadge to refresh its data
   };
 
   const filterPayments = (status: string) => {
@@ -298,15 +294,17 @@ const PaymentHistory: React.FC = () => {
         return payments;
       case "success":
         return payments.filter((p) =>
-          ["Success", "success", "settlement"].includes(p.status)
+          ["success", "settlement"].includes(p.status.toLowerCase())
         );
       case "pending":
         return payments.filter((p) =>
-          ["Pending", "pending"].includes(p.status)
+          ["pending"].includes(p.status.toLowerCase())
         );
       case "failed":
         return payments.filter((p) =>
-          ["Failed", "deny", "cancel", "expire"].includes(p.status)
+          ["failed", "deny", "cancel", "expire"].includes(
+            p.status.toLowerCase()
+          )
         );
       default:
         return [];
@@ -321,7 +319,7 @@ const PaymentHistory: React.FC = () => {
       icon: <Clock className="w-4 h-4" />,
     },
     {
-      value: "lunas",
+      value: "success",
       label: "Lunas",
       icon: <CheckCircle className="w-4 h-4" />,
     },
@@ -333,28 +331,36 @@ const PaymentHistory: React.FC = () => {
     return acc;
   }, {} as Record<string, number>);
 
+  // --- Loading State ---
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
-          <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-          <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-          <div className="relative p-4 md:p-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-              <Skeleton className="h-6 w-48 mb-2 bg-white/20" />
-              <Skeleton className="h-4 w-64 bg-white/20" />
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Memuat data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Error State ---
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="max-w-md mx-4">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Terjadi Kesalahan
+              </h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={fetchPayments} className="w-full">
+                Coba Lagi
+              </Button>
             </div>
-          </div>
-        </div>
-        <div className="p-4 md:p-6 space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="p-6 space-y-4 shadow-sm w-full">
-              <Skeleton className="h-5 w-32" />
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </Card>
-          ))}
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -428,33 +434,13 @@ const PaymentHistory: React.FC = () => {
                 </Button>
               </div>
             </div>
-
-            {/* Stats */}
-            {/* <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <BarChart2 className="w-4 h-4 text-green-200" />
-                <span>Total Transaksi: {payments.length}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <DollarSign className="w-4 h-4 text-green-200" />
-                <span>
-                  Total Berhasil: Rp{" "}
-                  {payments
-                    .filter((p) =>
-                      ["settlement", "success"].includes(p.status.toLowerCase())
-                    )
-                    .reduce((sum, p) => sum + p.amount, 0)
-                    .toLocaleString("id-ID")}
-                </span>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
 
       {/* Filter dan Content */}
       <div className="p-4 space-y-6 -mt-2">
-        {/* Filter & Actions */}
+        {/* Filter */}
         <div className="mb-6">
           <div className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 rounded-xl p-4">
             <div className="flex flex-col gap-4">
@@ -465,7 +451,6 @@ const PaymentHistory: React.FC = () => {
                 <p className="text-sm text-gray-600">
                   Pilih status pembayaran untuk melihat riwayat
                 </p>
-                {/* Filter Status Indicator */}
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <span className="text-xs text-gray-500">Status aktif:</span>
                   <Badge className="bg-green-100 text-green-700 text-xs font-medium">
@@ -492,7 +477,9 @@ const PaymentHistory: React.FC = () => {
                             {tab.icon}
                             <span>{tab.label}</span>
                           </div>
-                          <Badge className="ml-2 bg-green-100 text-green-700 text-xs">
+                          <Badge
+                            variant="outline"
+                            className="ml-2 text-xs bg-gray-100">
                             {tabCounts[tab.value]}
                           </Badge>
                         </div>
@@ -500,21 +487,11 @@ const PaymentHistory: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {selectedFilter !== "all" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedFilter("all")}
-                    className="px-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50">
-                    Reset
-                  </Button>
-                )}
                 <Button
-                  variant="outline"
-                  size="sm"
                   onClick={fetchPayments}
-                  className="px-3 ml-auto text-gray-600 hover:text-gray-800 hover:bg-gray-50">
-                  Refresh
+                  variant="outline"
+                  className="whitespace-nowrap">
+                  Segarkan Data
                 </Button>
               </div>
             </div>
@@ -522,65 +499,33 @@ const PaymentHistory: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="space-y-6">
-          {isLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-6 space-y-4 shadow-sm">
-                  <Skeleton className="h-5 w-32" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </Card>
-              ))}
-            </div>
-          ) : filterPayments(selectedFilter).length > 0 ? (
-            <div className="space-y-4">
-              {filterPayments(selectedFilter).map((p) => (
-                <PaymentCard key={p.id} payment={p} onRefresh={fetchPayments} />
-              ))}
-            </div>
+        <div className="space-y-4">
+          {filterPayments(selectedFilter).length > 0 ? (
+            filterPayments(selectedFilter).map((payment) => (
+              <PaymentCard
+                key={payment.id}
+                payment={payment}
+                onRefresh={fetchPayments}
+              />
+            ))
           ) : (
-            <EmptyState tab={selectedFilter} />
+            <div className="flex flex-col items-center justify-center py-12 px-4 bg-white/70 rounded-xl shadow-inner border border-gray-100">
+              <Clipboard className="w-12 h-12 text-gray-300 mb-4" />
+              <p className="text-gray-500 text-center">
+                Belum ada data pembayaran untuk kategori ini
+              </p>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Notifikasi Popup */}
+      {/* Popup Notifikasi */}
       <NotificationPopup
         isOpen={showNotificationPopup}
-        onClose={() => setShowNotificationPopup(false)}
-        onNotificationRead={handleNotificationRead}
+        onOpenChange={setShowNotificationPopup}
+        onRead={handleNotificationRead}
+        refreshKey={notificationRefreshKey}
       />
-    </div>
-  );
-};
-
-const EmptyState: React.FC<{ tab: string }> = ({ tab }) => {
-  const iconMap: Record<string, JSX.Element> = {
-    all: <Clipboard className="w-8 h-8 text-gray-700" />,
-    pending: <Clock className="w-8 h-8 text-amber-500" />,
-    success: <CheckCircle className="w-8 h-8 text-green-600" />,
-    failed: <XCircle className="w-8 h-8 text-red-600" />,
-  };
-
-  const messageMap: Record<string, string> = {
-    all: "Belum ada riwayat transaksi pembayaran iuran",
-    pending: "Tidak ada pembayaran yang sedang menunggu konfirmasi",
-    success: "Belum ada transaksi yang berhasil di sistem",
-    failed: "Tidak ada transaksi yang gagal atau dibatalkan",
-  };
-
-  return (
-    <div className="text-center py-16 sm:py-20 px-4">
-      <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center shadow-lg">
-        {iconMap[tab]}
-      </div>
-      <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-        Tidak Ada Transaksi
-      </h3>
-      <p className="text-gray-600 max-w-full sm:max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-        {messageMap[tab]}
-      </p>
     </div>
   );
 };
