@@ -10,6 +10,8 @@ import {
   LuStar,
   LuLogOut,
   LuMenu,
+  LuChevronLeft,
+  LuChevronRight,
 } from "react-icons/lu";
 
 import {
@@ -22,6 +24,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import BottomNav from "../components/common/buttom.navigasi";
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -31,6 +34,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -57,50 +62,56 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-main-background">
-      {/* Mobile Header - Hidden to save space */}
-      <div className="hidden lg:hidden bg-white shadow-sm border-b border-gray-200">
+      {/* Mobile Header */}
+      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
           <h1 className="text-lg font-semibold text-main-dark">
-            {authState.user?.is_admin ? "Admin Panel" : "RT/RW Managemen iuran"}
+            {authState.user?.is_admin ? "Admin Panel" : "RT/RW Management"}
           </h1>
           <div className="flex items-center gap-2">
-            {/* Notification Icon for Mobile - Removed from Layout */}
             <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green">
                   <LuMenu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+              <SheetContent side="right" className="w-64 bg-white">
+                <SheetHeader className="border-b border-gray-100 pb-4">
+                  <SheetTitle className="text-main-dark">Menu</SheetTitle>
                 </SheetHeader>
-                <nav className="mt-4 space-y-2">
+                <nav className="mt-6 space-y-1">
                   {navItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Button
                         key={item.path}
-                        variant={isActive(item.path) ? "secondary" : "ghost"}
-                        className={`w-full justify-start space-x-3 ${
+                        variant="ghost"
+                        className={`w-full justify-start gap-3 h-11 px-3 transition-all duration-200 focus:ring-0 focus:outline-none ${
                           isActive(item.path)
-                            ? "bg-green-100 text-primary-green"
-                            : "hover:bg-green-50 hover:text-primary-green"
+                            ? "bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
+                            : "text-gray-700 hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green"
                         }`}
                         onClick={() => {
                           navigate(item.path);
                           setShowMobileMenu(false);
                         }}>
-                        <Icon className="h-5 w-5" />
-                        <span>{item.label}</span>
+                        <Icon className="h-5 w-5 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
                       </Button>
                     );
                   })}
+
+                  {/* Divider */}
+                  <div className="border-t border-gray-100 my-4"></div>
+
                   <Button
-                    variant="destructive"
-                    className="w-full justify-start space-x-3"
+                    variant="ghost"
+                    className="w-full justify-start gap-3 h-11 px-3 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200"
                     onClick={handleLogout}>
-                    <LuLogOut className="h-5 w-5" />
+                    <LuLogOut className="h-5 w-5 flex-shrink-0" />
                     <span>Logout</span>
                   </Button>
                 </nav>
@@ -111,59 +122,116 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-white lg:border-r">
-        <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-          <div className="flex items-center px-4">
-            <h1 className="text-xl font-bold text-main-dark">
+      <div
+        className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200 lg:shadow-sm transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "lg:w-64" : "lg:w-16"
+        }`}>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
+          {isSidebarOpen && (
+            <h1 className="text-xl font-bold text-main-dark truncate">
               {authState.user?.is_admin ? "Admin Panel" : "RT/RW Fee"}
             </h1>
-          </div>
-          <nav className="mt-5 flex-1 px-2 space-y-1">
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green focus:ring-0 focus:outline-none transition-all duration-200 ml-auto"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            {isSidebarOpen ? (
+              <LuChevronLeft className="h-5 w-5" />
+            ) : (
+              <LuChevronRight className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto py-4">
+          <nav className="px-2 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
+              const active = isActive(item.path);
               return (
                 <Button
                   key={item.path}
-                  variant={isActive(item.path) ? "secondary" : "ghost"}
-                  className={`w-full justify-start space-x-3 ${
-                    isActive(item.path)
-                      ? "bg-green-100 text-primary-green"
-                      : "hover:bg-green-50 hover:text-primary-green"
+                  variant="ghost"
+                  className={`w-full transition-all duration-200 h-11 focus:ring-0 focus:outline-none ${
+                    isSidebarOpen
+                      ? "justify-start gap-3 px-3"
+                      : "justify-center px-0"
+                  } ${
+                    active
+                      ? "bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
+                      : "text-gray-700 hover:bg-green-50 hover:text-primary-green focus:bg-green-50 focus:text-primary-green"
                   }`}
                   onClick={() => navigate(item.path)}>
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {isSidebarOpen && (
+                    <span className="truncate transition-opacity duration-200">
+                      {item.label}
+                    </span>
+                  )}
                 </Button>
               );
             })}
           </nav>
         </div>
-        <div className="flex-shrink-0 border-t p-4 flex items-center">
-          <Avatar>
-            <AvatarImage src="" />
-            <AvatarFallback>
-              {authState.user?.nama?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-700">
-              {authState.user?.nama}
-            </p>
-            <p className="text-xs text-gray-500">
-              {authState.user?.is_admin ? "Admin" : "User"}
-            </p>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            {/* Notification Icon for Desktop - Removed from Layout */}
-            <Button onClick={handleLogout} variant="ghost" size="icon">
-              <LuLogOut className="h-5 w-5" />
-            </Button>
-          </div>
+
+        {/* User Profile Section */}
+        <div className="border-t border-gray-100 p-3 flex-shrink-0">
+          {isSidebarOpen ? (
+            <div className="flex items-center gap-3">
+              <Avatar className="h-9 w-9 flex-shrink-0">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-green-100 text-primary-green font-medium text-sm">
+                  {authState.user?.nama?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {authState.user?.nama}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {authState.user?.is_admin ? "Administrator" : "User"}
+                </p>
+              </div>
+
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200 flex-shrink-0">
+                <LuLogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Avatar className="h-8 w-8 flex-shrink-0">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-green-100 text-primary-green font-medium text-xs">
+                  {authState.user?.nama?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200">
+                <LuLogOut className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div
+        className={`transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "lg:pl-64" : "lg:pl-16"
+        }`}>
         <main className="min-h-screen">{children}</main>
       </div>
 
@@ -172,7 +240,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <BottomNav />
       </div>
 
-      {/* Add bottom padding for mobile bottom nav */}
+      {/* Bottom padding for mobile */}
       <div className="lg:hidden h-16"></div>
     </div>
   );

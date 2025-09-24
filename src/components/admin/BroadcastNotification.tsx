@@ -21,7 +21,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Bell, Send, Volume2, CreditCard, Clock } from "lucide-react";
+import {
+  Bell,
+  Send,
+  Volume2,
+  CreditCard,
+  Clock,
+  Building2,
+} from "lucide-react";
 
 const BroadcastNotification: React.FC = () => {
   const [formData, setFormData] = useState<BroadcastNotificationRequest>({
@@ -69,12 +76,52 @@ const BroadcastNotification: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Card>
+    <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <div className="relative p-4 md:p-6">
+          <div className="hidden md:flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Building2 className="w-10 h-10 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold">
+                Broadcast Notifikasi RT/RW
+              </h1>
+              <p className="text-green-100 text-sm">
+                Sistem Broadcast Notifikasi
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                  <Bell className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-1">
+                    Broadcast Notifikasi
+                  </h2>
+                  <p className="text-green-100 text-xs md:text-sm">
+                    Broadcast notifikasi ke semua pengguna dalam sistem
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 md:px-6 space-y-6">
+        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="w-6 h-6 text-blue-600" />
+              <Bell className="w-6 h-6 text-green-600" />
               Broadcast Notifikasi
             </CardTitle>
             <CardDescription>
@@ -100,7 +147,7 @@ const BroadcastNotification: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="pengumuman">
                       <div className="flex items-center gap-2">
-                        <Volume2 className="w-4 h-4 text-blue-600" />
+                        <Volume2 className="w-4 h-4 text-green-600" />
                         Pengumuman
                       </div>
                     </SelectItem>
@@ -171,7 +218,7 @@ const BroadcastNotification: React.FC = () => {
                           {formData.message}
                         </p>
                         <div className="mt-2">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                             {formData.notification_type}
                           </span>
                         </div>

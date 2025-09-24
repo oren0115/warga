@@ -131,168 +131,178 @@ const Dashboard: React.FC = () => {
 
       {stats && (
         <>
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {[
-              {
-                icon: <Users className="w-8 h-8 text-blue-600" />,
-                title: "Total Pengguna",
-                value: stats.totalUsers,
-              },
-              {
-                icon: <FileText className="w-8 h-8 text-green-600" />,
-                title: "Total Iuran",
-                value: stats.totalFees,
-              },
-              {
-                icon: <Clock className="w-8 h-8 text-yellow-600" />,
-                title: "Menunggu Verifikasi",
-                value: stats.pendingPayments,
-              },
-              {
-                icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
-                title: "Pembayaran Berhasil",
-                value: stats.approvedPayments,
-              },
-            ].map((item, i) => (
-              <Card
-                key={i}
-                className="rounded-2xl shadow-md hover:shadow-xl transition">
-                <CardContent className="flex items-center justify-between p-6">
-                  <div className="p-4 bg-gray-100 rounded-xl">{item.icon}</div>
-                  <div className="ml-4 text-right">
-                    <p className="text-sm text-gray-500">{item.title}</p>
-                    <p className="text-3xl font-bold">{item.value}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <div className="container mx-auto px-4 md:px-6 space-y-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              {[
+                {
+                  icon: <Users className="w-8 h-8 text-blue-600" />,
+                  title: "Total Pengguna",
+                  value: stats.totalUsers,
+                },
+                {
+                  icon: <FileText className="w-8 h-8 text-green-600" />,
+                  title: "Total Iuran",
+                  value: stats.totalFees,
+                },
+                {
+                  icon: <Clock className="w-8 h-8 text-yellow-600" />,
+                  title: "Menunggu Verifikasi",
+                  value: stats.pendingPayments,
+                },
+                {
+                  icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
+                  title: "Pembayaran Berhasil",
+                  value: stats.approvedPayments,
+                },
+              ].map((item, i) => (
+                <Card
+                  key={i}
+                  className="rounded-2xl shadow-md hover:shadow-xl transition">
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="p-4 bg-gray-100 rounded-xl">
+                      {item.icon}
+                    </div>
+                    <div className="ml-4 text-right">
+                      <p className="text-sm text-gray-500">{item.title}</p>
+                      <p className="text-3xl font-bold">{item.value}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-          {/* Status Pengumpulan */}
-          <Card className="rounded-2xl shadow-md hover:shadow-xl transition mb-6">
-            <CardHeader>
-              <CardTitle>Status Pengumpulan Bulan Ini</CardTitle>
-              <CardDescription>
-                Progress iuran warga bulan berjalan
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-gray-600">
-                  {`Rp ${stats.currentMonthCollection?.toLocaleString() || 0}`}{" "}
-                  dari Rp {stats.collectionRate?.toLocaleString() || "0"}
-                </span>
-                <span className="text-sm font-semibold text-gray-700">
-                  {stats.collectionRate}%
-                </span>
-              </div>
-              <Progress
-                value={stats.collectionRate}
-                className="h-4 rounded-full"
-              />
-            </CardContent>
-          </Card>
-
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Bar Chart */}
-            <Card className="rounded-2xl shadow-md hover:shadow-xl transition">
+            {/* Status Pengumpulan */}
+            <Card className="rounded-2xl shadow-md hover:shadow-xl transition mb-6">
               <CardHeader>
-                <CardTitle>Grafik Iuran Bulanan</CardTitle>
+                <CardTitle>Status Pengumpulan Bulan Ini</CardTitle>
                 <CardDescription>
-                  Ringkasan total iuran tiap bulan
+                  Progress iuran warga bulan berjalan
                 </CardDescription>
               </CardHeader>
-              <CardContent className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={monthlyFees}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    {/* <Tooltip
+              <CardContent>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-600">
+                    {`Rp ${
+                      stats.currentMonthCollection?.toLocaleString() || 0
+                    }`}{" "}
+                    dari Rp {stats.collectionRate?.toLocaleString() || "0"}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-700">
+                    {stats.collectionRate}%
+                  </span>
+                </div>
+                <Progress
+                  value={stats.collectionRate}
+                  className="h-4 rounded-full"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              {/* Bar Chart */}
+              <Card className="rounded-2xl shadow-md hover:shadow-xl transition">
+                <CardHeader>
+                  <CardTitle>Grafik Iuran Bulanan</CardTitle>
+                  <CardDescription>
+                    Ringkasan total iuran tiap bulan
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={monthlyFees}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      {/* <Tooltip
                       formatter={(val: number | undefined) =>
                         `Rp ${val?.toLocaleString()}`
                       }
                     /> */}
-                    <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]}>
-                      <LabelList
-                        dataKey="total"
-                        position="top"
-                        content={({ value }) =>
-                          value != null ? (
-                            <tspan>{`Rp ${Number(
-                              value
-                            ).toLocaleString()}`}</tspan>
-                          ) : null
-                        }
-                      />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Pie Chart */}
-            <Card className="rounded-2xl shadow-md hover:shadow-xl transition">
-              <CardHeader>
-                <CardTitle>Status Pembayaran</CardTitle>
-                <CardDescription>Distribusi status pembayaran</CardDescription>
-              </CardHeader>
-              <CardContent className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={paymentStatus}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={90}
-                      label>
-                      {paymentStatus.map((_entry, index) => (
-                        <Cell
-                          key={index}
-                          fill={COLORS[index % COLORS.length]}
+                      <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]}>
+                        <LabelList
+                          dataKey="total"
+                          position="top"
+                          content={({ value }) =>
+                            value != null ? (
+                              <tspan>{`Rp ${Number(
+                                value
+                              ).toLocaleString()}`}</tspan>
+                            ) : null
+                          }
                         />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Kelola Pengguna",
-                icon: <Users className="w-8 h-8 text-blue-600" />,
-                link: "/admin/users",
-              },
-              {
-                title: "Generate Iuran",
-                icon: <FileText className="w-8 h-8 text-green-600" />,
-                link: "/admin/fees",
-              },
-              {
-                title: "Review Pembayaran",
-                icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
-                link: "/admin/payments",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                onClick={() => navigate(item.link)}
-                className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3">
-                {item.icon}
-                <span className="font-medium text-gray-700">{item.title}</span>
-              </div>
-            ))}
+              {/* Pie Chart */}
+              <Card className="rounded-2xl shadow-md hover:shadow-xl transition">
+                <CardHeader>
+                  <CardTitle>Status Pembayaran</CardTitle>
+                  <CardDescription>
+                    Distribusi status pembayaran
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={paymentStatus}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={90}
+                        label>
+                        {paymentStatus.map((_entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Kelola Pengguna",
+                  icon: <Users className="w-8 h-8 text-blue-600" />,
+                  link: "/admin/users",
+                },
+                {
+                  title: "Generate Iuran",
+                  icon: <FileText className="w-8 h-8 text-green-600" />,
+                  link: "/admin/fees",
+                },
+                {
+                  title: "Review Pembayaran",
+                  icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
+                  link: "/admin/payments",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  onClick={() => navigate(item.link)}
+                  className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3">
+                  {item.icon}
+                  <span className="font-medium text-gray-700">
+                    {item.title}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

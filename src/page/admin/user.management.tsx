@@ -27,6 +27,7 @@ import {
   Download,
   RefreshCw,
   Eye,
+  Building2,
 } from "lucide-react";
 
 const UserManagement: React.FC = () => {
@@ -170,7 +171,7 @@ const UserManagement: React.FC = () => {
         <div className="relative p-4 md:p-6">
           <div className="hidden md:flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
-              <User2 className="w-6 h-6 text-white" />
+              <Building2 className="w-10 h-10 text-white" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold">
@@ -416,7 +417,7 @@ const UserManagement: React.FC = () => {
                       {paginatedUsers.map((user, index) => (
                         <TableRow
                           key={user.id}
-                          className={`hover:bg-blue-50 transition-colors border-b border-gray-100 ${
+                          className={`hover:bg-green-50 transition-colors border-b border-gray-100 ${
                             index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                           }`}>
                           {/* User Info */}

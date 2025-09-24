@@ -26,7 +26,6 @@ const GenerateFees: React.FC = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
 
   const currentYear = new Date().getFullYear();
 
@@ -71,41 +70,6 @@ const GenerateFees: React.FC = () => {
     setShowConfirm(true);
   };
 
-  const triggerDownload = (blob: Blob, filename: string) => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const handleExport = async (format: "excel" | "pdf") => {
-    if (!formData.bulan) {
-      setError("Pilih bulan terlebih dahulu untuk mengekspor laporan");
-      return;
-    }
-    try {
-      setIsExporting(true);
-      const bulanStr = `${currentYear}-${String(formData.bulan).padStart(
-        2,
-        "0"
-      )}`;
-      const blob = await adminService.exportFeesReport(bulanStr, format);
-      const filename = `fees_${bulanStr}.${
-        format === "excel" ? "xlsx" : "pdf"
-      }`;
-      triggerDownload(blob, filename);
-    } catch (e) {
-      console.error(e);
-      setError("Gagal mengekspor laporan iuran");
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -116,7 +80,7 @@ const GenerateFees: React.FC = () => {
         <div className="relative p-4 md:p-6">
           <div className="hidden md:flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
-              <Building2 className="w-6 h-6 text-white" />
+              <Building2 className="w-10 h-10 text-white" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold">
@@ -148,9 +112,9 @@ const GenerateFees: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+      <div className="container mx-auto px-4 md:px-6 space-y-6">
         {/* Form Card */}
-        <Card className="rounded-xl shadow-md">
+        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
           <CardHeader>
             <CardTitle className="text-xl text-gray-800">
               Buat Iuran Baru
@@ -231,32 +195,6 @@ const GenerateFees: React.FC = () => {
                       membuat iuran untuk semua warga yang terdaftar.
                     </AlertDescription>
                   </Alert>
-
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      type="submit"
-                      className="flex-1 flex items-center justify-center gap-2">
-                      Generate Iuran
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1 flex items-center justify-center gap-2"
-                      onClick={() => handleExport("excel")}
-                      disabled={isExporting}>
-                      <Receipt className="w-4 h-4" />
-                      {isExporting ? "Mengekspor..." : "Export Excel"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1 flex items-center justify-center gap-2"
-                      onClick={() => handleExport("pdf")}
-                      disabled={isExporting}>
-                      <Receipt className="w-4 h-4" />
-                      PDF
-                    </Button>
-                  </div>
                 </form>
               </>
             )}
@@ -264,7 +202,7 @@ const GenerateFees: React.FC = () => {
         </Card>
 
         {/* Info Card */}
-        <Card className="rounded-xl shadow-md">
+        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
           <CardHeader>
             <CardTitle className="text-xl text-gray-800">
               Informasi Generate Iuran

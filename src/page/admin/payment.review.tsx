@@ -10,7 +10,6 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
-  Loader2,
   CreditCard,
   Clock,
   CheckCircle,
@@ -33,6 +32,7 @@ import {
   ChevronUp,
   Calendar as CalendarIcon,
   Clock3,
+  ClipboardIcon,
 } from "lucide-react";
 import {
   Table,
@@ -578,7 +578,7 @@ const PaymentReview: React.FC = () => {
         <div className="relative p-4 md:p-6">
           <div className="hidden md:flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
-              <CreditCard className="w-6 h-6 text-white" />
+              <Building2 className="w-10 h-10 text-white" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold">
@@ -975,14 +975,14 @@ const PaymentReview: React.FC = () => {
                       {paginatedPayments.map((payment, index) => (
                         <TableRow
                           key={payment.id}
-                          className={`hover:bg-blue-50 transition-colors duration-200 border-b border-gray-100 ${
+                          className={`hover:bg-green-50 transition-colors border-b border-gray-100 ${
                             index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                           }`}>
                           {/* Enhanced Date/Time Column */}
                           <TableCell className="font-medium text-gray-900 py-6 px-6">
                             <div className="space-y-2">
                               <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                 <span className="font-semibold text-gray-900">
                                   {new Date(
                                     payment.created_at
@@ -1083,16 +1083,14 @@ const PaymentReview: React.FC = () => {
                                     {payment.transaction_id || "—"}
                                   </span>
                                   {payment.transaction_id && (
-                                    <button
+                                    <ClipboardIcon
+                                      className="w-5 h-5 hover:bg-gray-200 rounded text-gray-700 hover:text-gray-900"
                                       onClick={() =>
                                         navigator.clipboard.writeText(
                                           payment.transaction_id || ""
                                         )
                                       }
-                                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-600"
-                                      title="Salin ID">
-                                      📋
-                                    </button>
+                                    />
                                   )}
                                 </div>
                               </div>
