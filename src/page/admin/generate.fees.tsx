@@ -17,10 +17,10 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
-import { AlertTriangle, Info, Loader2, Receipt, Building2, } from "lucide-react";
+import { AlertTriangle, Info, Receipt, Building2 } from "lucide-react";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const GenerateFees: React.FC = () => {
-
   const [formData, setFormData] = useState({ bulan: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -89,9 +89,14 @@ const GenerateFees: React.FC = () => {
     }
     try {
       setIsExporting(true);
-      const bulanStr = `${currentYear}-${String(formData.bulan).padStart(2, "0")}`;
+      const bulanStr = `${currentYear}-${String(formData.bulan).padStart(
+        2,
+        "0"
+      )}`;
       const blob = await adminService.exportFeesReport(bulanStr, format);
-      const filename = `fees_${bulanStr}.${format === "excel" ? "xlsx" : "pdf"}`;
+      const filename = `fees_${bulanStr}.${
+        format === "excel" ? "xlsx" : "pdf"
+      }`;
       triggerDownload(blob, filename);
     } catch (e) {
       console.error(e);
@@ -104,7 +109,7 @@ const GenerateFees: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white relative overflow-hidden  mb-6">
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
         <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
@@ -138,7 +143,6 @@ const GenerateFees: React.FC = () => {
                   </p>
                 </div>
               </div>
-              
             </div>
           </div>
         </div>
@@ -156,87 +160,106 @@ const GenerateFees: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {message && (
-              <Alert className="mb-4 bg-green-50 border-green-200">
-                <Info className="h-4 w-4 text-green-600" />
-                <AlertTitle className="text-green-700">Berhasil</AlertTitle>
-                <AlertDescription className="text-green-700">
-                  {message}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {error && (
-              <Alert className="mb-4 bg-red-50 border-red-200">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertTitle className="text-red-700">Error</AlertTitle>
-                <AlertDescription className="text-red-700">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="bulan">Pilih Bulan</Label>
-                <Select
-                  value={formData.bulan}
-                  onValueChange={(val: string) =>
-                    setFormData((prev) => ({ ...prev, bulan: val }))
-                  }>
-                  <SelectTrigger id="bulan">
-                    <SelectValue placeholder="-- Pilih Bulan --" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label} {currentYear}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-gray-500">
-                  Iuran akan dibuat untuk semua warga yang terdaftar
-                </p>
+            {isLoading ? (
+              // Skeleton saat loading
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-32" /> {/* Label */}
+                  <Skeleton className="h-10 w-full rounded-md" /> {/* Select */}
+                  <Skeleton className="h-4 w-64" /> {/* Hint */}
+                </div>
+                <Skeleton className="h-20 w-full rounded-md" /> {/* Alert */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Skeleton className="h-10 w-full rounded-md" />
+                  <Skeleton className="h-10 w-full rounded-md" />
+                  <Skeleton className="h-10 w-full rounded-md" />
+                </div>
               </div>
+            ) : (
+              <>
+                {message && (
+                  <Alert className="mb-4 bg-green-50 border-green-200">
+                    <Info className="h-4 w-4 text-green-600" />
+                    <AlertTitle className="text-green-700">Berhasil</AlertTitle>
+                    <AlertDescription className="text-green-700">
+                      {message}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-              <Alert className="bg-yellow-50 border-yellow-200">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <AlertTitle className="text-yellow-800">Perhatian</AlertTitle>
-                <AlertDescription className="text-yellow-700">
-                  Pastikan Anda memilih bulan yang benar. Proses ini akan
-                  membuat iuran untuk semua warga yang terdaftar.
-                </AlertDescription>
-              </Alert>
+                {error && (
+                  <Alert className="mb-4 bg-red-50 border-red-200">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <AlertTitle className="text-red-700">Error</AlertTitle>
+                    <AlertDescription className="text-red-700">
+                      {error}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  type="submit"
-                  className="flex-1 flex items-center justify-center gap-2"
-                  disabled={isLoading}>
-                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {isLoading ? "Memproses..." : "Generate Iuran"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1 flex items-center justify-center gap-2"
-                  onClick={() => handleExport("excel")}
-                  disabled={isExporting}>
-                  <Receipt className="w-4 h-4" />
-                  {isExporting ? "Mengekspor..." : "Export Excel"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1 flex items-center justify-center gap-2"
-                  onClick={() => handleExport("pdf")}
-                  disabled={isExporting}>
-                  <Receipt className="w-4 h-4" />
-                  PDF
-                </Button>
-              </div>
-            </form>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="bulan">Pilih Bulan</Label>
+                    <Select
+                      value={formData.bulan}
+                      onValueChange={(val: string) =>
+                        setFormData((prev) => ({ ...prev, bulan: val }))
+                      }>
+                      <SelectTrigger id="bulan">
+                        <SelectValue placeholder="-- Pilih Bulan --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {months.map((m) => (
+                          <SelectItem key={m.value} value={m.value}>
+                            {m.label} {currentYear}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500">
+                      Iuran akan dibuat untuk semua warga yang terdaftar
+                    </p>
+                  </div>
+
+                  <Alert className="bg-yellow-50 border-yellow-200">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <AlertTitle className="text-yellow-800">
+                      Perhatian
+                    </AlertTitle>
+                    <AlertDescription className="text-yellow-700">
+                      Pastikan Anda memilih bulan yang benar. Proses ini akan
+                      membuat iuran untuk semua warga yang terdaftar.
+                    </AlertDescription>
+                  </Alert>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      type="submit"
+                      className="flex-1 flex items-center justify-center gap-2">
+                      Generate Iuran
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1 flex items-center justify-center gap-2"
+                      onClick={() => handleExport("excel")}
+                      disabled={isExporting}>
+                      <Receipt className="w-4 h-4" />
+                      {isExporting ? "Mengekspor..." : "Export Excel"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1 flex items-center justify-center gap-2"
+                      onClick={() => handleExport("pdf")}
+                      disabled={isExporting}>
+                      <Receipt className="w-4 h-4" />
+                      PDF
+                    </Button>
+                  </div>
+                </form>
+              </>
+            )}
           </CardContent>
         </Card>
 
