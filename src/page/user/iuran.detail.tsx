@@ -11,15 +11,12 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
-import { Label } from "../../components/ui/label";
 import type { VariantProps } from "class-variance-authority";
 import { badgeVariants } from "../../components/ui/badge";
 import {
   CalendarDays,
   CreditCard,
   Wallet,
-  Banknote,
   Building2,
   User,
   AlertCircle,
@@ -34,7 +31,10 @@ const IuranDetail: React.FC = () => {
   const [fee, setFee] = useState<Fee | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+
+  // Default metode pembayaran (ubah sesuai kebutuhan)
+  const [selectedPaymentMethod] = useState("bank_transfer");
+
   const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [error] = useState<string | null>(null);
@@ -66,12 +66,10 @@ const IuranDetail: React.FC = () => {
         payment_method: selectedPaymentMethod,
       };
       const paymentResponse = await userService.createPayment(paymentData);
+
       if (paymentResponse.payment_url) {
-        // Store payment ID for status checking
         setLastPaymentId(paymentResponse.payment_id);
         window.open(paymentResponse.payment_url, "_blank");
-
-        // Start polling for payment status
         startPaymentStatusPolling(paymentResponse.payment_id);
       }
     } catch (error) {
@@ -89,17 +87,16 @@ const IuranDetail: React.FC = () => {
     try {
       const statusResponse = await userService.checkPaymentStatus(paymentId);
 
-      // If payment is successful or failed, stop polling and refresh fee data
       if (
         statusResponse.status === "Success" ||
         statusResponse.status === "Failed"
       ) {
         setLastPaymentId(null);
-        await fetchFee(); // Refresh fee data
-        return true; // Stop polling
+        await fetchFee();
+        return true;
       }
 
-      return false; // Continue polling
+      return false;
     } catch (error) {
       console.error("Error checking payment status:", error);
       return false;
@@ -119,7 +116,7 @@ const IuranDetail: React.FC = () => {
 
       if (statusResponse.updated) {
         setLastPaymentId(null);
-        await fetchFee(); // Refresh fee data
+        await fetchFee();
         alert("Status pembayaran berhasil diperbarui!");
       } else {
         alert(statusResponse.message || "Status pembayaran sudah up to date");
@@ -138,9 +135,8 @@ const IuranDetail: React.FC = () => {
       if (shouldStop) {
         clearInterval(pollInterval);
       }
-    }, 5000); // Check every 5 seconds
+    }, 5000);
 
-    // Stop polling after 10 minutes
     setTimeout(() => {
       clearInterval(pollInterval);
       setLastPaymentId(null);
@@ -150,11 +146,11 @@ const IuranDetail: React.FC = () => {
   const getStatusVariant = (status: string): BadgeVariant => {
     switch (status.toLowerCase()) {
       case "lunas":
-        return "default"; // hijau (use "default" for paid)
+        return "default";
       case "pending":
-        return "outline"; // kuning (use "outline" for pending)
+        return "outline";
       case "belum bayar":
-        return "destructive"; // merah
+        return "destructive";
       case "gagal":
         return "destructive";
       default:
@@ -195,6 +191,7 @@ const IuranDetail: React.FC = () => {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -218,13 +215,12 @@ const IuranDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Enhanced Header with Branding - Responsive */}
+      {/* Header */}
       <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
         <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
         <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
 
         <div className="relative p-4 md:p-6">
-          {/* Branding Section - Hidden on mobile, visible on desktop */}
           <div className="hidden md:flex items-center gap-3 mb-4">
             <div className="p-2 bg-white/20 rounded-lg">
               <Building2 className="w-6 h-6 text-white" />
@@ -237,7 +233,6 @@ const IuranDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* Compact Mobile Header - Only visible on mobile */}
           <div className="md:hidden flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-white/20 rounded-lg">
@@ -264,7 +259,6 @@ const IuranDetail: React.FC = () => {
             </Button>
           </div>
 
-          {/* Enhanced Greeting Section */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2 md:gap-3">
@@ -280,7 +274,6 @@ const IuranDetail: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {/* Desktop back button - hidden on mobile */}
               <div className="hidden md:block">
                 <Button
                   variant="ghost"
@@ -347,61 +340,13 @@ const IuranDetail: React.FC = () => {
         {fee.status === "Belum Bayar" && (
           <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
             <CardHeader>
-              <CardTitle>Pilih Metode Pembayaran</CardTitle>
+              <CardTitle>Bayar Iuran</CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup
-                value={selectedPaymentMethod}
-                onValueChange={setSelectedPaymentMethod}
-                className="space-y-3">
-                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <RadioGroupItem value="credit_card" />
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-gray-600" />
-                    <div>
-                      <div className="font-medium">Kartu Kredit</div>
-                      <div className="text-sm text-gray-500">
-                        Visa, Mastercard, JCB
-                      </div>
-                    </div>
-                  </div>
-                </Label>
-                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <RadioGroupItem value="bank_transfer" />
-                  <div className="flex items-center gap-2">
-                    <Banknote className="w-5 h-5 text-gray-600" />
-                    <div>
-                      <div className="font-medium">Transfer Bank</div>
-                      <div className="text-sm text-gray-500">
-                        BCA, Mandiri, BNI, BRI
-                      </div>
-                    </div>
-                  </div>
-                </Label>
-                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <RadioGroupItem value="gopay" />
-                  <div>
-                    <div className="font-medium">GoPay</div>
-                    <div className="text-sm text-gray-500">
-                      Pembayaran via GoPay
-                    </div>
-                  </div>
-                </Label>
-                <Label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <RadioGroupItem value="shopeepay" />
-                  <div>
-                    <div className="font-medium">ShopeePay</div>
-                    <div className="text-sm text-gray-500">
-                      Pembayaran via ShopeePay
-                    </div>
-                  </div>
-                </Label>
-              </RadioGroup>
-
               <Button
                 onClick={handlePayment}
-                disabled={!selectedPaymentMethod || isProcessingPayment}
-                className="w-full mt-6 bg-green-600 hover:bg-green-700 shadow-lg text-white font-semibold py-3 text-lg"
+                disabled={isProcessingPayment}
+                className="w-full mt-2 bg-green-600 hover:bg-green-700 shadow-lg text-white font-semibold py-3 text-lg"
                 size="lg">
                 <CreditCard className="w-5 h-5 mr-2" />
                 {isProcessingPayment ? "Memproses..." : "Bayar Sekarang"}

@@ -1,6 +1,8 @@
 import React, { useEffect, useState, type JSX } from "react";
 import { userService } from "../../services/user.service";
 import type { Payment } from "../../types";
+// Remove the conflicting import
+// import { formatDate } from "../../utils/format.date";
 import {
   Card,
   CardHeader,
@@ -101,6 +103,7 @@ const PAYMENT_METHOD_MAP: Record<string, { text: string; icon: JSX.Element }> =
     },
   };
 
+// Keep your local formatDate function
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("id-ID", {
     year: "numeric",
@@ -108,6 +111,7 @@ const formatDate = (dateString: string) =>
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
 
 // ===================== PaymentCard =====================

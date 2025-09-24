@@ -118,7 +118,7 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-4 space-y-6 -mt-2 max-w-5xl mx-auto">
+      <div className="p-4 space-y-6 -mt-2">
         {/* Profile Header */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
           <CardContent className="p-4 md:p-6">
