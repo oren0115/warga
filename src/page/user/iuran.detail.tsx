@@ -22,6 +22,7 @@ import {
   Banknote,
   Building2,
   User,
+  AlertCircle,
 } from "lucide-react";
 
 type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
@@ -36,6 +37,7 @@ const IuranDetail: React.FC = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [error] = useState<string | null>(null);
 
   const fetchFee = useCallback(async () => {
     setIsLoading(true);
@@ -190,6 +192,26 @@ const IuranDetail: React.FC = () => {
             Kembali ke Daftar Iuran
           </Button>
         </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="max-w-md mx-4">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Terjadi Kesalahan
+              </h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={fetchFee} className="w-full">
+                Coba Lagi
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

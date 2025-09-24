@@ -31,7 +31,7 @@ const IuranList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-
+  const [error] = useState<string | null>(null);
   useEffect(() => {
     fetchData();
   }, []);
@@ -115,6 +115,27 @@ const IuranList: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Memuat data...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="max-w-md mx-4">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Terjadi Kesalahan
+              </h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={fetchData} className="w-full">
+                Coba Lagi
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

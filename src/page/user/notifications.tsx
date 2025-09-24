@@ -4,7 +4,15 @@ import type { Notification } from "../../types";
 import NotificationPopup from "../../components/NotificationPopup";
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
-import { Bell, Volume2, CreditCard, Clock, Info } from "lucide-react";
+import {
+  Bell,
+  Volume2,
+  CreditCard,
+  Clock,
+  Info,
+  AlertCircle,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -97,15 +105,21 @@ const Notifications: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Info className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Terjadi Kesalahan
-          </h3>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={fetchNotifications}>Coba Lagi</Button>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="max-w-md mx-4">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Terjadi Kesalahan
+              </h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={fetchNotifications} className="w-full">
+                Coba Lagi
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
