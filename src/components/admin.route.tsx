@@ -1,7 +1,7 @@
 // components/AdminRoute.tsx
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
-import { Loader2, Shield, AlertTriangle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { authState } = useAuth();
