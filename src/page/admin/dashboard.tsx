@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Building2,
   User,
+  User2,
 } from "lucide-react";
 
 import {
@@ -93,22 +94,41 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white mb-6 shadow-md">
-        <div className="relative p-6 flex items-center gap-3">
-          <Building2 className="w-10 h-10 text-white" />
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold">
-              Dashboard Iuran RT/RW
-            </h1>
-            <p className="text-green-100 text-sm">Sistem Pembayaran Digital</p>
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
+        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <div className="relative p-4 md:p-6">
+          <div className="hidden md:flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Building2 className="w-10 h-10 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold">
+                Dashboard Manajemen Pengguna RT/RW
+              </h1>
+              <p className="text-green-100 text-sm">
+                Sistem Pengelolaan Pengguna
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="px-6 pb-4">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 shadow-lg flex items-center gap-3">
-            <User className="w-6 h-6 text-white" />
-            <p className="text-green-100 text-sm">
-              Halo, <span className="font-bold">Admin</span> 👋
-            </p>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
+                  <User2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-1">
+                    Selamat Datang, Admin!
+                  </h2>
+                  <p className="text-green-100 text-xs md:text-sm">
+                    dashboard manajemen pengguna RT/RW
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -127,7 +147,7 @@ const Dashboard: React.FC = () => {
         <>
           <div className="container mx-auto px-4 md:px-6 space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               {[
                 {
                   icon: <Users className="w-8 h-8 text-blue-600" />,
@@ -164,7 +184,7 @@ const Dashboard: React.FC = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+            </div> */}
 
             {/* Status Pengumpulan */}
             <Card className="rounded-2xl shadow-md hover:shadow-xl transition mb-6">
@@ -268,7 +288,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
               {[
                 {
                   title: "Kelola Pengguna",
@@ -289,7 +309,7 @@ const Dashboard: React.FC = () => {
                 <div
                   key={i}
                   onClick={() => navigate(item.link)}
-                  className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3">
+                  className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3 mb-4">
                   {item.icon}
                   <span className="font-medium text-gray-700">
                     {item.title}

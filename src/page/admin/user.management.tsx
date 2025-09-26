@@ -832,11 +832,12 @@ const UserManagement: React.FC = () => {
                                 <div className="space-y-2">
                                   {user.is_admin ? (
                                     <Badge className="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 rounded-full px-3 py-1 text-sm font-semibold shadow-sm">
-                                      🛡️ Administrator
+                                      <Shield className="w-5 h-5 mr-1" />{" "}
+                                      Administrator
                                     </Badge>
                                   ) : (
                                     <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-full px-3 py-1 text-sm font-semibold shadow-sm">
-                                      👤 Warga
+                                      <User2 className="w-5 h-5 mr-1" /> Warga
                                     </Badge>
                                   )}
                                   <div className="flex items-center space-x-1">
