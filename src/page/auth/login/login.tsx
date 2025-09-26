@@ -7,7 +7,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
@@ -58,7 +57,8 @@ const Login: React.FC = () => {
             Selamat Datang
           </CardTitle>
           <CardDescription className="text-gray-500 text-sm">
-            Masuk ke akun <span className="font-medium">RT/RW Fee Management</span>
+            Masuk ke akun{" "}
+            <span className="font-medium">RT/RW Fee Management</span>
           </CardDescription>
         </CardHeader>
 
@@ -72,7 +72,9 @@ const Login: React.FC = () => {
 
             {/* Username */}
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="username"
+                className="text-sm font-medium text-gray-700">
                 Username
               </Label>
               <Input
@@ -89,7 +91,9 @@ const Login: React.FC = () => {
 
             {/* Password */}
             <div className="space-y-2 relative">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700">
                 Password
               </Label>
               <Input
@@ -122,15 +126,6 @@ const Login: React.FC = () => {
             </Button>
           </form>
         </CardContent>
-
-        <CardFooter className="flex justify-center text-sm text-gray-600">
-          Belum punya akun?
-          <Link
-            to="/register"
-            className="ml-1 font-semibold text-blue-600 hover:underline">
-            Daftar di sini
-          </Link>
-        </CardFooter>
       </Card>
     </div>
   );
