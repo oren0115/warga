@@ -12,7 +12,7 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Button } from "../../../components/ui/button";
 import { Alert, AlertDescription } from "../../../components/ui/alert";
-import { Loader2, Eye, EyeOff, Home, User, Lock } from "lucide-react";
+import { Loader2, Eye, EyeOff, User, Lock } from "lucide-react";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -56,15 +56,15 @@ const Login: React.FC = () => {
       }}>
       <Card className="w-full max-w-sm md:max-w-md shadow-2xl rounded-2xl border border-gray-200/50 bg-white/60 backdrop-blur-md">
         <CardHeader className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-2xl bg-blue-100 shadow">
+          {/* <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-2xl bg-blue-100 shadow">
             <Home className="w-8 h-8 text-blue-500" />
-          </div>
+          </div> */}
           <CardTitle className="text-2xl md:text-3xl font-extrabold text-gray-800">
             Selamat Datang
           </CardTitle>
           <CardDescription className="text-gray-500 text-sm">
             Masuk ke akun{" "}
-            <span className="font-semibold">IPL CLUSTER CANNARY</span>
+            <span className="font-semibold">IPL Cluster Cannary</span>
           </CardDescription>
         </CardHeader>
 
