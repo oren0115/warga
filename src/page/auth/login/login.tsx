@@ -12,7 +12,7 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Button } from "../../../components/ui/button";
 import { Alert, AlertDescription } from "../../../components/ui/alert";
-import { Loader2, Eye, EyeOff, Home } from "lucide-react";
+import { Loader2, Eye, EyeOff, Home, User, Lock } from "lucide-react";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -47,18 +47,24 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md shadow-xl rounded-2xl border border-gray-100">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 bg-muted/30"
+      style={{
+        backgroundImage: "url('/bg-login.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}>
+      <Card className="w-full max-w-sm md:max-w-md shadow-2xl rounded-2xl border border-gray-200/50 bg-white/60 backdrop-blur-md">
         <CardHeader className="text-center space-y-2">
-          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm">
-            <Home className="w-8 h-8 text-blue-600" />
+          <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-2xl bg-blue-100 shadow">
+            <Home className="w-8 h-8 text-blue-500" />
           </div>
-          <CardTitle className="text-3xl font-extrabold text-gray-800">
+          <CardTitle className="text-2xl md:text-3xl font-extrabold text-gray-800">
             Selamat Datang
           </CardTitle>
           <CardDescription className="text-gray-500 text-sm">
             Masuk ke akun{" "}
-            <span className="font-medium">RT/RW Fee Management</span>
+            <span className="font-semibold">IPL CLUSTER CANNARY</span>
           </CardDescription>
         </CardHeader>
 
@@ -71,7 +77,7 @@ const Login: React.FC = () => {
             )}
 
             {/* Username */}
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label
                 htmlFor="username"
                 className="text-sm font-medium text-gray-700">
@@ -85,8 +91,9 @@ const Login: React.FC = () => {
                 placeholder="contoh: budi123"
                 value={formData.username}
                 onChange={handleChange}
-                className="rounded-xl focus:ring-2 focus:ring-blue-500 transition"
+                className="rounded-xl pl-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
               />
+              <User className="absolute left-3 top-9 w-4 h-4 text-gray-400" />
             </div>
 
             {/* Password */}
@@ -104,8 +111,9 @@ const Login: React.FC = () => {
                 placeholder="Minimal 6 karakter"
                 value={formData.password}
                 onChange={handleChange}
-                className="rounded-xl focus:ring-2 focus:ring-blue-500 transition pr-10"
+                className="rounded-xl pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
               />
+              <Lock className="absolute left-3 top-9 w-4 h-4 text-gray-400" />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -117,13 +125,15 @@ const Login: React.FC = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full rounded-xl py-2 text-base font-medium shadow-md hover:shadow-lg transition"
+              className="w-full rounded-xl py-2 text-base font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition bg-gradient-to-r from-green-500 to-green-600"
               disabled={authState.isLoading}>
               {authState.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               {authState.isLoading ? "Memproses..." : "Masuk Sekarang"}
             </Button>
+
+            {/* Links */}
           </form>
         </CardContent>
       </Card>

@@ -428,7 +428,7 @@ const Home: React.FC = () => {
         </Card> */}
 
         {/* Enhanced Quick Stats */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
