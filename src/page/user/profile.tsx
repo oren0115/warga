@@ -121,14 +121,14 @@ const Profile: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {/* Desktop notification button - hidden on mobile */}
-              <div className="hidden md:block relative">
+              <div className="relative items-center md:flex lg:hidden">
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
                   size="icon"
                   className="text-white hover:bg-white/20">
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-5 h-5" />{" "}
+                  <span className="sr-only">Logout</span>
                 </Button>
               </div>
             </div>
