@@ -13,15 +13,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import {
-  Users,
-  FileText,
-  Clock,
-  CheckCircle2,
-  Building2,
-  User,
-  User2,
-} from "lucide-react";
+import { Users, FileText, CheckCircle2, Building2, User2 } from "lucide-react";
 
 import {
   BarChart,
