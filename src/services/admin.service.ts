@@ -28,6 +28,11 @@ export const adminService = {
     return response.data;
   },
 
+  regenerateFees: async (data: GenerateFeesRequest): Promise<any> => {
+    const response = await api.post("/admin/regenerate-fees", data);
+    return response.data;
+  },
+
   getAdminFees: async (): Promise<Fee[]> => {
     const response: AxiosResponse<Fee[]> = await api.get("/admin/fees");
     return response.data;
@@ -43,13 +48,10 @@ export const adminService = {
     bulan: string,
     format: "excel" | "pdf" = "excel"
   ): Promise<Blob> => {
-    const response = await api.get(
-      "/admin/reports/fees/export",
-      {
-        params: { bulan, format },
-        responseType: "blob",
-      }
-    );
+    const response = await api.get("/admin/reports/fees/export", {
+      params: { bulan, format },
+      responseType: "blob",
+    });
     return response.data as Blob;
   },
 
@@ -58,13 +60,10 @@ export const adminService = {
     end: string, // YYYY-MM-DD
     format: "excel" | "pdf" = "excel"
   ): Promise<Blob> => {
-    const response = await api.get(
-      "/admin/reports/payments/export",
-      {
-        params: { start, end, format },
-        responseType: "blob",
-      }
-    );
+    const response = await api.get("/admin/reports/payments/export", {
+      params: { start, end, format },
+      responseType: "blob",
+    });
     return response.data as Blob;
   },
 
@@ -79,5 +78,69 @@ export const adminService = {
       },
     });
     return response.data;
+  },
+
+  // User Management Operations
+  createUser: async (userData: {
+    username: string;
+    nama: string;
+    alamat: string;
+    nomor_rumah: string;
+    nomor_hp: string;
+    password: string;
+    is_admin?: boolean;
+    tipe_rumah?: string;
+  }): Promise<User> => {
+    const response: AxiosResponse<User> = await api.post(
+      "/admin/users",
+      userData
+    );
+    return response.data;
+  },
+
+  updateUser: async (
+    userId: string,
+    userData: Partial<{
+      username: string;
+      nama: string;
+      alamat: string;
+      nomor_rumah: string;
+      nomor_hp: string;
+      is_admin: boolean;
+      tipe_rumah: string;
+    }>
+  ): Promise<User> => {
+    const response: AxiosResponse<User> = await api.put(
+      `/admin/users/${userId}`,
+      userData
+    );
+    return response.data;
+  },
+
+  deleteUser: async (userId: string): Promise<void> => {
+    await api.delete(`/admin/users/${userId}`);
+  },
+
+  promoteToAdmin: async (userId: string): Promise<User> => {
+    const response: AxiosResponse<User> = await api.patch(
+      `/admin/users/${userId}/promote`
+    );
+    return response.data;
+  },
+
+  demoteFromAdmin: async (userId: string): Promise<User> => {
+    const response: AxiosResponse<User> = await api.patch(
+      `/admin/users/${userId}/demote`
+    );
+    return response.data;
+  },
+
+  resetUserPassword: async (
+    userId: string,
+    newPassword: string
+  ): Promise<void> => {
+    await api.patch(`/admin/users/${userId}/reset-password`, {
+      password: newPassword,
+    });
   },
 };

@@ -8,6 +8,7 @@ export interface User {
   nomor_rumah: string;
   nomor_hp: string;
   is_admin: boolean;
+  tipe_rumah?: string;
   created_at: string;
 }
 
@@ -93,6 +94,9 @@ export interface PaymentCreateResponse {
 
 export interface GenerateFeesRequest {
   bulan: string;
+  tarif_60m2: number;
+  tarif_72m2: number;
+  tarif_hook: number;
 }
 
 export interface BroadcastNotificationRequest {
@@ -109,13 +113,14 @@ export interface ApiResponse<T> {
 }
 
 export interface DashboardStats {
-  totalUsers: number;
-  totalFees: number;
-  pendingPayments: number;
-  approvedPayments: number;
-  currentMonthCollection: number;
-  collectionRate: number;
-}
+    totalUsers: number;
+    totalFees: number;
+    pendingPayments: number;
+    approvedPayments: number;
+    currentMonthCollection: number;
+    collectionRate: number;
+    monthlyFees: { month: string; total: number }[];
+  }
 
 // Auth context types
 export interface AuthState {

@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const currentUserName = "Admin"; // dummy sementara
+  // Menggunakan data user dari context atau API
 
   useEffect(() => {
     fetchDashboardData();
@@ -63,14 +63,8 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Dummy data grafik
-  const monthlyFees = [
-    { month: "Jan", total: 500000 },
-    { month: "Feb", total: 700000 },
-    { month: "Mar", total: 300000 },
-    { month: "Apr", total: 900000 },
-    { month: "Mei", total: 1100000 },
-  ];
+  // Data grafik dari API - akan diambil dari backend
+  const monthlyFees = stats?.monthlyFees || [];
 
   const paymentStatus = [
     { name: "Berhasil", value: stats?.approvedPayments || 0 },
@@ -113,7 +107,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 shadow-lg flex items-center gap-3">
             <User className="w-6 h-6 text-white" />
             <p className="text-green-100 text-sm">
-              Halo, <span className="font-bold">{currentUserName}</span> 👋
+              Halo, <span className="font-bold">Admin</span> 👋
             </p>
           </div>
         </div>

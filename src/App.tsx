@@ -1,7 +1,7 @@
 import "./css/main.css";
 import { Routes, Route } from "react-router-dom";
 import Login from "./page/auth/login/login";
-import Register from "./page/auth/register/register";
+// import Register from "./page/auth/register/register";
 import { AuthProvider } from "./context/auth.context";
 import Layout from "./layout/Layout";
 
@@ -20,6 +20,9 @@ import PaymentHistory from "./page/user/payment.history";
 import Notifications from "./page/user/notifications";
 import Profile from "./page/user/profile";
 
+// error pages
+import UnauthorizedPage from "./page/unauthorized";
+
 // proteksi
 import { ProtectedRoute } from "./components/protected.route";
 import { AdminRoute } from "./components/admin.route";
@@ -30,7 +33,7 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* <Route path="/register" element={<Register />} /> */}
 
         {/* User routes */}
         <Route
@@ -157,7 +160,7 @@ function App() {
         />
 
         {/* Unauthorized & Not Found */}
-        <Route path="/unauthorized" element={<h1>403 - Unauthorized</h1>} />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<h1>404 - Not Found</h1>} />
       </Routes>
     </AuthProvider>

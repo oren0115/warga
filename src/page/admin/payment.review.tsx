@@ -490,7 +490,7 @@ const PaymentReview: React.FC = () => {
                 {/* Export Section Skeleton */}
                 <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                   <div className="flex items-center gap-3 flex-1">
-                    <CalendarIcon className="w-5 h-5 text-blue-600" />
+                    <CalendarIcon className="w-5 h-5 text-green-600" />
                     <div className="h-8 bg-white rounded animate-pulse flex-1"></div>
                     <span className="text-gray-500 font-medium">—</span>
                     <div className="h-8 bg-white rounded animate-pulse flex-1"></div>
@@ -729,7 +729,7 @@ const PaymentReview: React.FC = () => {
                     <CardTitle className="text-xl font-bold text-gray-900">
                       Database Transaksi Pembayaran
                     </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
+                    {/* <p className="text-sm text-gray-600 mt-1">
                       Menampilkan{" "}
                       <span className="font-semibold text-blue-600">
                         {filteredPayments.length}
@@ -744,7 +744,7 @@ const PaymentReview: React.FC = () => {
                           </span>
                         </span>
                       )}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -842,7 +842,7 @@ const PaymentReview: React.FC = () => {
               {/* Enhanced Export Section */}
               <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                 <div className="flex items-center gap-3 flex-1">
-                  <CalendarIcon className="w-5 h-5 text-blue-600" />
+                  <CalendarIcon className="w-5 h-5 text-green-600" />
                   <Input
                     type="date"
                     value={startDate}
