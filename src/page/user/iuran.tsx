@@ -154,7 +154,7 @@ const IuranList: React.FC = () => {
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
+              <h1 className="text-xl font-bold">IPL Cluster Cannary</h1>
               <p className="text-green-100 text-sm">
                 Sistem Pembayaran Digital
               </p>
@@ -167,7 +167,7 @@ const IuranList: React.FC = () => {
               <div className="p-1.5 bg-white/20 rounded-lg">
                 <Building2 className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-semibold">RT/RW</span>
+              <span className="text-lg font-semibold">IPL Cluster Cannary</span>
             </div>
             <div className="relative">
               <Button
@@ -232,7 +232,7 @@ const IuranList: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
-                        {fee.kategori}
+                        Tipe Rumah {fee.kategori}
                       </CardTitle>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />

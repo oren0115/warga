@@ -177,7 +177,7 @@ const Home: React.FC = () => {
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Manajemen Iuran RT/RW</h1>
+              <h1 className="text-xl font-bold">IPL Cluster Cannary</h1>
               <p className="text-green-100 text-sm">
                 Sistem Pembayaran Digital
               </p>
@@ -190,7 +190,7 @@ const Home: React.FC = () => {
               <div className="p-1.5 bg-white/20 rounded-lg">
                 <Building2 className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-semibold">RT/RW</span>
+              <span className="text-lg font-semibold">IPL CLuster Cannary</span>
             </div>
             <div className="relative">
               <Button

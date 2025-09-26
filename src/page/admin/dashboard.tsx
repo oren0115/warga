@@ -97,7 +97,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold">
-                Dashboard Manajemen Pengguna RT/RW
+                Dashboard Manajemen RT/RW
               </h1>
               <p className="text-green-100 text-sm">
                 Sistem Pengelolaan Pengguna

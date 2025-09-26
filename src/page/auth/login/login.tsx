@@ -88,7 +88,7 @@ const Login: React.FC = () => {
                 name="username"
                 type="text"
                 autoComplete="username"
-                placeholder="contoh: budi123"
+                placeholder="username..."
                 value={formData.username}
                 onChange={handleChange}
                 className="rounded-xl pl-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
@@ -125,15 +125,13 @@ const Login: React.FC = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full rounded-xl py-2 text-base font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition bg-gradient-to-r from-green-500 to-green-600"
+              className="w-full rounded-xl py-2 text-base font-semibold shadow-md hover:shadow-lg transition bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 cursor-pointer"
               disabled={authState.isLoading}>
               {authState.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               {authState.isLoading ? "Memproses..." : "Masuk Sekarang"}
             </Button>
-
-            {/* Links */}
           </form>
         </CardContent>
       </Card>
