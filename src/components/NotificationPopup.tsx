@@ -75,16 +75,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const formatRelativeTime = (dateString: string) => {
     const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
     const now = new Date(
@@ -100,43 +90,63 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     return rtf.format(days, "day");
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type.toLowerCase()) {
+  const getTypeConfig = (type: string) => {
+    const lowerType = type.toLowerCase();
+    switch (lowerType) {
       case "pengumuman":
-        return <Volume2 className="w-5 h-5 text-blue-600" />;
+        return {
+          icon: <Volume2 className="w-4 h-4" />,
+          bgColor: "bg-blue-50",
+          iconBgColor: "bg-blue-100",
+          iconColor: "text-blue-600",
+          badgeBgColor: "bg-blue-100",
+          badgeTextColor: "text-blue-700",
+          borderColor: "border-blue-300",
+          label: "Pengumuman",
+        };
       case "pembayaran":
-        return <CreditCard className="w-5 h-5 text-green-600" />;
+        return {
+          icon: <CreditCard className="w-4 h-4" />,
+          bgColor: "bg-green-50",
+          iconBgColor: "bg-green-100",
+          iconColor: "text-green-600",
+          badgeBgColor: "bg-green-100",
+          badgeTextColor: "text-green-700",
+          borderColor: "border-green-300",
+          label: "Pembayaran",
+        };
       case "reminder":
-        return <Clock className="w-5 h-5 text-yellow-600" />;
+        return {
+          icon: <Clock className="w-4 h-4" />,
+          bgColor: "bg-red-50",
+          iconBgColor: "bg-red-100",
+          iconColor: "text-red-600",
+          badgeBgColor: "bg-red-100",
+          badgeTextColor: "text-red-700",
+          borderColor: "border-red-300",
+          label: "Pengingat",
+        };
       default:
-        return <Info className="w-5 h-5 text-gray-600" />;
+        return {
+          icon: <Info className="w-4 h-4" />,
+          bgColor: "bg-gray-50",
+          iconBgColor: "bg-gray-100",
+          iconColor: "text-gray-600",
+          badgeBgColor: "bg-gray-100",
+          badgeTextColor: "text-gray-700",
+          borderColor: "border-gray-300",
+          label: "Info",
+        };
     }
   };
 
-  const getTypeBadge = (type: string) => {
-    const t = type.toLowerCase();
-    const styles =
-      t === "pembayaran"
-        ? "bg-green-100 text-green-700"
-        : t === "pengumuman"
-        ? "bg-blue-100 text-blue-700"
-        : t === "reminder"
-        ? "bg-yellow-100 text-yellow-800"
-        : "bg-gray-100 text-gray-700";
-    const label =
-      t === "pembayaran"
-        ? "Tagihan"
-        : t === "pengumuman"
-        ? "Pengumuman"
-        : t === "reminder"
-        ? "Pengingat"
-        : "Info";
-    return (
-      <span
-        className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${styles}`}>
-        {label}
-      </span>
-    );
+  const extractPaymentInfo = (message: string) => {
+    const amountMatch = message.match(/Rp\s?([\d.,]+)/);
+    const dateMatch = message.match(/\d{1,2}\s+\w+\s+\d{4}/);
+    return {
+      amount: amountMatch ? amountMatch[0] : null,
+      dueDate: dateMatch ? dateMatch[0] : null,
+    };
   };
 
   const unreadCount = notifications.filter((notif) => !notif.is_read).length;
@@ -207,57 +217,84 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
               </Button>
             </div>
           ) : notifications.length > 0 ? (
-            <ul className="divide-y divide-gray-100">
-              {notifications.map((notification) => (
-                <li
-                  key={notification.id}
-                  className={`${
-                    !notification.is_read
-                      ? "bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-l-green-400"
-                      : "hover:bg-gray-50"
-                  } transition-all duration-200`}>
-                  <Link
-                    to={notification.url || "/notifications"}
-                    onClick={() => markAsRead(notification.id)}
-                    className="flex items-start gap-4 px-5 py-4 group">
-                    <div
-                      className={`mt-1 p-2 rounded-full ${
-                        !notification.is_read
-                          ? "bg-green-100"
-                          : "bg-gray-100 group-hover:bg-green-100"
-                      } transition-colors duration-200`}>
-                      {getTypeIcon(notification.type)}
-                    </div>
-                    <div className="flex-1 min-w-0 leading-relaxed">
-                      <div className="flex items-start justify-between gap-3">
-                        <p
-                          className={`text-[13px] md:text-sm font-bold ${
-                            !notification.is_read
-                              ? "text-gray-900"
-                              : "text-gray-700"
-                          } group-hover:text-gray-900 transition-colors duration-200`}>
-                          {notification.title}
-                        </p>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {getTypeBadge(notification.type)}
-                          {!notification.is_read && (
-                            <div className="w-2 h-2 bg-green-500 rounded-full mt-1"></div>
-                          )}
+            <div className="p-3 space-y-3">
+              {notifications.map((notification) => {
+                const config = getTypeConfig(notification.type);
+                const paymentInfo = extractPaymentInfo(notification.message);
+
+                return (
+                  <div
+                    key={notification.id}
+                    className={`rounded-xl border-2 overflow-hidden transition-all duration-200 hover:shadow-md ${
+                      !notification.is_read
+                        ? `border-l-4 ${config.borderColor} ${config.bgColor}`
+                        : "border-gray-200 bg-white hover:bg-gray-50"
+                    }`}>
+                    <Link
+                      to={notification.url || "/notifications"}
+                      onClick={() => markAsRead(notification.id)}
+                      className="block p-4">
+                      {/* Header: Category + Icon + Time */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`${config.iconBgColor} ${config.iconColor} p-1.5 rounded-full`}>
+                            {config.icon}
+                          </div>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${config.badgeBgColor} ${config.badgeTextColor}`}>
+                            {config.label}
+                          </span>
+                          <span className="text-[10px] text-gray-500">•</span>
+                          <span className="text-[10px] text-gray-500 font-medium">
+                            {formatRelativeTime(notification.created_at)}
+                          </span>
                         </div>
+                        {!notification.is_read && (
+                          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        )}
                       </div>
-                      <p className="text-[13px] md:text-sm text-gray-600 mt-1 line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
+
+                      {/* Title: Bold & Larger */}
+                      <h4
+                        className={`text-sm font-bold mb-1.5 leading-tight ${
+                          !notification.is_read
+                            ? "text-gray-900"
+                            : "text-gray-800"
+                        }`}>
+                        {notification.title}
+                      </h4>
+
+                      {/* Brief Content: Max 2 lines */}
+                      <p className="text-xs text-gray-600 line-clamp-2 mb-2 leading-relaxed">
                         {notification.message}
                       </p>
-                      <span
-                        className="text-[11px] text-gray-500 mt-2 block"
-                        title={formatDate(notification.created_at)}>
-                        {formatRelativeTime(notification.created_at)}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+                      {/* Payment Info Highlights (if available) */}
+                      {(paymentInfo.amount || paymentInfo.dueDate) && (
+                        <div className="flex flex-wrap gap-2 mt-2 p-2 bg-white rounded-lg border border-gray-100">
+                          {paymentInfo.amount && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-bold text-gray-900">
+                                {paymentInfo.amount}
+                              </span>
+                            </div>
+                          )}
+                          {paymentInfo.dueDate && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-red-500" />
+                              <span className="text-[10px] font-semibold text-gray-700">
+                                {paymentInfo.dueDate}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <div className="text-center py-12 px-6">
               <div className="p-4 bg-gray-100 rounded-full w-fit mx-auto mb-4">

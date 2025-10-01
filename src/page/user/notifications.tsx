@@ -86,6 +86,7 @@ const Notifications: React.FC = () => {
                 isRead={notification.is_read}
                 createdAt={notification.created_at}
                 onMarkAsRead={markAsRead}
+                url={notification.url}
               />
             ))}
           </div>

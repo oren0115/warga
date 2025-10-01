@@ -26,7 +26,7 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({ className = "", r
   if (unreadCount === 0) return null;
 
   return (
-    <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium ${className}`}>
+    <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center font-bold shadow-lg animate-pulse ${className}`}>
       {unreadCount > 99 ? "99+" : unreadCount}
     </span>
   );
