@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { Volume2, CreditCard, Clock, Info } from "lucide-react";
+import { formatDateTime } from "../../utils/format.utils";
 
 interface NotificationCardProps {
   id: string;
@@ -50,14 +51,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jakarta",
-    });
+    return formatDateTime(dateString);
   };
 
   return (

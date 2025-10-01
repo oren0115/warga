@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { userService } from "../../services/user.service";
 import type { Payment } from "../../types";
 
@@ -33,7 +33,7 @@ const PaymentHistory: React.FC = () => {
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState("all");
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       const paymentsData = await userService.getPayments();
       setPayments(paymentsData);
@@ -42,7 +42,7 @@ const PaymentHistory: React.FC = () => {
       console.error(err);
       setError(err.message || "Gagal memuat data");
     }
-  };
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -56,11 +56,12 @@ const PaymentHistory: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Reduce auto-refresh frequency to prevent timezone drift
     const interval = setInterval(() => {
       fetchPayments();
-    }, 15000);
+    }, 30000); // Changed from 15s to 30s
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchPayments]);
 
   const handleNotificationRead = () => {
     setNotificationRefreshKey((prev) => prev + 1);

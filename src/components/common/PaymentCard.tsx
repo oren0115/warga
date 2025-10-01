@@ -16,6 +16,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import type { Payment } from "../../types";
+import { formatDateConsistent } from "../../utils/format.utils";
 
 interface PaymentCardProps {
   payment: Payment;
@@ -99,15 +100,17 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
     },
   };
 
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jakarta",
-    });
+  const formatDate = (dateString: string) => {
+    // Ensure we always get consistent Jakarta timezone
+    if (!dateString) return "-";
+
+    try {
+      return formatDateConsistent(dateString);
+    } catch (error) {
+      console.warn("Error formatting date:", error);
+      return "-";
+    }
+  };
 
   const status = STATUS_MAP[payment.status.toLowerCase()] || {
     text: payment.status,

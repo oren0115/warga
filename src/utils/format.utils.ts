@@ -9,31 +9,31 @@ export const formatCurrency = (amount: number): string => {
 };
 
 export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString("id-ID", {
+  const jakartaDate = toJakartaTime(dateString);
+  return jakartaDate.toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "Asia/Jakarta",
   });
 };
 
 export const formatDateTime = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString("id-ID", {
+  const jakartaDate = toJakartaTime(dateString);
+  return jakartaDate.toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "Asia/Jakarta",
   });
 };
 
 export const formatDateShort = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString("id-ID", {
+  const jakartaDate = toJakartaTime(dateString);
+  return jakartaDate.toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "Asia/Jakarta",
   });
 };
 
@@ -104,10 +104,99 @@ export const getDueDateFromBulan = (bulan: string): Date => {
 // Get current time in Jakarta timezone
 export const getCurrentJakartaTime = (): Date => {
   const now = new Date();
-  const jakartaTime = new Date(
-    now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-  );
+  // Get Jakarta time by adding 7 hours to UTC
+  const jakartaOffset = 7 * 60; // Jakarta is UTC+7
+  const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
+  const jakartaTime = new Date(utcTime + jakartaOffset * 60000);
   return jakartaTime;
+};
+
+// Convert any date to Jakarta timezone for consistent display
+export const toJakartaTime = (dateString: string | Date): Date => {
+  const date =
+    typeof dateString === "string" ? new Date(dateString) : dateString;
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return new Date();
+  }
+
+  // If the date already has timezone info, use it directly
+  if (
+    typeof dateString === "string" &&
+    (dateString.includes("+") || dateString.includes("Z"))
+  ) {
+    return date;
+  }
+
+  // For dates without timezone info, assume they are in Jakarta timezone
+  // and convert to proper Date object
+  const jakartaOffset = 7 * 60; // Jakarta is UTC+7
+  const utcTime = date.getTime() + date.getTimezoneOffset() * 60000;
+  const jakartaTime = new Date(utcTime + jakartaOffset * 60000);
+
+  return jakartaTime;
+};
+
+// Cache for formatted dates to prevent timezone drift
+const dateFormatCache = new Map<string, string>();
+
+// Clear cache when needed (e.g., when timezone changes)
+export const clearDateFormatCache = () => {
+  dateFormatCache.clear();
+};
+
+// Validate and fix timezone for payment data
+export const validatePaymentTimezone = (payment: any) => {
+  if (!payment) return payment;
+
+  // Ensure settled_at and expiry_time are properly formatted
+  if (payment.settled_at) {
+    payment.settled_at = toJakartaTime(payment.settled_at).toISOString();
+  }
+
+  if (payment.expiry_time) {
+    payment.expiry_time = toJakartaTime(payment.expiry_time).toISOString();
+  }
+
+  if (payment.created_at) {
+    payment.created_at = toJakartaTime(payment.created_at).toISOString();
+  }
+
+  return payment;
+};
+
+// Format date with consistent Jakarta timezone - prevents timezone drift
+export const formatDateConsistent = (
+  dateString: string,
+  options?: Intl.DateTimeFormatOptions
+): string => {
+  // Create cache key
+  const cacheKey = `${dateString}_${JSON.stringify(options || {})}`;
+
+  // Check cache first
+  if (dateFormatCache.has(cacheKey)) {
+    return dateFormatCache.get(cacheKey)!;
+  }
+
+  const jakartaDate = toJakartaTime(dateString);
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const formatted = jakartaDate.toLocaleDateString("id-ID", {
+    ...defaultOptions,
+    ...options,
+  });
+
+  // Cache the result
+  dateFormatCache.set(cacheKey, formatted);
+
+  return formatted;
 };
 
 // Format date with Jakarta timezone for display
