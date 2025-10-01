@@ -34,7 +34,9 @@ const GenerateFees: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+  ).getFullYear();
 
   const months = [
     { value: "1", label: "Januari" },

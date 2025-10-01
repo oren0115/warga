@@ -236,6 +236,7 @@ const UserManagement: React.FC = () => {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Jakarta",
     });
   };
 
@@ -278,7 +279,10 @@ const UserManagement: React.FC = () => {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `data_warga_${new Date().toISOString().split("T")[0]}.csv`;
+    const jakartaDate = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
+    link.download = `data_warga_${jakartaDate.toISOString().split("T")[0]}.csv`;
     link.click();
   };
 

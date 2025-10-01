@@ -167,6 +167,7 @@ const IuranDetail: React.FC = () => {
       year: "numeric",
       month: "long",
       day: "numeric",
+      timeZone: "Asia/Jakarta",
     });
 
   const formatMonth = (bulan: string) => {
@@ -201,7 +202,11 @@ const IuranDetail: React.FC = () => {
     if (bulan.includes("-")) {
       return bulan.split("-")[0];
     }
-    return new Date().getFullYear().toString();
+    return new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    )
+      .getFullYear()
+      .toString();
   };
 
   const getDueDateFromBulan = (bulan: string) => {
@@ -210,7 +215,9 @@ const IuranDetail: React.FC = () => {
       const dueDate = new Date(parseInt(year), parseInt(month), 0);
       return dueDate;
     } else {
-      const currentYear = new Date().getFullYear();
+      const currentYear = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+      ).getFullYear();
       const dueDate = new Date(currentYear, parseInt(bulan), 0);
       return dueDate;
     }
@@ -400,6 +407,7 @@ const IuranDetail: React.FC = () => {
                         day: "numeric",
                         month: "long",
                         year: "numeric",
+                        timeZone: "Asia/Jakarta",
                       }
                     )}
                   </span>
@@ -424,7 +432,9 @@ const IuranDetail: React.FC = () => {
             {/* Sisa Waktu - Prominent Display */}
             {(() => {
               const dueDate = getDueDateFromBulan(fee.bulan);
-              const currentDate = new Date();
+              const currentDate = new Date(
+                new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+              );
               const timeDiff = dueDate.getTime() - currentDate.getTime();
               const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 

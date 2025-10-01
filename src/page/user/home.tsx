@@ -64,7 +64,10 @@ const Home: React.FC = () => {
       // Format: "9" -> direct parse
       feeMonth = parseInt(fee.bulan);
     }
-    const currentMonth = new Date().getMonth() + 1;
+    const currentMonth =
+      new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+      ).getMonth() + 1;
     return feeMonth === currentMonth;
   });
 

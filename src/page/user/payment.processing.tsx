@@ -34,6 +34,9 @@ const PaymentProcessing: React.FC = () => {
       const paymentData = await userService.checkPaymentStatus(paymentId);
       setPaymentStatus(paymentData);
 
+      // Refresh fees to get updated status
+      await userService.getFees();
+
       // Redirect berdasarkan status
       if (
         paymentData.status.toLowerCase() === "success" ||

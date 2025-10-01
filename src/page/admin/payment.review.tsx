@@ -176,7 +176,9 @@ const PaymentReview: React.FC = () => {
   };
 
   const getDateRangeFilter = () => {
-    const now = new Date();
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     switch (dateRange) {
@@ -308,7 +310,9 @@ const PaymentReview: React.FC = () => {
   };
 
   const getDetailedStats = (): PaymentStats => {
-    const now = new Date();
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -990,6 +994,7 @@ const PaymentReview: React.FC = () => {
                                     day: "2-digit",
                                     month: "short",
                                     year: "numeric",
+                                    timeZone: "Asia/Jakarta",
                                   })}
                                 </span>
                               </div>
@@ -1007,7 +1012,11 @@ const PaymentReview: React.FC = () => {
                               </div>
                               <div className="text-xs text-gray-500">
                                 {(() => {
-                                  const now = new Date();
+                                  const now = new Date(
+                                    new Date().toLocaleString("en-US", {
+                                      timeZone: "Asia/Jakarta",
+                                    })
+                                  );
                                   const paymentDate = new Date(
                                     payment.created_at
                                   );

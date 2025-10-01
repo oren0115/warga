@@ -87,7 +87,9 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
 
   const formatRelativeTime = (dateString: string) => {
     const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
-    const now = new Date();
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
     const then = new Date(dateString);
     const diffMs = then.getTime() - now.getTime();
     const minutes = Math.round(diffMs / 60000);
@@ -130,7 +132,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         ? "Pengingat"
         : "Info";
     return (
-      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${styles}`}>
+      <span
+        className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${styles}`}>
         {label}
       </span>
     );
@@ -212,8 +215,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                     !notification.is_read
                       ? "bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-l-green-400"
                       : "hover:bg-gray-50"
-                  } transition-all duration-200`}
-                >
+                  } transition-all duration-200`}>
                   <Link
                     to={notification.url || "/notifications"}
                     onClick={() => markAsRead(notification.id)}
@@ -248,8 +250,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                       </p>
                       <span
                         className="text-[11px] text-gray-500 mt-2 block"
-                        title={formatDate(notification.created_at)}
-                      >
+                        title={formatDate(notification.created_at)}>
                         {formatRelativeTime(notification.created_at)}
                       </span>
                     </div>

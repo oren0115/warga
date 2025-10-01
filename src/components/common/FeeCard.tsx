@@ -55,7 +55,9 @@ const FeeCard: React.FC<FeeCardProps> = ({
   };
 
   const getDaysUntilDueDate = (month: string) => {
-    const currentDate = new Date();
+    const currentDate = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
     let dueDate: Date;
 
     if (month.includes("-")) {
@@ -83,13 +85,19 @@ const FeeCard: React.FC<FeeCardProps> = ({
     if (bulan.includes("-")) {
       return bulan.split("-")[0];
     }
-    return new Date(fee.created_at).getFullYear().toString();
+    return new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    )
+      .getFullYear()
+      .toString();
   };
 
   const daysUntilDue = getDaysUntilDueDate(fee.bulan);
   const canPay =
     fee.status.toLowerCase() === "belum bayar" ||
     fee.status.toLowerCase() === "pending";
+
+  const isPaid = fee.status.toLowerCase() === "lunas";
 
   return (
     <Card
@@ -138,9 +146,14 @@ const FeeCard: React.FC<FeeCardProps> = ({
                       day: "numeric",
                       month: "long",
                       year: "numeric",
+                      timeZone: "Asia/Jakarta",
                     });
                   } else {
-                    const currentYear = new Date().getFullYear();
+                    const currentYear = new Date(
+                      new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Jakarta",
+                      })
+                    ).getFullYear();
                     const dueDate = new Date(
                       currentYear,
                       parseInt(fee.bulan),
@@ -150,6 +163,7 @@ const FeeCard: React.FC<FeeCardProps> = ({
                       day: "numeric",
                       month: "long",
                       year: "numeric",
+                      timeZone: "Asia/Jakarta",
                     });
                   }
                 })()}
@@ -197,9 +211,12 @@ const FeeCard: React.FC<FeeCardProps> = ({
             className={`w-full ${
               canPay
                 ? "bg-green-600 hover:bg-green-700 text-white font-semibold"
+                : isPaid
+                ? "bg-green-100 hover:bg-green-200 text-green-700"
                 : "bg-gray-100 hover:bg-gray-200 text-gray-700"
             }`}
             variant={canPay ? "default" : "outline"}
+            disabled={isPaid}
             onClick={() => {
               if (canPay && onPay) {
                 onPay(fee.id);
@@ -211,6 +228,11 @@ const FeeCard: React.FC<FeeCardProps> = ({
               <>
                 <CreditCard className="w-5 h-5 mr-2" />
                 Bayar Sekarang
+              </>
+            ) : isPaid ? (
+              <>
+                <CreditCard className="w-5 h-5 mr-2" />
+                Sudah Lunas
               </>
             ) : (
               "Lihat Detail"

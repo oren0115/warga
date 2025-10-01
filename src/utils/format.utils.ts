@@ -13,6 +13,15 @@ export const formatDate = (dateString: string): string => {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Jakarta",
+  });
+};
+
+export const formatDateTime = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "Asia/Jakarta",
@@ -24,6 +33,7 @@ export const formatDateShort = (dateString: string): string => {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Jakarta",
   });
 };
 
@@ -59,11 +69,11 @@ export const getYearFromBulan = (bulan: string): string => {
   if (bulan.includes("-")) {
     return bulan.split("-")[0];
   }
-  return new Date().getFullYear().toString();
+  return getCurrentJakartaTime().getFullYear().toString();
 };
 
 export const getDaysUntilDueDate = (month: string): number => {
-  const currentDate = new Date();
+  const currentDate = getCurrentJakartaTime();
   let dueDate: Date;
 
   if (month.includes("-")) {
@@ -89,4 +99,31 @@ export const getDueDateFromBulan = (bulan: string): Date => {
     const currentYear = new Date().getFullYear();
     return new Date(currentYear, parseInt(bulan), 0);
   }
+};
+
+// Get current time in Jakarta timezone
+export const getCurrentJakartaTime = (): Date => {
+  const now = new Date();
+  const jakartaTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+  );
+  return jakartaTime;
+};
+
+// Format date with Jakarta timezone for display
+export const formatDateWithTimezone = (
+  dateString: string,
+  options?: Intl.DateTimeFormatOptions
+): string => {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Jakarta",
+  };
+
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    ...defaultOptions,
+    ...options,
+  });
 };

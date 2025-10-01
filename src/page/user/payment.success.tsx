@@ -27,6 +27,9 @@ const PaymentSuccess: React.FC = () => {
     try {
       const paymentData = await userService.checkPaymentStatus(paymentId);
       setPaymentStatus(paymentData);
+
+      // Refresh fees to get updated status
+      await userService.getFees();
     } catch (error) {
       console.error("Error fetching payment details:", error);
     } finally {
@@ -44,6 +47,9 @@ const PaymentSuccess: React.FC = () => {
     try {
       const paymentData = await userService.checkPaymentStatus(paymentId);
       setPaymentStatus(paymentData);
+
+      // Refresh fees to get updated status
+      await userService.getFees();
     } catch (error) {
       console.error("Error checking payment status:", error);
     }
