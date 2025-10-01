@@ -10,7 +10,7 @@ import Dashboard from "./page/admin/dashboard";
 import UserManagement from "./page/admin/user.management";
 import GenerateFees from "./page/admin/generate.fees";
 import PaymentReview from "./page/admin/payment.review";
-import BroadcastNotification from "./components/admin/BroadcastNotification";
+import BroadcastNotification from "./page/admin/BroadcastNotification";
 
 // user pages
 import Home from "./page/user/home";

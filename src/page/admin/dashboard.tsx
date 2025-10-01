@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/admin.service";
+import { useAuth } from "../../context/auth.context";
 import type { DashboardStats } from "../../types";
 
 import {
@@ -13,7 +14,14 @@ import {
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Users, FileText, CheckCircle2, Building2, User2 } from "lucide-react";
+import {
+  Users,
+  FileText,
+  CheckCircle2,
+  User2,
+  Receipt,
+  LogOut,
+} from "lucide-react";
 
 import {
   BarChart,
@@ -30,8 +38,15 @@ import {
   Legend,
 } from "recharts";
 
+import {
+  AdminPageHeader,
+  AdminStatsCard,
+  AdminLoading,
+} from "../../components/admin";
+
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,15 +61,57 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
+      // console.log("Fetching dashboard data...");
       const response = await adminService.getDashboard();
+      // console.log("Dashboard response:", response);
       setStats(response);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching dashboard data:", err);
-      setError("Gagal memuat data dashboard");
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.message ||
+        "Gagal memuat data dashboard";
+      setError(errorMessage);
+
+      // Fallback data for testing
+      console.log("Using fallback data for testing...");
+      setStats({
+        totalUsers: 15,
+        totalFees: 45,
+        pendingPayments: 8,
+        approvedPayments: 12,
+        currentMonthCollection: 1200000,
+        collectionRate: 75.5,
+        monthlyFees: [
+          { month: "Jul", total: 800000 },
+          { month: "Aug", total: 950000 },
+          { month: "Sep", total: 1100000 },
+          { month: "Oct", total: 1200000 },
+          { month: "Nov", total: 1050000 },
+          { month: "Dec", total: 1200000 },
+        ],
+      });
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // Mobile logout button component
+  const MobileLogoutButton = () => (
+    <Button
+      onClick={handleLogout}
+      variant="outline"
+      size="sm"
+      className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white lg:hidden">
+      <LogOut className="w-4 h-4 mr-1" />
+      <span className="hidden sm:inline">Logout</span>
+    </Button>
+  );
 
   // Data grafik dari API - akan diambil dari backend
   const monthlyFees = stats?.monthlyFees || [];
@@ -67,116 +124,79 @@ const Dashboard: React.FC = () => {
   const COLORS = ["#22c55e", "#f59e0b"]; // hijau & oranye
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        {/* Skeleton loader */}
-        <div className="animate-pulse space-y-6">
-          <div className="h-24 bg-gray-200 rounded-2xl"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-2xl"></div>
-            ))}
-          </div>
-          <div className="h-64 bg-gray-200 rounded-2xl"></div>
-        </div>
-      </div>
-    );
+    return <AdminLoading type="page" />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-        <div className="relative p-4 md:p-6">
-          <div className="hidden md:flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Building2 className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">
-                Dashboard Manajemen RT/RW
-              </h1>
-              <p className="text-green-100 text-sm">
-                Sistem Pengelolaan Pengguna
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                  <User2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-semibold mb-1">
-                    Selamat Datang, Admin!
-                  </h2>
-                  <p className="text-green-100 text-xs md:text-sm">
-                    dashboard manajemen pengguna RT/RW
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Selamat Datang, Admin!"
+        subtitle="Dashboard Manajemen IPL Cluster Cannary"
+        icon={<User2 className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        rightAction={<MobileLogoutButton />}
+      />
 
       {/* Error */}
       {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-          <Button size="sm" className="mt-3" onClick={fetchDashboardData}>
-            Coba Lagi
-          </Button>
-        </Alert>
+        <div className="container mx-auto px-4 md:px-6">
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>
+              <div className="space-y-2">
+                <p className="font-semibold">Error: {error}</p>
+                <p className="text-sm">
+                  Menggunakan data demo untuk testing. Pastikan backend berjalan
+                  di port 8000.
+                </p>
+              </div>
+            </AlertDescription>
+            <Button size="sm" className="mt-3" onClick={fetchDashboardData}>
+              Coba Lagi
+            </Button>
+          </Alert>
+        </div>
       )}
 
       {stats && (
         <>
           <div className="container mx-auto px-4 md:px-6 space-y-6">
             {/* Stats Grid */}
-            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              {[
-                {
-                  icon: <Users className="w-8 h-8 text-blue-600" />,
-                  title: "Total Pengguna",
-                  value: stats.totalUsers,
-                },
-                {
-                  icon: <FileText className="w-8 h-8 text-green-600" />,
-                  title: "Total Iuran",
-                  value: stats.totalFees,
-                },
-                {
-                  icon: <Clock className="w-8 h-8 text-yellow-600" />,
-                  title: "Menunggu Verifikasi",
-                  value: stats.pendingPayments,
-                },
-                {
-                  icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
-                  title: "Pembayaran Berhasil",
-                  value: stats.approvedPayments,
-                },
-              ].map((item, i) => (
-                <Card
-                  key={i}
-                  className="rounded-2xl shadow-md hover:shadow-xl transition">
-                  <CardContent className="flex items-center justify-between p-6">
-                    <div className="p-4 bg-gray-100 rounded-xl">
-                      {item.icon}
-                    </div>
-                    <div className="ml-4 text-right">
-                      <p className="text-sm text-gray-500">{item.title}</p>
-                      <p className="text-3xl font-bold">{item.value}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div> */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <AdminStatsCard
+                title="Total Pengguna"
+                value={stats.totalUsers}
+                description="Terdaftar di sistem"
+                icon={<Users className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-blue-100 to-blue-50"
+                iconTextColor="text-blue-700"
+              />
+              <AdminStatsCard
+                title="Total Iuran"
+                value={stats.totalFees}
+                description="Iuran bulanan"
+                icon={<FileText className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-green-100 to-green-50"
+                iconTextColor="text-green-700"
+              />
+              <AdminStatsCard
+                title="Menunggu Verifikasi"
+                value={stats.pendingPayments}
+                description="Perlu tindak lanjut"
+                icon={<CheckCircle2 className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-yellow-100 to-yellow-50"
+                iconTextColor="text-yellow-700"
+                valueColor="text-yellow-600"
+              />
+              <AdminStatsCard
+                title="Pembayaran Berhasil"
+                value={stats.approvedPayments}
+                description="Transaksi selesai"
+                icon={<Receipt className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-purple-100 to-purple-50"
+                iconTextColor="text-purple-700"
+                valueColor="text-green-600"
+              />
+            </div>
 
             {/* Status Pengumpulan */}
             <Card className="rounded-2xl shadow-md hover:shadow-xl transition mb-6">
@@ -192,7 +212,7 @@ const Dashboard: React.FC = () => {
                     {`Rp ${
                       stats.currentMonthCollection?.toLocaleString() || 0
                     }`}{" "}
-                    dari Rp {stats.collectionRate?.toLocaleString() || "0"}
+                    terkumpul
                   </span>
                   <span className="text-sm font-semibold text-gray-700">
                     {stats.collectionRate}%
@@ -202,6 +222,9 @@ const Dashboard: React.FC = () => {
                   value={stats.collectionRate}
                   className="h-4 rounded-full"
                 />
+                <p className="text-xs text-gray-500 mt-2">
+                  Target pengumpulan iuran bulan ini
+                </p>
               </CardContent>
             </Card>
 

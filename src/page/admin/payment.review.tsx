@@ -7,42 +7,43 @@ import {
   CardTitle,
   CardContent,
 } from "../../components/ui/card";
-import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
-  CreditCard,
-  Clock,
-  CheckCircle,
-  XCircle,
   Calendar,
   DollarSign,
   TrendingUp,
-  AlertCircle,
   Search,
-  Download,
   FileText,
   Banknote,
   RefreshCw,
   BarChart3,
   Receipt,
-  Smartphone,
-  Building2,
   Eye,
-  ChevronDown,
-  ChevronUp,
   Calendar as CalendarIcon,
   Clock3,
-  ClipboardIcon,
+  CreditCard,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Filter,
 } from "lucide-react";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "../../components/ui/table";
 import { Input } from "../../components/ui/input";
+import { PaymentCard } from "../../components/common";
+import { AdminPageHeader } from "@/components/admin";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 interface PaymentStats {
   total: number;
@@ -55,84 +56,7 @@ interface PaymentStats {
   totalRevenue: number;
 }
 
-// Skeleton Components
-const SkeletonCard = () => (
-  <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-gray-300">
-    <CardContent className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-3 flex-1">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
-          <div className="h-8 bg-gray-200 rounded animate-pulse w-16"></div>
-          <div className="flex items-center space-x-2">
-            <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-3 bg-gray-200 rounded animate-pulse w-20"></div>
-          </div>
-        </div>
-        <div className="p-4 bg-gray-100 rounded-xl animate-pulse">
-          <div className="w-7 h-7 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const SkeletonTableRow = () => (
-  <TableRow className="hover:bg-blue-50 transition-colors duration-200 border-b border-gray-100">
-    <TableCell className="py-6 px-6">
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-gray-200 rounded-full animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-20"></div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-16"></div>
-        </div>
-        <div className="h-3 bg-gray-200 rounded animate-pulse w-24"></div>
-      </div>
-    </TableCell>
-
-    <TableCell className="px-6">
-      <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 bg-gray-200 rounded-xl animate-pulse"></div>
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-16"></div>
-        </div>
-      </div>
-    </TableCell>
-
-    <TableCell className="px-6">
-      <div className="space-y-3">
-        <div className="text-right">
-          <div className="h-6 bg-gray-200 rounded animate-pulse w-20 ml-auto"></div>
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-16 ml-auto mt-1"></div>
-        </div>
-        <div className="flex justify-end">
-          <div className="h-6 bg-gray-200 rounded animate-pulse w-24"></div>
-        </div>
-      </div>
-    </TableCell>
-
-    <TableCell className="px-6">
-      <div className="space-y-3">
-        <div>
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-          <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
-        </div>
-        <div className="pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="h-3 bg-gray-200 rounded animate-pulse w-12"></div>
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-gray-200 rounded-full animate-pulse"></div>
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-8"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </TableCell>
-  </TableRow>
-);
+// Skeleton Components - Removed, now using AdminLoading
 
 const PaymentReview: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -143,10 +67,7 @@ const PaymentReview: React.FC = () => {
   const [endDate, setEndDate] = useState<string>("");
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sortField, setSortField] = useState<"created_at" | "amount">(
-    "created_at"
-  );
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [dateRange, setDateRange] = useState<
@@ -199,47 +120,33 @@ const PaymentReview: React.FC = () => {
     }
   };
 
-  const filteredPayments = payments
-    .filter((payment) => {
-      // Filter by status
-      let statusMatch = true;
-      if (filter === "pending") statusMatch = payment.status === "Pending";
-      else if (filter === "success")
-        statusMatch =
-          payment.status === "Settlement" || payment.status === "Success";
-      else if (filter === "failed")
-        statusMatch =
-          payment.status === "Deny" ||
-          payment.status === "Cancel" ||
-          payment.status === "Expire";
+  const filteredPayments = payments.filter((payment) => {
+    // Filter by status
+    let statusMatch = true;
+    if (filter === "pending") statusMatch = payment.status === "Pending";
+    else if (filter === "success")
+      statusMatch =
+        payment.status === "Settlement" || payment.status === "Success";
+    else if (filter === "failed")
+      statusMatch =
+        payment.status === "Deny" ||
+        payment.status === "Cancel" ||
+        payment.status === "Expire";
 
-      // Filter by search term
-      const searchMatch =
-        searchTerm === "" ||
-        payment.payment_method
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        payment.transaction_id
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        payment.amount.toString().includes(searchTerm);
+    // Filter by search term
+    const searchMatch =
+      searchTerm === "" ||
+      payment.payment_method.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payment.transaction_id
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      payment.amount.toString().includes(searchTerm);
 
-      // Filter by date range
-      const dateMatch = getDateRangeFilter()(payment);
+    // Filter by date range
+    const dateMatch = getDateRangeFilter()(payment);
 
-      return statusMatch && searchMatch && dateMatch;
-    })
-    .sort((a, b) => {
-      const multiplier = sortDirection === "asc" ? 1 : -1;
-      if (sortField === "created_at") {
-        return (
-          multiplier *
-          (new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-        );
-      } else {
-        return multiplier * (a.amount - b.amount);
-      }
-    });
+    return statusMatch && searchMatch && dateMatch;
+  });
 
   // Pagination
   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
@@ -248,58 +155,6 @@ const PaymentReview: React.FC = () => {
     startIndex,
     startIndex + itemsPerPage
   );
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "settlement":
-      case "success":
-        return (
-          <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-green-200 hover:from-green-200 hover:to-green-300 font-semibold px-3 py-1 shadow-sm">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Pembayaran Berhasil
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge className="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border-yellow-200 hover:from-yellow-200 hover:to-yellow-300 font-semibold px-3 py-1 shadow-sm">
-            <Clock className="w-4 h-4 mr-2" />
-            Menunggu Konfirmasi
-          </Badge>
-        );
-      case "deny":
-      case "cancel":
-      case "expire":
-        return (
-          <Badge className="bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-red-200 hover:from-red-200 hover:to-red-300 font-semibold px-3 py-1 shadow-sm">
-            <XCircle className="w-4 h-4 mr-2" />
-            Pembayaran Gagal
-          </Badge>
-        );
-      default:
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200 font-medium px-3 py-1">
-            <AlertCircle className="w-4 h-4 mr-2" />
-            {status}
-          </Badge>
-        );
-    }
-  };
-
-  const getPaymentMethodIcon = (method: string) => {
-    const methodLower = method.toLowerCase();
-    if (methodLower.includes("bank") || methodLower.includes("transfer")) {
-      return <Building2 className="w-5 h-5 text-blue-600" />;
-    } else if (
-      methodLower.includes("wallet") ||
-      methodLower.includes("ovo") ||
-      methodLower.includes("dana") ||
-      methodLower.includes("gopay")
-    ) {
-      return <Smartphone className="w-5 h-5 text-green-600" />;
-    } else {
-      return <CreditCard className="w-5 h-5 text-purple-600" />;
-    }
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -392,16 +247,6 @@ const PaymentReview: React.FC = () => {
     }
   };
 
-  const handleSort = (field: "created_at" | "amount") => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("desc");
-    }
-    setCurrentPage(1);
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -413,7 +258,7 @@ const PaymentReview: React.FC = () => {
           <div className="relative p-4 md:p-6">
             <div className="hidden md:flex items-center gap-3 mb-4">
               <div className="p-2 bg-white/20 rounded-lg">
-                <CreditCard className="w-6 h-6 text-white" />
+                <Receipt className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-extrabold">
@@ -447,7 +292,25 @@ const PaymentReview: React.FC = () => {
           {/* Stats Cards Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[...Array(4)].map((_, i) => (
-              <SkeletonCard key={i} />
+              <Card
+                key={i}
+                className="hover:shadow-lg transition-all duration-300 border rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-3 flex-1">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
+                      <div className="h-8 bg-gray-200 rounded animate-pulse w-16"></div>
+                      <div className="flex items-center space-x-2">
+                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-20"></div>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-100 rounded-xl animate-pulse">
+                      <div className="w-7 h-7 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
@@ -515,47 +378,50 @@ const PaymentReview: React.FC = () => {
               </div>
             </CardHeader>
 
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-b border-gray-200">
-                      <TableHead className="font-bold text-gray-800 py-5 px-6">
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>Waktu Transaksi</span>
+            <CardContent className="p-6">
+              {/* Payment Cards Grid Skeleton */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="pb-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 bg-gray-200 rounded"></div>
+                          <div className="space-y-2">
+                            <div className="h-4 bg-gray-200 rounded w-24"></div>
+                            <div className="h-3 bg-gray-200 rounded w-20"></div>
+                          </div>
                         </div>
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-800 px-6">
                         <div className="flex items-center space-x-2">
-                          <CreditCard className="w-4 h-4" />
-                          <span>Informasi Pembayaran</span>
+                          <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                          <div className="h-6 bg-gray-200 rounded w-16"></div>
                         </div>
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-800 px-6">
-                        <div className="flex items-center space-x-2">
-                          <DollarSign className="w-4 h-4" />
-                          <span>Nominal & Status</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4">
+                      <div className="p-4 bg-gray-100 rounded-xl">
+                        <div className="flex justify-between items-center">
+                          <div className="h-4 bg-gray-200 rounded w-32"></div>
+                          <div className="h-6 bg-gray-200 rounded w-24"></div>
                         </div>
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-800 px-6">
-                        <div className="flex items-center space-x-2">
-                          <Receipt className="w-4 h-4" />
-                          <span>ID & Detail Transaksi</span>
-                        </div>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[...Array(5)].map((_, i) => (
-                      <SkeletonTableRow key={i} />
-                    ))}
-                  </TableBody>
-                </Table>
+                      </div>
+                      <div className="space-y-2">
+                        {[...Array(3)].map((_, j) => (
+                          <div
+                            key={j}
+                            className="flex justify-between items-center py-2">
+                            <div className="h-3 bg-gray-200 rounded w-20"></div>
+                            <div className="h-3 bg-gray-200 rounded w-24"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
               {/* Pagination Skeleton */}
-              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-gray-50 border-t">
+              <div className="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-200">
                 <div className="h-4 bg-gray-200 rounded animate-pulse w-48 mb-4 sm:mb-0"></div>
                 <div className="flex items-center space-x-2">
                   {[...Array(5)].map((_, i) => (
@@ -575,42 +441,11 @@ const PaymentReview: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-        <div className="relative p-4 md:p-6">
-          <div className="hidden md:flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Building2 className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">
-                Dashboard Review Pembayaran RT/RW
-              </h1>
-              <p className="text-green-100 text-sm">Sistem Review Pembayaran</p>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                  <CreditCard className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-semibold mb-1">
-                    Review Pembayaran
-                  </h2>
-                  <p className="text-green-100 text-xs md:text-sm">
-                    Review pembayaran RT/RW Anda dengan mudah
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Review Pembayaran"
+        subtitle="Kelola pembayaran iuran IPL Cluster Anda dengan mudah"
+        icon={<Receipt className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+      />
 
       <div className="container mx-auto px-4 md:px-6 space-y-6">
         {/* Enhanced Overview Cards */}
@@ -770,7 +605,7 @@ const PaymentReview: React.FC = () => {
               {/* Enhanced Search and Filters */}
               <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
                 {/* Search Bar */}
-                <div className="relative flex-1 max-w-md">
+                <div className="relative flex-1 w-full lg:max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
                     placeholder="Cari metode, ID transaksi, atau nominal..."
@@ -787,8 +622,8 @@ const PaymentReview: React.FC = () => {
                   )}
                 </div>
 
-                {/* Date Range Filter */}
-                <div className="flex gap-2">
+                {/* Date Range Filter - Desktop */}
+                <div className="hidden lg:flex gap-2">
                   {[
                     { key: "all", label: "Semua Waktu" },
                     { key: "today", label: "Hari Ini" },
@@ -805,10 +640,29 @@ const PaymentReview: React.FC = () => {
                     </Button>
                   ))}
                 </div>
+
+                {/* Date Range Filter - Mobile (Select) */}
+                <div className="lg:hidden w-full">
+                  <Select
+                    value={dateRange}
+                    onValueChange={(value) =>
+                      setDateRange(value as "today" | "week" | "month" | "all")
+                    }>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih rentang waktu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Waktu</SelectItem>
+                      <SelectItem value="today">Hari Ini</SelectItem>
+                      <SelectItem value="week">7 Hari</SelectItem>
+                      <SelectItem value="month">30 Hari</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              {/* Status Filter Buttons */}
-              <div className="flex flex-wrap gap-2">
+              {/* Status Filter Buttons - Desktop */}
+              <div className="hidden lg:flex flex-wrap gap-2">
                 <Button
                   variant={filter === "all" ? "default" : "outline"}
                   onClick={() => setFilter("all")}
@@ -843,27 +697,119 @@ const PaymentReview: React.FC = () => {
                 </Button>
               </div>
 
+              {/* Status Filter - Mobile (Sheet) */}
+              <div className="lg:hidden w-full">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="w-full">
+                      <Filter className="w-4 h-4 mr-2" />
+                      Filter Status{" "}
+                      {filter !== "all" && (
+                        <span className="ml-2 px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">
+                          {filter === "pending"
+                            ? "Menunggu"
+                            : filter === "success"
+                            ? "Berhasil"
+                            : "Gagal"}
+                        </span>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-auto">
+                    <SheetHeader>
+                      <SheetTitle>Filter Status Pembayaran</SheetTitle>
+                    </SheetHeader>
+                    <div className="grid gap-3 py-4">
+                      <Button
+                        variant={filter === "all" ? "default" : "outline"}
+                        onClick={() => setFilter("all")}
+                        className="justify-start h-12">
+                        <TrendingUp className="w-5 h-5 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">Semua</div>
+                          <div className="text-xs opacity-70">
+                            {stats.total.toLocaleString()} transaksi
+                          </div>
+                        </div>
+                      </Button>
+                      <Button
+                        variant={filter === "pending" ? "default" : "outline"}
+                        onClick={() => setFilter("pending")}
+                        className="justify-start h-12">
+                        <Clock className="w-5 h-5 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">Menunggu</div>
+                          <div className="text-xs opacity-70">
+                            {stats.pending.toLocaleString()} transaksi
+                          </div>
+                        </div>
+                      </Button>
+                      <Button
+                        variant={filter === "success" ? "default" : "outline"}
+                        onClick={() => setFilter("success")}
+                        className="justify-start h-12">
+                        <CheckCircle className="w-5 h-5 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">Berhasil</div>
+                          <div className="text-xs opacity-70">
+                            {stats.success.toLocaleString()} transaksi
+                          </div>
+                        </div>
+                      </Button>
+                      <Button
+                        variant={filter === "failed" ? "default" : "outline"}
+                        onClick={() => setFilter("failed")}
+                        className="justify-start h-12">
+                        <XCircle className="w-5 h-5 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">Gagal</div>
+                          <div className="text-xs opacity-70">
+                            {stats.failed.toLocaleString()} transaksi
+                          </div>
+                        </div>
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
               {/* Enhanced Export Section */}
-              <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                <div className="flex items-center gap-3 flex-1">
-                  <CalendarIcon className="w-5 h-5 text-green-600" />
-                  <Input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="flex-1 border-gray-200 bg-white"
-                    placeholder="Tanggal mulai"
-                  />
-                  <span className="text-gray-500 font-medium">—</span>
-                  <Input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="flex-1 border-gray-200 bg-white"
-                    placeholder="Tanggal akhir"
-                  />
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <CalendarIcon className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-gray-700">
+                    Export Laporan
+                  </h3>
                 </div>
-                <div className="flex gap-2">
+
+                {/* Date Inputs */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">
+                      Tanggal Mulai
+                    </label>
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full border-gray-200 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">
+                      Tanggal Akhir
+                    </label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full border-gray-200 bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Export Buttons */}
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -871,16 +817,7 @@ const PaymentReview: React.FC = () => {
                     disabled={isExporting}
                     className="font-medium bg-white hover:bg-green-50 border-green-200 text-green-700">
                     <FileText className="w-4 h-4 mr-2" />
-                    {isExporting ? "Mengekspor..." : "Export Excel"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleExport("pdf")}
-                    disabled={isExporting}
-                    className="font-medium bg-white hover:bg-red-50 border-red-200 text-red-700">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export PDF
+                    <span className="hidden sm:inline">Export </span>Excel
                   </Button>
                 </div>
               </div>
@@ -926,211 +863,24 @@ const PaymentReview: React.FC = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="p-0">
+          <CardContent className="p-6">
             {paginatedPayments.length > 0 ? (
               <>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-b border-gray-200">
-                        <TableHead className="font-bold text-gray-800 py-5 px-6">
-                          <button
-                            onClick={() => handleSort("created_at")}
-                            className="flex items-center space-x-2 hover:text-blue-600 transition-colors">
-                            <Calendar className="w-4 h-4" />
-                            <span>Waktu Transaksi</span>
-                            {sortField === "created_at" &&
-                              (sortDirection === "asc" ? (
-                                <ChevronUp className="w-4 h-4" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4" />
-                              ))}
-                          </button>
-                        </TableHead>
-                        <TableHead className="font-bold text-gray-800 px-6">
-                          <div className="flex items-center space-x-2">
-                            <CreditCard className="w-4 h-4" />
-                            <span>Informasi Pembayaran</span>
-                          </div>
-                        </TableHead>
-                        <TableHead className="font-bold text-gray-800 px-6">
-                          <button
-                            onClick={() => handleSort("amount")}
-                            className="flex items-center space-x-2 hover:text-blue-600 transition-colors">
-                            <DollarSign className="w-4 h-4" />
-                            <span>Nominal & Status</span>
-                            {sortField === "amount" &&
-                              (sortDirection === "asc" ? (
-                                <ChevronUp className="w-4 h-4" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4" />
-                              ))}
-                          </button>
-                        </TableHead>
-                        <TableHead className="font-bold text-gray-800 px-6">
-                          <div className="flex items-center space-x-2">
-                            <Receipt className="w-4 h-4" />
-                            <span>ID & Detail Transaksi</span>
-                          </div>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {paginatedPayments.map((payment, index) => (
-                        <TableRow
-                          key={payment.id}
-                          className={`hover:bg-green-50 transition-colors border-b border-gray-100 ${
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                          }`}>
-                          {/* Enhanced Date/Time Column */}
-                          <TableCell className="font-medium text-gray-900 py-6 px-6">
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="font-semibold text-gray-900">
-                                  {new Date(
-                                    payment.created_at
-                                  ).toLocaleDateString("id-ID", {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    timeZone: "Asia/Jakarta",
-                                  })}
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <Clock3 className="w-4 h-4" />
-                                <span>
-                                  {new Date(
-                                    payment.created_at
-                                  ).toLocaleTimeString("id-ID", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}{" "}
-                                  WIB
-                                </span>
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {(() => {
-                                  const now = new Date(
-                                    new Date().toLocaleString("en-US", {
-                                      timeZone: "Asia/Jakarta",
-                                    })
-                                  );
-                                  const paymentDate = new Date(
-                                    payment.created_at
-                                  );
-                                  const diffHours = Math.floor(
-                                    (now.getTime() - paymentDate.getTime()) /
-                                      (1000 * 60 * 60)
-                                  );
-
-                                  if (diffHours < 1) return "Baru saja";
-                                  if (diffHours < 24)
-                                    return `${diffHours} jam yang lalu`;
-                                  return `${Math.floor(
-                                    diffHours / 24
-                                  )} hari yang lalu`;
-                                })()}
-                              </div>
-                            </div>
-                          </TableCell>
-
-                          {/* Enhanced Payment Method Column */}
-                          <TableCell className="text-gray-700 px-6">
-                            <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-sm">
-                                {getPaymentMethodIcon(payment.payment_method)}
-                              </div>
-                              <div className="space-y-1">
-                                <p className="font-semibold text-gray-900 text-base">
-                                  {payment.payment_method}
-                                </p>
-                                <div className="flex items-center space-x-2">
-                                  <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5">
-                                    {payment.payment_method
-                                      .toLowerCase()
-                                      .includes("bank")
-                                      ? "Transfer Bank"
-                                      : payment.payment_method
-                                          .toLowerCase()
-                                          .includes("wallet")
-                                      ? "E-Wallet"
-                                      : "Digital Payment"}
-                                  </Badge>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-
-                          {/* Enhanced Amount and Status Column */}
-                          <TableCell className="px-6">
-                            <div className="space-y-3">
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-900">
-                                  {formatCurrency(payment.amount)}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  Nominal pembayaran
-                                </p>
-                              </div>
-                              <div className="flex justify-end">
-                                {getStatusBadge(payment.status)}
-                              </div>
-                            </div>
-                          </TableCell>
-
-                          {/* Enhanced Transaction ID Column */}
-                          <TableCell className="text-gray-600 px-6">
-                            <div className="space-y-3">
-                              <div>
-                                <p className="text-sm text-gray-500 mb-1">
-                                  ID Transaksi
-                                </p>
-                                <div className="flex items-center space-x-2">
-                                  <span className="font-mono text-sm bg-gray-100 px-3 py-2 rounded-lg border shadow-sm">
-                                    {payment.transaction_id || "—"}
-                                  </span>
-                                  {payment.transaction_id && (
-                                    <ClipboardIcon
-                                      className="w-5 h-5 hover:bg-gray-200 rounded text-gray-700 hover:text-gray-900"
-                                      onClick={() =>
-                                        navigator.clipboard.writeText(
-                                          payment.transaction_id || ""
-                                        )
-                                      }
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                              <div className="pt-2 border-t border-gray-100">
-                                <div className="flex items-center justify-between text-xs text-gray-500">
-                                  <span>Ref: #{payment.id}</span>
-                                  <span className="flex items-center space-x-1">
-                                    <div
-                                      className={`w-2 h-2 rounded-full ${
-                                        payment.status === "Settlement" ||
-                                        payment.status === "Success"
-                                          ? "bg-green-500"
-                                          : payment.status === "Pending"
-                                          ? "bg-yellow-500"
-                                          : "bg-red-500"
-                                      }`}></div>
-                                    <span>Live</span>
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                {/* Payment Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedPayments.map((payment) => (
+                    <PaymentCard
+                      key={payment.id}
+                      payment={payment}
+                      onRefresh={handleRefresh}
+                      className="w-full"
+                    />
+                  ))}
                 </div>
 
                 {/* Enhanced Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-gray-50 border-t">
+                  <div className="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-200">
                     <div className="text-sm text-gray-600 mb-4 sm:mb-0">
                       Menampilkan{" "}
                       <span className="font-semibold">{startIndex + 1}</span>{" "}

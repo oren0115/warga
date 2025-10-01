@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
-import { AlertTriangle, Info, Receipt, Building2 } from "lucide-react";
-import { Skeleton } from "../../components/ui/skeleton";
+import { AlertTriangle, Info, Receipt } from "lucide-react";
+import { AdminPageHeader, AdminLoading } from "../../components/admin";
 
 const GenerateFees: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -152,45 +152,11 @@ const GenerateFees: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-        <div className="relative p-4 md:p-6">
-          <div className="hidden md:flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Building2 className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">
-                Dashboard Manajemen Iuran RT/RW
-              </h1>
-              <p className="text-green-100 text-sm">
-                Sistem Pembayaran Digital
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                  <Receipt className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-semibold mb-1">
-                    Generate Iuran Bulanan
-                  </h2>
-                  <p className="text-green-100 text-xs md:text-sm">
-                    Kelola iuran RT/RW Anda dengan mudah
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Generate Iuran Bulanan"
+        subtitle="Kelola iuran IPL Cluster Anda dengan mudah"
+        icon={<Receipt className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+      />
 
       <div className="container mx-auto px-4 md:px-6 space-y-6">
         {/* Form Card */}
@@ -205,20 +171,7 @@ const GenerateFees: React.FC = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              // Skeleton saat loading
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-32" /> {/* Label */}
-                  <Skeleton className="h-10 w-full rounded-md" /> {/* Select */}
-                  <Skeleton className="h-4 w-64" /> {/* Hint */}
-                </div>
-                <Skeleton className="h-20 w-full rounded-md" /> {/* Alert */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Skeleton className="h-10 w-full rounded-md" />
-                  <Skeleton className="h-10 w-full rounded-md" />
-                  <Skeleton className="h-10 w-full rounded-md" />
-                </div>
-              </div>
+              <AdminLoading type="card" />
             ) : (
               <>
                 {message && (

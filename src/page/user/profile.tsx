@@ -22,9 +22,11 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { PageHeader, PageLayout } from "../../components/common";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
   const { authState, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<User>>({
     nama: authState.user?.nama || "",
@@ -72,7 +74,20 @@ const Profile: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    navigate("/login");
   };
+
+  // Mobile logout button component
+  const MobileLogoutButton = () => (
+    <Button
+      onClick={handleLogout}
+      variant="outline"
+      size="sm"
+      className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white lg:hidden">
+      <LogOut className="w-4 h-4 mr-1" />
+      <span className="hidden sm:inline">Logout</span>
+    </Button>
+  );
 
   return (
     <PageLayout>
@@ -82,16 +97,7 @@ const Profile: React.FC = () => {
         subtitle="Kelola IPL Anda dengan mudah"
         icon={<UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />}
         userName={authState.user?.nama}
-        rightAction={
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/20">
-            <LogOut className="w-5 h-5" />
-            <span className="sr-only">Logout</span>
-          </Button>
-        }
+        rightAction={<MobileLogoutButton />}
       />
 
       <div className="p-4 space-y-6 -mt-2">

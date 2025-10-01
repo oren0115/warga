@@ -28,122 +28,19 @@ import {
   Download,
   RefreshCw,
   Eye,
-  Building2,
   UserPlus,
   Edit,
   Shield,
 } from "lucide-react";
 import UserManagementModal from "../../components/admin/UserManagementModal";
-
-// Skeleton Components
-const SkeletonCard = () => (
-  <Card className="hover:shadow-lg transition-all duration-300 rounded-xl border border-gray-100">
-    <CardContent className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="w-16 h-16 bg-gray-200 rounded-xl animate-pulse"></div>
-        <div className="text-right space-y-2">
-          <div className="w-24 h-3 bg-gray-200 rounded animate-pulse"></div>
-          <div className="w-16 h-8 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-20 h-2 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const SkeletonTableRow = () => (
-  <TableRow className="hover:bg-green-50 transition-colors border-b border-gray-100">
-    {/* User Info */}
-    <TableCell className="py-4 px-6">
-      <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
-        <div className="space-y-2">
-          <div className="w-32 h-4 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-24 h-3 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      </div>
-    </TableCell>
-
-    {/* Contact */}
-    <TableCell className="py-4 px-6">
-      <div className="space-y-1">
-        <div className="w-28 h-4 bg-gray-300 rounded animate-pulse"></div>
-        <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-    </TableCell>
-
-    {/* Address */}
-    <TableCell className="py-4 px-6">
-      <div className="space-y-2 max-w-xs">
-        <div className="w-48 h-4 bg-gray-300 rounded animate-pulse"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-16 h-5 bg-gray-200 rounded animate-pulse"></div>
-          <div className="w-12 h-5 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      </div>
-    </TableCell>
-
-    {/* Role & Status */}
-    <TableCell className="py-4 px-6">
-      <div className="space-y-2">
-        <div className="w-24 h-6 bg-gray-200 rounded-full animate-pulse"></div>
-        <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-gray-200 rounded-full animate-pulse"></div>
-          <div className="w-12 h-3 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      </div>
-    </TableCell>
-
-    {/* Join Date */}
-    <TableCell className="py-4 px-6">
-      <div className="space-y-1">
-        <div className="w-20 h-4 bg-gray-300 rounded animate-pulse"></div>
-        <div className="w-16 h-3 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-    </TableCell>
-
-    {/* Actions */}
-    <TableCell className="py-4 px-6">
-      <div className="flex items-center space-x-2">
-        <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
-        <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-    </TableCell>
-  </TableRow>
-);
-
-const SkeletonHeader = () => (
-  <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6">
-    <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-    <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-    <div className="relative p-4 md:p-6">
-      <div className="hidden md:flex items-center gap-3 mb-4">
-        <div className="p-2 bg-white/20 rounded-lg">
-          <div className="w-10 h-10 bg-white/30 rounded animate-pulse"></div>
-        </div>
-        <div className="space-y-2">
-          <div className="w-80 h-8 bg-white/30 rounded animate-pulse"></div>
-          <div className="w-48 h-4 bg-white/20 rounded animate-pulse"></div>
-        </div>
-      </div>
-
-      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-              <div className="w-5 h-5 md:w-6 md:h-6 bg-white/30 rounded animate-pulse"></div>
-            </div>
-            <div className="space-y-2">
-              <div className="w-32 h-6 bg-white/30 rounded animate-pulse"></div>
-              <div className="w-48 h-4 bg-white/20 rounded animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+import {
+  AdminPageHeader,
+  AdminStatsCard,
+  AdminTable,
+  AdminFilters,
+  AdminPagination,
+  AdminLoading,
+} from "../../components/admin";
 
 const UserManagement: React.FC = () => {
   const { authState } = useAuth();
@@ -242,6 +139,122 @@ const UserManagement: React.FC = () => {
 
   const adminCount = users.filter((user) => user.is_admin).length;
   const wargaCount = users.filter((user) => !user.is_admin).length;
+
+  // Table columns definition
+  const tableColumns = [
+    {
+      key: "user_info",
+      label: "Informasi Pengguna",
+      render: (_value: any, user: User) => (
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+            <span className="text-lg font-bold text-white">
+              {user.nama.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-lg font-semibold text-gray-900 truncate">
+              {user.nama}
+            </p>
+            <p className="text-sm text-gray-500 font-mono">@{user.username}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "contact",
+      label: "Kontak",
+      render: (_value: any, user: User) => (
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-gray-900">{user.nomor_hp}</p>
+          <p className="text-xs text-gray-500">Nomor WhatsApp</p>
+        </div>
+      ),
+    },
+    {
+      key: "address",
+      label: "Alamat Lengkap",
+      render: (_value: any, user: User) => (
+        <div className="space-y-1 max-w-xs">
+          <p className="text-sm text-gray-900 line-clamp-2">{user.alamat}</p>
+          <div className="flex items-center space-x-2">
+            <Badge className="bg-gray-100 text-gray-700 text-xs px-2 py-1">
+              Rumah #{user.nomor_rumah}
+            </Badge>
+            {user.tipe_rumah && (
+              <Badge className="bg-blue-100 text-blue-700 text-xs px-2 py-1">
+                {user.tipe_rumah}
+              </Badge>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "role_status",
+      label: "Status & Role",
+      render: (_value: any, user: User) => (
+        <div className="space-y-2">
+          {user.is_admin ? (
+            <Badge className="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 rounded-full px-3 py-1 text-sm font-semibold shadow-sm">
+              <Shield className="w-5 h-5 mr-1" /> Administrator
+            </Badge>
+          ) : (
+            <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-full px-3 py-1 text-sm font-semibold shadow-sm">
+              <User2 className="w-5 h-5 mr-1" /> Warga
+            </Badge>
+          )}
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-green-600 font-medium">Aktif</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "join_date",
+      label: "Bergabung",
+      render: (_value: any, user: User) => (
+        <div className="text-sm text-gray-600">
+          <p className="font-medium">
+            {formatDate(user.created_at).split(",")[0]}
+          </p>
+          <p className="text-xs text-gray-500">
+            {formatDate(user.created_at).split(",")[1]}
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Aksi",
+      render: (_value: any, user: User) => (
+        <div className="flex items-center space-x-2">
+          <Button
+            onClick={() => handleViewUser(user)}
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50">
+            <Eye className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => handleEditUser(user)}
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+            <Edit className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  // Filter options
+  const filterOptions = [
+    { key: "all", label: "Semua", count: users.length },
+    { key: "admin", label: "Admin", count: adminCount },
+    { key: "warga", label: "Warga", count: wargaCount },
+  ];
 
   const exportToCSV = () => {
     // Admin validation untuk export
@@ -343,106 +356,7 @@ const UserManagement: React.FC = () => {
 
   // Loading Skeleton
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
-        {/* Skeleton Header */}
-        <SkeletonHeader />
-
-        <div className="container mx-auto px-4 md:px-6 space-y-6">
-          {/* Skeleton Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </div>
-
-          {/* Skeleton Table Card */}
-          <Card className="shadow-lg rounded-xl border border-gray-100">
-            <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-gray-100/50">
-              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-                <div className="flex items-center space-x-4">
-                  <div className="w-9 h-9 bg-gray-200 rounded-lg animate-pulse"></div>
-                  <div className="space-y-2">
-                    <div className="w-48 h-6 bg-gray-300 rounded animate-pulse"></div>
-                    <div className="w-64 h-4 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full lg:w-auto">
-                  {/* Skeleton Search */}
-                  <div className="w-64 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-
-                  {/* Skeleton Filter */}
-                  <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-
-                  {/* Skeleton Action Buttons */}
-                  <div className="flex space-x-2">
-                    <div className="w-28 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                    <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                    <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Skeleton Items per page */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center space-x-2">
-                  <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="w-12 h-8 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100">
-                      {[
-                        "Informasi Pengguna",
-                        "Kontak",
-                        "Alamat Lengkap",
-                        "Status & Role",
-                        "Bergabung",
-                        "Aksi",
-                      ].map((index) => (
-                        <TableHead
-                          key={index}
-                          className="uppercase text-xs text-gray-600 font-bold tracking-wider py-4 px-6">
-                          <div className="w-24 h-4 bg-gray-300 rounded animate-pulse"></div>
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {/* Skeleton Table Rows */}
-                    {Array.from({ length: 5 }, (_, index) => (
-                      <SkeletonTableRow key={index} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Skeleton Pagination */}
-              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-gray-50 border-t">
-                <div className="mb-4 sm:mb-0">
-                  <div className="w-48 h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  {Array.from({ length: 7 }, (_, index) => (
-                    <div
-                      key={index}
-                      className="w-10 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return <AdminLoading type="page" />;
   }
 
   // Show access denied message for non-admin users
@@ -477,44 +391,11 @@ const UserManagement: React.FC = () => {
     <div className="min-h-screen bg-gray-50 bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header - Only for Admin */}
       {isAdmin && (
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden  mb-6">
-          <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-          <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-          <div className="relative p-4 md:p-6">
-            <div className="hidden md:flex items-center gap-3 mb-4">
-              <div className="p-2 bg-white/20 rounded-lg">
-                <Building2 className="w-10 h-10 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold">
-                  Dashboard Manajemen Pengguna RT/RW
-                </h1>
-                <p className="text-green-100 text-sm">
-                  Sistem Pengelolaan Pengguna
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                    <User2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg md:text-xl font-semibold mb-1">
-                      Kelola Pengguna
-                    </h2>
-                    <p className="text-green-100 text-xs md:text-sm">
-                      Kelola pengguna RT/RW Anda dengan mudah
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdminPageHeader
+          title="Kelola Pengguna"
+          subtitle="Kelola pengguna IPL Cluster Anda dengan mudah"
+          icon={<User2 className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        />
       )}
 
       {isAdmin && (
@@ -522,73 +403,114 @@ const UserManagement: React.FC = () => {
           {/* Enhanced Stats Cards - Only for Admin */}
           {isAdmin && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              <Card className="hover:shadow-lg transition-all duration-300 rounded-xl border border-blue-100">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl shadow-sm">
-                      <Users className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
-                        Total Pengguna
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {users.length.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-blue-600 font-medium">
-                        Terdaftar di sistem
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-all duration-300 rounded-xl border border-purple-100">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-4 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl shadow-sm">
-                      <UserCheck className="w-8 h-8 text-purple-700" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
-                        Administrator
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {adminCount.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-purple-600 font-medium">
-                        Akses penuh sistem
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-all duration-300 rounded-xl border border-green-100">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-4 bg-gradient-to-br from-green-100 to-green-50 rounded-xl shadow-sm">
-                      <Users className="w-8 h-8 text-green-700" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">
-                        Warga Biasa
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {wargaCount.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-green-600 font-medium">
-                        Pengguna aktif
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <AdminStatsCard
+                title="Total Pengguna"
+                value={users.length}
+                description="Terdaftar di sistem"
+                icon={<Users className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-blue-100 to-blue-50"
+                iconTextColor="text-blue-600"
+              />
+              <AdminStatsCard
+                title="Administrator"
+                value={adminCount}
+                description="Akses penuh sistem"
+                icon={<UserCheck className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-purple-100 to-purple-50"
+                iconTextColor="text-purple-700"
+              />
+              <AdminStatsCard
+                title="Warga Biasa"
+                value={wargaCount}
+                description="Pengguna aktif"
+                icon={<Users className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-green-100 to-green-50"
+                iconTextColor="text-green-700"
+              />
             </div>
           )}
 
           {/* Enhanced Table Card - Only for Admin */}
           {isAdmin && (
+            <>
+              {/* Filters */}
+              <AdminFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Cari nama, username, HP, alamat..."
+                filters={filterOptions}
+                activeFilter={filterRole}
+                onFilterChange={(filter) =>
+                  setFilterRole(filter as "all" | "admin" | "warga")
+                }
+                onRefresh={handleRefresh}
+                onExport={exportToCSV}
+                onReset={() => {
+                  setSearchTerm("");
+                  setFilterRole("all");
+                }}
+                isRefreshing={isRefreshing}
+                rightActions={
+                  <Button
+                    onClick={handleCreateUser}
+                    className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium">
+                    <UserPlus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Tambah User</span>
+                  </Button>
+                }
+              />
+
+              {/* Table */}
+              <AdminTable
+                title="Database Warga RT/RW"
+                description={`Menampilkan ${filteredUsers.length} dari ${users.length} total pengguna`}
+                icon={<Eye className="w-5 h-5 text-blue-600" />}
+                columns={tableColumns}
+                data={paginatedUsers}
+                emptyState={{
+                  icon:
+                    searchTerm || filterRole !== "all" ? (
+                      <Search className="w-12 h-12 text-gray-400" />
+                    ) : (
+                      <Users className="w-12 h-12 text-gray-400" />
+                    ),
+                  title:
+                    searchTerm || filterRole !== "all"
+                      ? "Tidak Ada Hasil Ditemukan"
+                      : "Belum Ada Pengguna Terdaftar",
+                  description:
+                    searchTerm || filterRole !== "all"
+                      ? "Coba ubah kata kunci pencarian atau filter untuk mendapatkan hasil yang lebih relevan"
+                      : "Sistem siap digunakan. Pengguna pertama akan muncul di sini setelah registrasi",
+                  action: (searchTerm || filterRole !== "all") && (
+                    <Button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setFilterRole("all");
+                      }}
+                      className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                      Reset Pencarian
+                    </Button>
+                  ),
+                }}
+              />
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <AdminPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredUsers.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                  onItemsPerPageChange={setItemsPerPage}
+                />
+              )}
+            </>
+          )}
+
+          {/* Old Table - Removed */}
+          {false && false && (
             <Card className="shadow-lg rounded-xl border border-gray-100">
               <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-gray-100/50">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
