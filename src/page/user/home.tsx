@@ -85,8 +85,18 @@ const Home: React.FC = () => {
 
   const getDaysUntilDueDate = (month: string) => {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const dueDate = new Date(currentYear, parseInt(month), 0); // Last day of the month
+    let dueDate: Date;
+
+    if (month.includes("-")) {
+      // Format: "2025-09" -> extract year and month
+      const [year, monthNum] = month.split("-");
+      dueDate = new Date(parseInt(year), parseInt(monthNum), 0); // Last day of the month
+    } else {
+      // Format: "9" -> use current year
+      const currentYear = currentDate.getFullYear();
+      dueDate = new Date(currentYear, parseInt(month), 0); // Last day of the month
+    }
+
     const timeDiff = dueDate.getTime() - currentDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return daysDiff;
@@ -115,7 +125,17 @@ const Home: React.FC = () => {
       "November",
       "Desember",
     ];
-    return months[parseInt(monthNum) - 1] || monthNum;
+
+    let month: number;
+    if (monthNum.includes("-")) {
+      // Format: "2025-09" -> extract month part
+      month = parseInt(monthNum.split("-")[1]);
+    } else {
+      // Format: "9" -> direct parse
+      month = parseInt(monthNum);
+    }
+
+    return months[month - 1] || monthNum;
   };
 
   if (isLoading) {
@@ -150,9 +170,19 @@ const Home: React.FC = () => {
     );
   }
 
-  const currentFee = fees.find(
-    (fee) => parseInt(fee.bulan) === new Date().getMonth() + 1
-  );
+  const currentFee = fees.find((fee) => {
+    // Handle format "YYYY-MM" or just month number
+    let feeMonth: number;
+    if (fee.bulan.includes("-")) {
+      // Format: "2025-09" -> extract month part
+      feeMonth = parseInt(fee.bulan.split("-")[1]);
+    } else {
+      // Format: "9" -> direct parse
+      feeMonth = parseInt(fee.bulan);
+    }
+    const currentMonth = new Date().getMonth() + 1;
+    return feeMonth === currentMonth;
+  });
 
   const daysUntilDue = currentFee ? getDaysUntilDueDate(currentFee.bulan) : 0;
 

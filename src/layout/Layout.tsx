@@ -62,7 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100">
           {isSidebarOpen && (
             <h1 className="text-xl font-bold text-main-dark truncate">
-              {authState.user?.is_admin ? "Admin Panel" : "Iuran RT/RW"}
+              {authState.user?.is_admin ? "Admin Panel" : "IPL"}
             </h1>
           )}
           <Button

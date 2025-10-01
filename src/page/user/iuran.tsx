@@ -94,15 +94,35 @@ const IuranList: React.FC = () => {
       "November",
       "Desember",
     ];
-    return months[parseInt(monthNum) - 1] || monthNum;
+
+    let month: number;
+    if (monthNum.includes("-")) {
+      // Format: "2025-09" -> extract month part
+      month = parseInt(monthNum.split("-")[1]);
+    } else {
+      // Format: "9" -> direct parse
+      month = parseInt(monthNum);
+    }
+
+    return months[month - 1] || monthNum;
   };
 
   // Samakan perhitungan jatuh tempo dengan halaman Home:
-  // Last day of the month berdasarkan nilai fee.bulan ("1".."12") di tahun berjalan
+  // Last day of the month berdasarkan nilai fee.bulan ("1".."12" atau "YYYY-MM") di tahun berjalan
   const getDaysUntilDueDate = (month: string) => {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const dueDate = new Date(currentYear, parseInt(month), 0);
+    let dueDate: Date;
+
+    if (month.includes("-")) {
+      // Format: "2025-09" -> extract year and month
+      const [year, monthNum] = month.split("-");
+      dueDate = new Date(parseInt(year), parseInt(monthNum), 0); // Last day of the month
+    } else {
+      // Format: "9" -> use current year
+      const currentYear = currentDate.getFullYear();
+      dueDate = new Date(currentYear, parseInt(month), 0); // Last day of the month
+    }
+
     const timeDiff = dueDate.getTime() - currentDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return daysDiff;
@@ -253,20 +273,90 @@ const IuranList: React.FC = () => {
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
                   <div className="text-2xl font-bold text-gray-900">
                     Rp {fee.nominal.toLocaleString()}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Jatuh tempo:</span>
-                    {(() => {
-                      const days = getDaysUntilDueDate(fee.bulan);
-                      return days <= 7 && days > 0 ? (
-                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
-                          {days} hari lagi
-                        </span>
-                      ) : null;
-                    })()}
+
+                  {/* Detail Iuran */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Tahun:</span>
+                      <span className="font-medium">
+                        {(() => {
+                          if (fee.bulan.includes("-")) {
+                            return fee.bulan.split("-")[0];
+                          }
+                          return new Date(fee.created_at).getFullYear();
+                        })()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Jatuh Tempo:</span>
+                      <span className="font-medium">
+                        {(() => {
+                          if (fee.bulan.includes("-")) {
+                            const [year, month] = fee.bulan.split("-");
+                            const dueDate = new Date(
+                              parseInt(year),
+                              parseInt(month),
+                              0
+                            );
+                            return dueDate.toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            });
+                          } else {
+                            const currentYear = new Date().getFullYear();
+                            const dueDate = new Date(
+                              currentYear,
+                              parseInt(fee.bulan),
+                              0
+                            );
+                            return dueDate.toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            });
+                          }
+                        })()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Sisa Waktu:</span>
+                      {(() => {
+                        const days = getDaysUntilDueDate(fee.bulan);
+                        if (days > 0) {
+                          return (
+                            <span
+                              className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                days <= 3
+                                  ? "bg-red-100 text-red-700"
+                                  : days <= 7
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-green-100 text-green-700"
+                              }`}>
+                              {days} hari lagi
+                            </span>
+                          );
+                        } else if (days === 0) {
+                          return (
+                            <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-medium">
+                              Hari ini
+                            </span>
+                          );
+                        } else {
+                          return (
+                            <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-medium">
+                              Terlambat {Math.abs(days)} hari
+                            </span>
+                          );
+                        }
+                      })()}
+                    </div>
                   </div>
                 </CardContent>
 
