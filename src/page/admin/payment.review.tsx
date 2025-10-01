@@ -564,25 +564,9 @@ const PaymentReview: React.FC = () => {
                     <Eye className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
+                    <CardTitle className="text-xl font-bold  text-gray-900">
                       Database Transaksi Pembayaran
                     </CardTitle>
-                    {/* <p className="text-sm text-gray-600 mt-1">
-                      Menampilkan{" "}
-                      <span className="font-semibold text-blue-600">
-                        {filteredPayments.length}
-                      </span>{" "}
-                      dari <span className="font-semibold">{stats.total}</span>{" "}
-                      total transaksi
-                      {filter !== "all" && (
-                        <span className="ml-2">
-                          • Filter:{" "}
-                          <span className="capitalize font-medium text-purple-600">
-                            {filter}
-                          </span>
-                        </span>
-                      )}
-                    </p> */}
                   </div>
                 </div>
 
