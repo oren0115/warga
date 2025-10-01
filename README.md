@@ -34,6 +34,57 @@ A modern React-based frontend application for managing community financial opera
 - **Charts**: Recharts 3.2.1
 - **Icons**: Lucide React & React Icons
 - **State Management**: React Context API
+- **Date Handling**: Day.js
+- **Type Safety**: TypeScript 5.8.3
+- **Code Quality**: ESLint 9.35.0
+
+## 📦 Dependencies
+
+### Core Dependencies
+
+- `react@^19.1.1` - React library
+- `react-dom@^19.1.1` - React DOM rendering
+- `react-router-dom@^6.30.1` - Client-side routing
+- `axios@^1.12.2` - HTTP client for API calls
+
+### UI & Styling
+
+- `@tailwindcss/vite@^4.1.13` - Tailwind CSS Vite plugin
+- `tailwindcss@^4.1.13` - Utility-first CSS framework
+- `tailwind-merge@^3.3.1` - Tailwind class merging utility
+- `class-variance-authority@^0.7.1` - Component variant management
+- `clsx@^2.1.1` - Conditional className utility
+
+### UI Components (Radix UI)
+
+- `@radix-ui/react-avatar@^1.1.10` - Avatar component
+- `@radix-ui/react-dialog@^1.1.15` - Dialog/Modal component
+- `@radix-ui/react-label@^2.1.7` - Label component
+- `@radix-ui/react-progress@^1.1.7` - Progress bar component
+- `@radix-ui/react-radio-group@^1.3.8` - Radio group component
+- `@radix-ui/react-select@^2.2.6` - Select dropdown component
+- `@radix-ui/react-slot@^1.2.3` - Slot component
+- `@radix-ui/react-tabs@^1.1.13` - Tabs component
+
+### Icons & Charts
+
+- `lucide-react@^0.544.0` - Icon library
+- `react-icons@^5.5.0` - Additional icon library
+- `recharts@^3.2.1` - Chart library
+
+### Utilities
+
+- `dayjs@^1.11.18` - Date manipulation library
+
+### Development Dependencies
+
+- `@vitejs/plugin-react@^5.0.2` - Vite React plugin
+- `typescript@~5.8.3` - TypeScript compiler
+- `vite@^7.1.6` - Build tool
+- `eslint@^9.35.0` - Code linting
+- `@types/react@^19.1.13` - React TypeScript types
+- `@types/react-dom@^19.1.9` - React DOM TypeScript types
+- `@types/node@^24.5.2` - Node.js TypeScript types
 
 ## 📁 Project Structure
 
@@ -62,6 +113,23 @@ src/
 - npm or yarn package manager
 - Backend API running (see backend documentation)
 
+### Complete Project Setup
+
+This is a full-stack application with separate frontend and backend components:
+
+1. **Backend Setup** (Required first)
+
+   - Navigate to the `backend` directory
+   - Install Python dependencies: `pip install -r requirements.txt`
+   - Set up MongoDB database
+   - Configure environment variables
+   - Start the backend server: `python main.py`
+
+2. **Frontend Setup** (This project)
+   - Install dependencies: `npm install`
+   - Configure environment variables
+   - Start the development server: `npm run dev`
+
 ### Installation
 
 1. **Clone the repository**
@@ -85,6 +153,8 @@ src/
    ```env
    VITE_API_URL=http://localhost:8000/api
    ```
+
+   **Note**: Make sure the backend API is running and accessible at the specified URL.
 
 4. **Start the development server**
 
@@ -198,6 +268,40 @@ The application is configured for production deployment with:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **API Connection Error**
+
+   - Ensure backend server is running on `http://localhost:8000`
+   - Check `VITE_API_URL` in `.env` file
+   - Verify CORS settings in backend
+
+2. **Build Errors**
+
+   - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+   - Check TypeScript errors: `npm run build`
+   - Ensure all dependencies are installed
+
+3. **Authentication Issues**
+
+   - Clear browser localStorage
+   - Check JWT token validity
+   - Verify backend authentication endpoints
+
+4. **Styling Issues**
+   - Ensure Tailwind CSS is properly configured
+   - Check if all UI components are imported correctly
+   - Verify CSS classes are not conflicting
+
+### Development Tips
+
+- Use browser dev tools for debugging
+- Check network tab for API call issues
+- Use React DevTools for component debugging
+- Monitor console for error messages
 
 ## 📝 License
 

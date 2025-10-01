@@ -591,7 +591,7 @@ const PaymentReview: React.FC = () => {
                   disabled={isRefreshing}
                   variant="outline"
                   size="sm"
-                  className="font-medium">
+                  className="font-medium bg-white hover:bg-green-600  border-green-20">
                   <RefreshCw
                     className={`w-4 h-4 mr-2 ${
                       isRefreshing ? "animate-spin" : ""
@@ -673,7 +673,7 @@ const PaymentReview: React.FC = () => {
                 <Button
                   variant={filter === "pending" ? "default" : "outline"}
                   onClick={() => setFilter("pending")}
-                  className="text-sm font-medium"
+                  className="text-sm font-medium hover:bg-amber-600 hover:text-white"
                   size="sm">
                   <Clock className="w-4 h-4 mr-2" />
                   Menunggu ({stats.pending.toLocaleString()})

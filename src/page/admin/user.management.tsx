@@ -25,7 +25,6 @@ import {
   UserCheck,
   User2,
   Filter,
-  Download,
   RefreshCw,
   Eye,
   UserPlus,
@@ -256,49 +255,6 @@ const UserManagement: React.FC = () => {
     { key: "warga", label: "Warga", count: wargaCount },
   ];
 
-  const exportToCSV = () => {
-    // Admin validation untuk export
-    if (!isAdmin) {
-      alert(
-        "Akses ditolak. Hanya administrator yang dapat mengexport data pengguna."
-      );
-      return;
-    }
-
-    const headers = [
-      "Nama",
-      "Username",
-      "No. HP",
-      "Alamat",
-      "No. Rumah",
-      "Role",
-      "Tanggal Bergabung",
-    ];
-    const csvContent = [
-      headers.join(","),
-      ...filteredUsers.map((user) =>
-        [
-          `"${user.nama}"`,
-          `"${user.username}"`,
-          `"${user.nomor_hp}"`,
-          `"${user.alamat}"`,
-          `"${user.nomor_rumah}"`,
-          user.is_admin ? "Admin" : "Warga",
-          `"${formatDate(user.created_at)}"`,
-        ].join(",")
-      ),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    const jakartaDate = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-    );
-    link.download = `data_warga_${jakartaDate.toISOString().split("T")[0]}.csv`;
-    link.click();
-  };
-
   const resetCurrentPage = () => {
     setCurrentPage(1);
   };
@@ -444,7 +400,6 @@ const UserManagement: React.FC = () => {
                   setFilterRole(filter as "all" | "admin" | "warga")
                 }
                 onRefresh={handleRefresh}
-                onExport={exportToCSV}
                 onReset={() => {
                   setSearchTerm("");
                   setFilterRole("all");
@@ -618,16 +573,6 @@ const UserManagement: React.FC = () => {
                             }`}
                           />
                           <span className="hidden sm:inline">Refresh</span>
-                        </Button>
-                      )}
-
-                      {isAdmin && (
-                        <Button
-                          onClick={exportToCSV}
-                          variant="outline"
-                          className="flex items-center space-x-2 px-4 py-2.5 border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-colors text-sm font-medium">
-                          <Download className="w-4 h-4" />
-                          <span className="hidden sm:inline">Export</span>
                         </Button>
                       )}
                     </div>
