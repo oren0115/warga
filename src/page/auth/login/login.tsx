@@ -37,7 +37,20 @@ const Login: React.FC = () => {
 
     try {
       await login(formData.username, formData.password);
-      navigate("/");
+
+      // Get user info from localStorage after successful login
+      const userInfo = localStorage.getItem("userInfo");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        // Redirect based on user role
+        if (user.is_admin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        navigate("/");
+      }
     } catch (err: any) {
       setError(
         err.response?.data?.detail ||
@@ -56,9 +69,6 @@ const Login: React.FC = () => {
       }}>
       <Card className="w-full max-w-sm md:max-w-md shadow-2xl rounded-2xl border border-gray-200/50 bg-white/60 backdrop-blur-md">
         <CardHeader className="text-center space-y-2">
-          {/* <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-2xl bg-blue-100 shadow">
-            <Home className="w-8 h-8 text-blue-500" />
-          </div> */}
           <CardTitle className="text-2xl md:text-3xl font-extrabold text-gray-800">
             Selamat Datang
           </CardTitle>
