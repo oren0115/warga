@@ -17,11 +17,11 @@ import {
   X,
   Save,
   User as UserIcon,
-  Building2,
   LogOut,
   Camera,
   CheckCircle,
 } from "lucide-react";
+import { PageHeader, PageLayout } from "../../components/common";
 
 const Profile: React.FC = () => {
   const { authState, updateProfile, logout } = useAuth();
@@ -75,66 +75,24 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <PageLayout>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white  overflow-hidden mb-6">
-        <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full"></div>
-        <div className="absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full"></div>
-
-        <div className="relative p-4 md:p-6">
-          {/* Branding Section - Hidden on mobile, visible on desktop */}
-          <div className="hidden md:flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">Manajemen IPL</h1>
-              <p className="text-green-100 text-sm">
-                Sistem Pembayaran Digital
-              </p>
-            </div>
-          </div>
-
-          {/* Compact Mobile Header - Only visible on mobile */}
-          <div className="md:hidden flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-white/20 rounded-lg">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-semibold">IPL Cluster Cannary</span>
-            </div>
-          </div>
-
-          {/* Enhanced Greeting Section */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                  <UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-semibold mb-1">
-                    Halo, {authState.user?.nama}! 👋
-                  </h2>
-                  <p className="text-green-100 text-xs md:text-sm">
-                    Kelola IPL Anda dengan mudah
-                  </p>
-                </div>
-              </div>
-              <div className="relative items-center md:flex lg:hidden">
-                <Button
-                  onClick={handleLogout}
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20">
-                  <LogOut className="w-5 h-5" />{" "}
-                  <span className="sr-only">Logout</span>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Halo"
+        subtitle="Kelola IPL Anda dengan mudah"
+        icon={<UserIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        userName={authState.user?.nama}
+        rightAction={
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/20">
+            <LogOut className="w-5 h-5" />
+            <span className="sr-only">Logout</span>
+          </Button>
+        }
+      />
 
       <div className="p-4 space-y-6 -mt-2">
         {/* Profile Header */}
@@ -259,7 +217,7 @@ const Profile: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

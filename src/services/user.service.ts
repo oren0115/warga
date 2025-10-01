@@ -7,6 +7,7 @@ import type {
   Notification,
   PaymentCreateRequest,
   PaymentCreateResponse,
+  PaymentStatusResponse,
 } from "../types";
 
 // Helper untuk memastikan response berupa array
@@ -71,19 +72,11 @@ export const userService = {
   // Cek status pembayaran
   checkPaymentStatus: async (
     paymentId: string
-  ): Promise<{
-    payment_id: string;
-    status: string;
-    midtrans_status: string;
-    settled_at?: string;
-  }> => {
+  ): Promise<PaymentStatusResponse> => {
     try {
-      const response: AxiosResponse<{
-        payment_id: string;
-        status: string;
-        midtrans_status: string;
-        settled_at?: string;
-      }> = await api.get(`/payments/check/${paymentId}`);
+      const response: AxiosResponse<PaymentStatusResponse> = await api.get(
+        `/payments/check/${paymentId}`
+      );
       return response.data;
     } catch (error) {
       console.error("Error checking payment status:", error);
@@ -94,23 +87,19 @@ export const userService = {
   // Paksa cek status pembayaran
   forceCheckPaymentStatus: async (
     paymentId: string
-  ): Promise<{
-    payment_id: string;
-    status: string;
-    midtrans_status: string;
-    settled_at?: string;
-    updated: boolean;
-    message?: string;
-  }> => {
+  ): Promise<
+    PaymentStatusResponse & {
+      updated: boolean;
+      message?: string;
+    }
+  > => {
     try {
-      const response: AxiosResponse<{
-        payment_id: string;
-        status: string;
-        midtrans_status: string;
-        settled_at?: string;
-        updated: boolean;
-        message?: string;
-      }> = await api.post(`/payments/force-check/${paymentId}`);
+      const response: AxiosResponse<
+        PaymentStatusResponse & {
+          updated: boolean;
+          message?: string;
+        }
+      > = await api.post(`/payments/force-check/${paymentId}`);
       return response.data;
     } catch (error) {
       console.error("Error force checking payment status:", error);

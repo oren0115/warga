@@ -20,6 +20,12 @@ import PaymentHistory from "./page/user/payment.history";
 import Notifications from "./page/user/notifications";
 import Profile from "./page/user/profile";
 
+// payment status pages
+import PaymentProcessing from "./page/user/payment.processing";
+import PaymentSuccess from "./page/user/payment.success";
+import PaymentPending from "./page/user/payment.pending";
+import PaymentFailed from "./page/user/payment.failed";
+
 // error pages
 import UnauthorizedPage from "./page/unauthorized";
 
@@ -102,6 +108,48 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Profile />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Payment status routes */}
+        <Route
+          path="/payment/processing"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentProcessing />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment/success"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentSuccess />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment/pending"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentPending />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment/failed"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentFailed />
               </Layout>
             </ProtectedRoute>
           }

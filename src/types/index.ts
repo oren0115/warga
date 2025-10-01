@@ -92,6 +92,13 @@ export interface PaymentCreateResponse {
   va_number?: string;
 }
 
+export interface PaymentStatusResponse {
+  payment_id: string;
+  status: string;
+  midtrans_status: string;
+  settled_at?: string;
+}
+
 export interface GenerateFeesRequest {
   bulan: string;
   tarif_60m2: number;

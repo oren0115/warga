@@ -70,7 +70,11 @@ const IuranDetail: React.FC = () => {
       if (paymentResponse.payment_url) {
         setLastPaymentId(paymentResponse.payment_id);
         window.open(paymentResponse.payment_url, "_blank");
-        startPaymentStatusPolling(paymentResponse.payment_id);
+
+        // Redirect to processing page instead of polling
+        navigate(
+          `/payment/processing?payment_id=${paymentResponse.payment_id}&fee_id=${fee.id}`
+        );
       }
     } catch (error) {
       console.error("Error creating payment:", error);
@@ -80,30 +84,30 @@ const IuranDetail: React.FC = () => {
     }
   };
 
-  const checkPaymentStatus = async (paymentId: string) => {
-    if (!paymentId) return;
+  // const checkPaymentStatus = async (paymentId: string) => {
+  //   if (!paymentId) return;
 
-    setIsCheckingPayment(true);
-    try {
-      const statusResponse = await userService.checkPaymentStatus(paymentId);
+  //   setIsCheckingPayment(true);
+  //   try {
+  //     const statusResponse = await userService.checkPaymentStatus(paymentId);
 
-      if (
-        statusResponse.status === "Success" ||
-        statusResponse.status === "Failed"
-      ) {
-        setLastPaymentId(null);
-        await fetchFee();
-        return true;
-      }
+  //     if (
+  //       statusResponse.status === "Success" ||
+  //       statusResponse.status === "Failed"
+  //     ) {
+  //       setLastPaymentId(null);
+  //       await fetchFee();
+  //       return true;
+  //     }
 
-      return false;
-    } catch (error) {
-      console.error("Error checking payment status:", error);
-      return false;
-    } finally {
-      setIsCheckingPayment(false);
-    }
-  };
+  //     return false;
+  //   } catch (error) {
+  //     console.error("Error checking payment status:", error);
+  //     return false;
+  //   } finally {
+  //     setIsCheckingPayment(false);
+  //   }
+  // };
 
   const forceCheckPaymentStatus = async () => {
     if (!lastPaymentId) return;
@@ -129,19 +133,19 @@ const IuranDetail: React.FC = () => {
     }
   };
 
-  const startPaymentStatusPolling = (paymentId: string) => {
-    const pollInterval = setInterval(async () => {
-      const shouldStop = await checkPaymentStatus(paymentId);
-      if (shouldStop) {
-        clearInterval(pollInterval);
-      }
-    }, 5000);
+  // const startPaymentStatusPolling = (paymentId: string) => {
+  //   const pollInterval = setInterval(async () => {
+  //     const shouldStop = await checkPaymentStatus(paymentId);
+  //     if (shouldStop) {
+  //       clearInterval(pollInterval);
+  //     }
+  //   }, 5000);
 
-    setTimeout(() => {
-      clearInterval(pollInterval);
-      setLastPaymentId(null);
-    }, 600000);
-  };
+  //   setTimeout(() => {
+  //     clearInterval(pollInterval);
+  //     setLastPaymentId(null);
+  //   }, 600000);
+  // };
 
   const getStatusVariant = (status: string): BadgeVariant => {
     switch (status.toLowerCase()) {
