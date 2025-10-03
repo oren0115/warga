@@ -21,7 +21,6 @@ import {
   Edit,
   Shield,
   ShieldOff,
-  Trash2,
   Eye,
   EyeOff,
   AlertTriangle,
@@ -188,34 +187,6 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     } catch (error: any) {
       console.error("Error deleting user:", error);
       setErrors({ general: "Terjadi kesalahan saat menghapus pengguna" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRoleToggle = async () => {
-    if (!user) return;
-
-    // Admin validation untuk role toggle
-    if (!isAdmin) {
-      setErrors({
-        general:
-          "Akses ditolak. Hanya administrator yang dapat mengubah role pengguna.",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      if (user.is_admin) {
-        await adminService.demoteFromAdmin(user.id);
-      } else {
-        await adminService.promoteToAdmin(user.id);
-      }
-      onUserUpdated();
-    } catch (error: any) {
-      console.error("Error changing role:", error);
-      setErrors({ general: "Terjadi kesalahan saat mengubah role" });
     } finally {
       setIsLoading(false);
     }
@@ -527,48 +498,6 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-6 border-t">
-              <div className="flex space-x-2">
-                {isEdit && user && isAdmin && (
-                  <>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRoleToggle}
-                      disabled={isLoading}
-                      className="text-xs">
-                      {user.is_admin ? (
-                        <>
-                          <ShieldOff className="w-3 h-3 mr-1" />
-                          Demote
-                        </>
-                      ) : (
-                        <>
-                          <Shield className="w-3 h-3 mr-1" />
-                          Promote
-                        </>
-                      )}
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowDeleteConfirm(true)}
-                      disabled={isLoading}
-                      className="text-red-600 border-red-300 hover:bg-red-50 text-xs">
-                      <Trash2 className="w-3 h-3 mr-1" />
-                      Hapus
-                    </Button>
-                  </>
-                )}
-                {isEdit && user && !isAdmin && (
-                  <div className="text-xs text-gray-500 px-3 py-2">
-                    Hanya admin yang dapat mengelola pengguna
-                  </div>
-                )}
-              </div>
-
               <div className="flex space-x-2">
                 <Button
                   type="button"

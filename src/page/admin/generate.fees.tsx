@@ -19,7 +19,8 @@ import {
 } from "../../components/ui/select";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
 import { AlertTriangle, Info, Receipt } from "lucide-react";
-import { AdminPageHeader, AdminLoading } from "../../components/admin";
+import { AdminPageHeader } from "../../components/admin";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const GenerateFees: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -171,7 +172,50 @@ const GenerateFees: React.FC = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <AdminLoading type="card" />
+              <div className="space-y-6">
+                {/* Form Skeleton */}
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-3 w-64" />
+                </div>
+
+                {/* Tarif Section Skeleton */}
+                <div className="space-y-4">
+                  <div>
+                    <Skeleton className="h-6 w-48 mb-3" />
+                    <Skeleton className="h-4 w-64" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-3 w-40" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Alert Skeleton */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <Skeleton className="h-4 w-4 mt-1" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buttons Skeleton */}
+                <div className="flex justify-end gap-3">
+                  <Skeleton className="h-10 w-32" />
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              </div>
             ) : (
               <>
                 {message && (
