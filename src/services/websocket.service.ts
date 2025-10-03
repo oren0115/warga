@@ -40,7 +40,7 @@ class WebSocketServiceImpl implements WebSocketService {
       apiBaseUrl
         .replace(/^http/, "ws") // http -> ws, https -> wss
         .replace(/\/$/, "") + // Remove trailing slash
-      `/api/ws/${userId}?token=${encodeURIComponent(token)}`;
+      `/ws/${userId}?token=${encodeURIComponent(token)}`;
 
     console.log("Connecting to WebSocket:", wsUrl); // For debugging
 
