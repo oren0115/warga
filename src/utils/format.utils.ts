@@ -9,31 +9,31 @@ export const formatCurrency = (amount: number): string => {
 };
 
 export const formatDate = (dateString: string): string => {
-  const jakartaDate = toJakartaTime(dateString);
-  return jakartaDate.toLocaleDateString("id-ID", {
+  return new Date(dateString).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Jakarta",
   });
 };
 
 export const formatDateTime = (dateString: string): string => {
-  const jakartaDate = toJakartaTime(dateString);
-  return jakartaDate.toLocaleDateString("id-ID", {
+  return new Date(dateString).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
 };
 
 export const formatDateShort = (dateString: string): string => {
-  const jakartaDate = toJakartaTime(dateString);
-  return jakartaDate.toLocaleDateString("id-ID", {
+  return new Date(dateString).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Jakarta",
   });
 };
 
@@ -103,12 +103,12 @@ export const getDueDateFromBulan = (bulan: string): Date => {
 
 // Get current time in Jakarta timezone
 export const getCurrentJakartaTime = (): Date => {
+  // Create a new date object with Jakarta timezone
   const now = new Date();
-  // Get Jakarta time by adding 7 hours to UTC
-  const jakartaOffset = 7 * 60; // Jakarta is UTC+7
-  const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
-  const jakartaTime = new Date(utcTime + jakartaOffset * 60000);
-  return jakartaTime;
+  const jakartaTimeString = now.toLocaleString("sv-SE", {
+    timeZone: "Asia/Jakarta",
+  });
+  return new Date(jakartaTimeString);
 };
 
 // Convert any date to Jakarta timezone for consistent display
@@ -121,21 +121,9 @@ export const toJakartaTime = (dateString: string | Date): Date => {
     return new Date();
   }
 
-  // If the date already has timezone info, use it directly
-  if (
-    typeof dateString === "string" &&
-    (dateString.includes("+") || dateString.includes("Z"))
-  ) {
-    return date;
-  }
-
-  // For dates without timezone info, assume they are in Jakarta timezone
-  // and convert to proper Date object
-  const jakartaOffset = 7 * 60; // Jakarta is UTC+7
-  const utcTime = date.getTime() + date.getTimezoneOffset() * 60000;
-  const jakartaTime = new Date(utcTime + jakartaOffset * 60000);
-
-  return jakartaTime;
+  // Always return the date as-is since JavaScript Date handles UTC properly
+  // The timezone conversion happens during formatting
+  return date;
 };
 
 // Cache for formatted dates to prevent timezone drift
@@ -179,16 +167,16 @@ export const formatDateConsistent = (
     return dateFormatCache.get(cacheKey)!;
   }
 
-  const jakartaDate = toJakartaTime(dateString);
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   };
 
-  const formatted = jakartaDate.toLocaleDateString("id-ID", {
+  const formatted = new Date(dateString).toLocaleDateString("id-ID", {
     ...defaultOptions,
     ...options,
   });
@@ -215,4 +203,54 @@ export const formatDateWithTimezone = (
     ...defaultOptions,
     ...options,
   });
+};
+
+// Format date with "pukul" format for Indonesian display
+export const formatDateTimeWithPukul = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  };
+
+  const formatted = date.toLocaleDateString("id-ID", options);
+  // Replace time with "pukul" format
+  return formatted.replace(/(\d{2}:\d{2})/, "pukul $1");
+};
+
+// Debug function to test timezone conversion
+export const debugTimezoneConversion = (dateString: string): void => {
+  console.log("=== Timezone Debug ===");
+  console.log("Input dateString:", dateString);
+  console.log(
+    "Has timezone info:",
+    dateString.includes("+") || dateString.includes("Z")
+  );
+
+  const date = new Date(dateString);
+  console.log("Parsed date:", date);
+  console.log("Date UTC string:", date.toUTCString());
+  console.log("Date local string:", date.toLocaleString());
+  console.log(
+    "Date Jakarta string:",
+    date.toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })
+  );
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  };
+
+  const formatted = date.toLocaleDateString("id-ID", options);
+  console.log("Formatted result:", formatted);
+  console.log("========================");
 };

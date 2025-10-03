@@ -16,7 +16,10 @@ import {
   DollarSign,
 } from "lucide-react";
 import type { Payment } from "../../types";
-import { formatDateConsistent } from "../../utils/format.utils";
+import {
+  formatDateConsistent,
+  formatDateTimeWithPukul,
+} from "../../utils/format.utils";
 
 interface PaymentCardProps {
   payment: Payment;
@@ -148,7 +151,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               {method.text}
             </CardTitle>
             <p className="text-sm text-gray-500 font-medium">
-              {formatDate(payment.created_at)}
+              {formatDateTimeWithPukul(payment.created_at)}
             </p>
           </div>
         </div>
@@ -186,14 +189,14 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {payment.expiry_time && (
             <Row
               label="Batas Waktu"
-              value={formatDate(payment.expiry_time)}
+              value={formatDateTimeWithPukul(payment.expiry_time)}
               color="text-amber-600"
             />
           )}
           {payment.settled_at && (
             <Row
               label="Diselesaikan"
-              value={formatDate(payment.settled_at)}
+              value={formatDateTimeWithPukul(payment.settled_at)}
               color="text-green-600"
             />
           )}

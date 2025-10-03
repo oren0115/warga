@@ -22,9 +22,6 @@ import {
 
 // Mapping status pembayaran
 
-// Mapping metode pembayaran
-
-// ===================== PaymentHistory =====================
 const PaymentHistory: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
