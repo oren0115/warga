@@ -200,24 +200,24 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="border-b">
-          <div className="flex items-center justify-between">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto ">
+        <CardHeader className="border-b ">
+          <div className="flex items-center justify-between ">
             <div className="flex items-center space-x-3">
               {isCreate && <UserPlus className="w-6 h-6 text-green-600" />}
-              {isEdit && <Edit className="w-6 h-6 text-blue-600" />}
+              {isEdit && <Edit className="w-6 h-6 text-green-600" />}
               {isReadOnly && <Eye className="w-6 h-6 text-gray-600" />}
-              <CardTitle className="text-xl">
+              <CardTitle className="text-xl ">
                 {isCreate && "Tambah Pengguna Baru"}
                 {isEdit && "Edit Data Pengguna"}
                 {isReadOnly && "Detail Pengguna"}
               </CardTitle>
             </div>
             <Button
-              variant="ghost"
+              // variant="outline"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8">
+              className="h-8 w-8 bg-green-600 text-white hover:bg-green-700 ">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -502,6 +502,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                 <Button
                   type="button"
                   variant="outline"
+                  className=" hover:bg-red-700"
                   onClick={onClose}
                   disabled={isLoading}>
                   Batal
