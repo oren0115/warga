@@ -32,10 +32,17 @@ class WebSocketServiceImpl implements WebSocketService {
     this.userId = userId;
     this.token = token;
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${
-      window.location.hostname
-    }:8000/api/ws/${userId}?token=${encodeURIComponent(token)}`;
+    // Get API base URL from environment variable
+    const apiBaseUrl = import.meta.env.VITE_API_URL || "";
+
+    // Convert HTTP/HTTPS to WS/WSS
+    const wsUrl =
+      apiBaseUrl
+        .replace(/^http/, "ws") // http -> ws, https -> wss
+        .replace(/\/$/, "") + // Remove trailing slash
+      `/api/ws/${userId}?token=${encodeURIComponent(token)}`;
+
+    console.log("Connecting to WebSocket:", wsUrl); // For debugging
 
     try {
       this.ws = new WebSocket(wsUrl);
