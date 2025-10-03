@@ -32,16 +32,11 @@ export const userService = {
   createPayment: async (
     paymentData: PaymentCreateRequest
   ): Promise<PaymentCreateResponse> => {
-    console.log("API Base URL:", api.defaults.baseURL);
-    console.log("Sending payment request to:", "/payments");
-    console.log("Request data:", paymentData);
-
     const response: AxiosResponse<PaymentCreateResponse> = await api.post(
       "/payments",
       paymentData
     );
 
-    console.log("Payment API response:", response.data);
     return response.data;
   },
 

@@ -225,21 +225,7 @@ export const formatDateTimeWithPukul = (dateString: string): string => {
 
 // Debug function to test timezone conversion
 export const debugTimezoneConversion = (dateString: string): void => {
-  console.log("=== Timezone Debug ===");
-  console.log("Input dateString:", dateString);
-  console.log(
-    "Has timezone info:",
-    dateString.includes("+") || dateString.includes("Z")
-  );
-
   const date = new Date(dateString);
-  console.log("Parsed date:", date);
-  console.log("Date UTC string:", date.toUTCString());
-  console.log("Date local string:", date.toLocaleString());
-  console.log(
-    "Date Jakarta string:",
-    date.toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })
-  );
 
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -250,7 +236,5 @@ export const debugTimezoneConversion = (dateString: string): void => {
     timeZone: "Asia/Jakarta",
   };
 
-  const formatted = date.toLocaleDateString("id-ID", options);
-  console.log("Formatted result:", formatted);
-  console.log("========================");
+  date.toLocaleDateString("id-ID", options);
 };

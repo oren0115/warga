@@ -74,7 +74,6 @@ const UserManagement: React.FC = () => {
   const fetchUsers = async () => {
     // Admin validation untuk fetch users
     if (!isAdmin) {
-      console.warn("Non-admin user attempting to fetch users data");
       setIsLoading(false);
       return;
     }

@@ -61,9 +61,7 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      // console.log("Fetching dashboard data...");
       const response = await adminService.getDashboard();
-      // console.log("Dashboard response:", response);
       setStats(response);
     } catch (err: any) {
       console.error("Error fetching dashboard data:", err);
@@ -74,7 +72,6 @@ const Dashboard: React.FC = () => {
       setError(errorMessage);
 
       // Fallback data for testing
-      console.log("Using fallback data for testing...");
       setStats({
         totalUsers: 15,
         totalFees: 45,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { userService } from "../services/user.service";
+import { formatRelativeTime } from "../utils/timezone.utils";
 import type { Notification } from "../types";
 
 // shadcn + lucide
@@ -73,21 +74,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
-  };
-
-  const formatRelativeTime = (dateString: string) => {
-    const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
-    const now = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-    );
-    const then = new Date(dateString);
-    const diffMs = then.getTime() - now.getTime();
-    const minutes = Math.round(diffMs / 60000);
-    const hours = Math.round(minutes / 60);
-    const days = Math.round(hours / 24);
-    if (Math.abs(minutes) < 60) return rtf.format(minutes, "minute");
-    if (Math.abs(hours) < 24) return rtf.format(hours, "hour");
-    return rtf.format(days, "day");
   };
 
   const getTypeConfig = (type: string) => {
