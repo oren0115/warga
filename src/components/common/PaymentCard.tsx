@@ -16,10 +16,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import type { Payment } from "../../types";
-import {
-  formatDateConsistent,
-  formatDateTimeWithPukul,
-} from "../../utils/format.utils";
+import { formatDateTimeWithPukul } from "../../utils/format.utils";
 
 interface PaymentCardProps {
   payment: Payment;
@@ -101,18 +98,6 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
       text: "ShopeePay",
       icon: <ShoppingCart className="w-6 h-6 text-gray-700" />,
     },
-  };
-
-  const formatDate = (dateString: string) => {
-    // Ensure we always get consistent Jakarta timezone
-    if (!dateString) return "-";
-
-    try {
-      return formatDateConsistent(dateString);
-    } catch (error) {
-      console.warn("Error formatting date:", error);
-      return "-";
-    }
   };
 
   const status = STATUS_MAP[payment.status.toLowerCase()] || {
