@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { PaymentCard } from "../../components/common";
-import { AdminPageHeader } from "@/components/admin";
+import { AdminPageHeader, AdminPagination } from "@/components/admin";
 import {
   Sheet,
   SheetContent,
@@ -573,9 +573,8 @@ const PaymentReview: React.FC = () => {
                 <Button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
-                  variant="outline"
                   size="sm"
-                  className="font-medium bg-white hover:bg-green-600  border-green-20">
+                  className="font-medium bg-white hover:bg-green-600  border-green-20 cursor-pointer">
                   <RefreshCw
                     className={`w-4 h-4 mr-2 ${
                       isRefreshing ? "animate-spin" : ""
@@ -618,7 +617,7 @@ const PaymentReview: React.FC = () => {
                       variant={dateRange === range.key ? "default" : "outline"}
                       onClick={() => setDateRange(range.key as any)}
                       size="sm"
-                      className="text-xs">
+                      className="text-xs cursor-pointer">
                       {range.label}
                     </Button>
                   ))}
@@ -684,7 +683,7 @@ const PaymentReview: React.FC = () => {
               <div className="lg:hidden w-full">
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full hover:bg-green-500 cursor-pointer">
                       <Filter className="w-4 h-4 mr-2" />
                       Filter Status{" "}
                       {filter !== "all" && (
@@ -728,8 +727,9 @@ const PaymentReview: React.FC = () => {
                         </div>
                       </Button>
                       <Button
-                        variant={filter === "success" ? "default" : "outline"}
+                        
                         onClick={() => setFilter("success")}
+                        variant={filter === "berhasil" ? "default" : "outline"}
                         className="justify-start h-12">
                         <CheckCircle className="w-5 h-5 mr-3" />
                         <div className="flex-1 text-left">
@@ -805,30 +805,9 @@ const PaymentReview: React.FC = () => {
                 </div>
               </div>
 
-              {/* Items per page and sorting */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Tampilkan:</span>
-                    <select
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="border border-gray-200 rounded px-2 py-1 text-sm bg-white">
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                    </select>
-                    <span className="text-sm text-gray-600">
-                      entri per halaman
-                    </span>
-                  </div>
-                </div>
-
-                {(searchTerm || filter !== "all" || dateRange !== "all") && (
+              {/* Reset Filter Button */}
+              {(searchTerm || filter !== "all" || dateRange !== "all") && (
+                <div className="flex justify-end pt-4 border-t border-gray-100">
                   <Button
                     onClick={() => {
                       setSearchTerm("");
@@ -841,8 +820,8 @@ const PaymentReview: React.FC = () => {
                     className="text-sm text-blue-600 hover:text-blue-800 font-medium">
                     Reset Semua Filter
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </CardHeader>
 
@@ -861,104 +840,23 @@ const PaymentReview: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Enhanced Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-200">
-                    <div className="text-sm text-gray-600 mb-4 sm:mb-0">
-                      Menampilkan{" "}
-                      <span className="font-semibold">{startIndex + 1}</span>{" "}
-                      sampai{" "}
-                      <span className="font-semibold">
-                        {Math.min(
-                          startIndex + itemsPerPage,
-                          filteredPayments.length
-                        )}
-                      </span>{" "}
-                      dari{" "}
-                      <span className="font-semibold">
-                        {filteredPayments.length.toLocaleString()}
-                      </span>{" "}
-                      transaksi
-                      {filteredPayments.length !== payments.length && (
-                        <span className="text-blue-600 ml-1">
-                          (difilter dari {payments.length.toLocaleString()}{" "}
-                          total)
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1}
-                        className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                        ‹‹
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          setCurrentPage((p) => Math.max(p - 1, 1))
-                        }
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
-                        ‹ Sebelumnya
-                      </button>
-
-                      {/* Page Numbers */}
-                      <div className="hidden sm:flex items-center space-x-1">
-                        {Array.from(
-                          { length: Math.min(5, totalPages) },
-                          (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-
-                            return (
-                              <button
-                                key={pageNum}
-                                onClick={() => setCurrentPage(pageNum)}
-                                className={`px-4 py-2 rounded-lg border text-sm transition-colors font-medium ${
-                                  currentPage === pageNum
-                                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                                    : "bg-white hover:bg-gray-50"
-                                }`}>
-                                {pageNum}
-                              </button>
-                            );
-                          }
-                        )}
-                      </div>
-
-                      {/* Mobile: Current page indicator */}
-                      <div className="sm:hidden px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">
-                        {currentPage} / {totalPages}
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          setCurrentPage((p) => Math.min(p + 1, totalPages))
-                        }
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
-                        Selanjutnya ›
-                      </button>
-
-                      <button
-                        onClick={() => setCurrentPage(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                        ››
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* AdminPagination Component */}
+                <AdminPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredPayments.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                  onItemsPerPageChange={(newItemsPerPage) => {
+                    setItemsPerPage(newItemsPerPage);
+                    setCurrentPage(1);
+                  }}
+                  itemsPerPageOptions={[5, 10, 25, 50]}
+                  showItemsPerPage={true}
+                  className="mt-8"
+                  totalUnfilteredItems={payments.length}
+                  filterInfo="transaksi"
+                />
               </>
             ) : (
               <div className="text-center py-20">

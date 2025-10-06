@@ -91,9 +91,9 @@ const PaymentStatusPage: React.FC<PaymentStatusPageProps> = ({
         icon={<RefreshCw className="w-6 h-6 text-white" />}
       />
 
-      <div className="flex items-center justify-center min-h-[60vh] p-4">
-        <Card className="w-full max-w-md shadow-xl border-0">
-          <CardContent className="p-8 text-center">
+      <div className="flex items-center justify-center min-h-[60vh] w-full p-4">
+        <Card className="w-full max-w-lg md:max-w-2xl lg:max-w-full shadow-xl border-0">
+          <CardContent className="p-8 md:p-12 text-center">
             {config.icon}
 
             <h2 className={`text-2xl font-bold mb-4 ${config.textColor}`}>
@@ -142,7 +142,7 @@ const PaymentStatusPage: React.FC<PaymentStatusPageProps> = ({
                 <Button
                   onClick={onCheckStatus}
                   disabled={isCheckingStatus}
-                  className={`w-full ${config.buttonColor} text-white`}>
+                  className={`w-full ${config.buttonColor} text-white cursor-pointer`}>
                   {isCheckingStatus ? (
                     <>
                       <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -160,14 +160,14 @@ const PaymentStatusPage: React.FC<PaymentStatusPageProps> = ({
               {status === "failed" && onRetry && (
                 <Button
                   onClick={onRetry}
-                  className={`w-full ${config.buttonColor} text-white`}>
+                  className={`w-full ${config.buttonColor} text-white cursor-pointer`}>
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Coba Lagi
                 </Button>
               )}
 
               {onBack && (
-                <Button onClick={onBack} variant="outline" className="w-full">
+                <Button onClick={onBack}  className="w-full hover:bg-green-900 cursor-pointer">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Kembali ke Daftar Iuran
                 </Button>

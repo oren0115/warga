@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface AdminPaginationProps {
   currentPage: number;
@@ -11,6 +11,8 @@ interface AdminPaginationProps {
   itemsPerPageOptions?: number[];
   showItemsPerPage?: boolean;
   className?: string;
+  totalUnfilteredItems?: number;
+  filterInfo?: string;
 }
 
 const AdminPagination: React.FC<AdminPaginationProps> = ({
@@ -23,6 +25,8 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
   itemsPerPageOptions = [5, 10, 25, 50],
   showItemsPerPage = true,
   className = "",
+  totalUnfilteredItems,
+  filterInfo,
 }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
@@ -57,106 +61,124 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
   }
 
   return (
-    <div className={`flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-gray-50 border-t ${className}`}>
+    <div className={`flex flex-col gap-3 px-4 sm:px-6 py-4 bg-gray-50 border-t ${className}`}>
       {/* Items Info */}
-      <div className="text-sm text-gray-600 mb-4 sm:mb-0">
+      <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
         Menampilkan{" "}
         <span className="font-semibold">{startIndex + 1}</span> sampai{" "}
         <span className="font-semibold">{endIndex}</span> dari{" "}
         <span className="font-semibold">{totalItems.toLocaleString()}</span>{" "}
-        hasil
+        {filterInfo || "hasil"}
+        {totalUnfilteredItems && totalUnfilteredItems !== totalItems && (
+          <span className="block sm:inline text-blue-600 sm:ml-1 mt-1 sm:mt-0">
+            (difilter dari {totalUnfilteredItems.toLocaleString()} total)
+          </span>
+        )}
       </div>
 
-      <div className="flex items-center space-x-4">
-        {/* Items per page selector */}
-        {showItemsPerPage && onItemsPerPageChange && (
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Tampilkan:</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-              className="border border-gray-200 rounded px-2 py-1 text-sm bg-white"
-            >
-              {itemsPerPageOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <span className="text-sm text-gray-600">entri per halaman</span>
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        <div className="flex items-center space-x-2">
-          {/* First Page */}
-          <Button
-            onClick={() => onPageChange(1)}
-            disabled={currentPage === 1}
-            variant="outline"
-            size="sm"
-            className="px-3 py-2"
+      {/* Items per page selector - Mobile First */}
+      {showItemsPerPage && onItemsPerPageChange && (
+        <div className="flex items-center justify-center sm:justify-start gap-2">
+          <span className="text-xs sm:text-sm text-gray-600">Tampilkan:</span>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
+            className="border border-gray-300 rounded-md px-2 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            ‹‹
-          </Button>
-
-          {/* Previous Page */}
-          <Button
-            onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-            disabled={currentPage === 1}
-            variant="outline"
-            size="sm"
-            className="px-4 py-2"
-          >
-            ‹ Sebelumnya
-          </Button>
-
-          {/* Page Numbers */}
-          <div className="hidden sm:flex items-center space-x-1">
-            {getVisiblePages().map((pageNum) => (
-              <Button
-                key={pageNum}
-                onClick={() => onPageChange(pageNum)}
-                variant={currentPage === pageNum ? "default" : "outline"}
-                size="sm"
-                className={`px-4 py-2 ${
-                  currentPage === pageNum
-                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                    : "bg-white hover:bg-gray-50"
-                }`}
-              >
-                {pageNum}
-              </Button>
+            {itemsPerPageOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
-          </div>
-
-          {/* Mobile: Current page indicator */}
-          <div className="sm:hidden px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">
-            {currentPage} / {totalPages}
-          </div>
-
-          {/* Next Page */}
-          <Button
-            onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            variant="outline"
-            size="sm"
-            className="px-4 py-2"
-          >
-            Selanjutnya ›
-          </Button>
-
-          {/* Last Page */}
-          <Button
-            onClick={() => onPageChange(totalPages)}
-            disabled={currentPage === totalPages}
-            variant="outline"
-            size="sm"
-            className="px-3 py-2"
-          >
-            ››
-          </Button>
+          </select>
+          <span className="text-xs sm:text-sm text-gray-600">per halaman</span>
         </div>
+      )}
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-center gap-1 sm:gap-2">
+        {/* First Page - Hidden on mobile */}
+        <Button
+          onClick={() => onPageChange(1)}
+          disabled={currentPage === 1}
+          variant="outline"
+          size="sm"
+          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50"
+        >
+          ‹‹
+        </Button>
+
+        {/* Previous Page */}
+        <Button
+          onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+          disabled={currentPage === 1}
+          variant="outline"
+          size="sm"
+          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm"
+        >
+          <span className="hidden sm:inline">‹ Sebelumnya</span>
+          <span className="sm:hidden">‹ Prev</span>
+        </Button>
+
+        {/* Page Numbers - Desktop */}
+        <div className="hidden md:flex items-center gap-1">
+          {getVisiblePages().map((pageNum) => (
+            <Button
+              key={pageNum}
+              onClick={() => onPageChange(pageNum)}
+              variant="outline"
+              size="sm"
+              className={`px-3 py-2 min-w-[40px] ${
+                currentPage === pageNum
+                  ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
+                  : "bg-white hover:bg-green-50 border-gray-300"
+              }`}
+            >
+              {pageNum}
+            </Button>
+          ))}
+        </div>
+
+        {/* Mobile: Current page indicator with direct input */}
+        <div className="md:hidden flex items-center gap-2 px-3 py-2">
+          <input
+            type="number"
+            value={currentPage}
+            onChange={(e) => {
+              const page = parseInt(e.target.value);
+              if (page >= 1 && page <= totalPages) {
+                onPageChange(page);
+              }
+            }}
+            min={1}
+            max={totalPages}
+            className="w-12 px-2 py-1 text-center border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <span className="text-sm text-gray-600">/ {totalPages}</span>
+        </div>
+
+        {/* Next Page */}
+        <Button
+          onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          variant="outline"
+          size="sm"
+          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm"
+        >
+          <span className="hidden sm:inline">Selanjutnya ›</span>
+          <span className="sm:hidden">Next ›</span>
+        </Button>
+
+        {/* Last Page - Hidden on mobile */}
+        <Button
+          onClick={() => onPageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          variant="outline"
+          size="sm"
+          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50"
+        >
+          ››
+        </Button>
       </div>
     </div>
   );

@@ -554,7 +554,7 @@ const UserManagement: React.FC = () => {
                       {isAdmin && (
                         <Button
                           onClick={handleCreateUser}
-                          className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium">
+                          className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium cursor-pointer">
                           <UserPlus className="w-4 h-4" />
                           <span className="hidden sm:inline">Tambah User</span>
                         </Button>
@@ -564,10 +564,10 @@ const UserManagement: React.FC = () => {
                         <Button
                           onClick={handleRefresh}
                           disabled={isRefreshing}
-                          variant="outline"
-                          className="flex items-center space-x-2 px-4 py-2.5 border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50 rounded-lg transition-colors text-sm font-medium">
+                          // variant="outline"
+                          className="flex items-center space-x-2 px-4 py-2.5 border-blue-300 text-blue-600 hover:bg-green-50  disabled:opacity-50 rounded-lg transition-colors text-sm font-medium">
                           <RefreshCw
-                            className={`w-4 h-4 ${
+                            className={`w-4 h-4 cursor-pointer ${
                               isRefreshing ? "animate-spin" : ""
                             }`}
                           />

@@ -371,13 +371,13 @@ const GenerateFees: React.FC = () => {
                       type="button"
                       variant="outline"
                       onClick={handleRegenerateClick}
-                      className="px-6 py-2"
+                      className="px-6 py-2 cursor-pointer"
                       disabled={isLoading || !formData.bulan}>
                       {isLoading ? "Memproses..." : "Regenerate Iuran"}
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 cursor-pointer"
                       disabled={isLoading}>
                       {isLoading ? "Memproses..." : "Generate Iuran"}
                     </Button>
@@ -474,12 +474,12 @@ const GenerateFees: React.FC = () => {
 
             <div className="flex justify-end gap-3">
               <Button
-                variant="outline"
+              variant="outline"
                 onClick={() => setShowConfirm(false)}
-                className="px-4">
+                className="px-4 hover:bg-red-600 cursor-pointer">
                 Batal
               </Button>
-              <Button onClick={handleGenerate} disabled={isLoading}>
+              <Button onClick={handleGenerate} disabled={isLoading} className="hover:bg-green-900 cursor-pointer">
                 {isLoading ? "Memproses..." : "Ya, Generate"}
               </Button>
             </div>
@@ -544,15 +544,14 @@ const GenerateFees: React.FC = () => {
 
             <div className="flex justify-end gap-3">
               <Button
-                variant="outline"
                 onClick={() => setShowRegenerateConfirm(false)}
-                className="px-4">
+                className="px-4 hover:bg-red-600 cursor-pointer">
                 Batal
               </Button>
               <Button
                 onClick={handleRegenerate}
                 disabled={isLoading}
-                className="bg-orange-600 hover:bg-orange-700 text-white">
+                className="bg-orange-600 hover:bg-orange-700 text-white cursor-pointer">
                 {isLoading ? "Memproses..." : "Ya, Regenerate"}
               </Button>
             </div>
