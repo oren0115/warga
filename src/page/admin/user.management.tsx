@@ -104,10 +104,10 @@ const UserManagement: React.FC = () => {
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.nomor_hp.includes(searchTerm) ||
-      user.alamat.toLowerCase().includes(searchTerm.toLowerCase());
+      user.nama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.nomor_hp?.includes(searchTerm) ||
+      user.alamat?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole =
       filterRole === "all" ||
@@ -147,7 +147,7 @@ const UserManagement: React.FC = () => {
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
             <span className="text-lg font-bold text-white">
-              {user.nama.charAt(0).toUpperCase()}
+              {user.nama?.charAt(0)?.toUpperCase() || "?"}
             </span>
           </div>
           <div className="min-w-0">
@@ -164,7 +164,9 @@ const UserManagement: React.FC = () => {
       label: "Kontak",
       render: (_value: any, user: User) => (
         <div className="space-y-1">
-          <p className="text-sm font-medium text-gray-900">{user.nomor_hp}</p>
+          <p className="text-sm font-medium text-gray-900">
+            {user.nomor_hp || "Tidak ada nomor HP"}
+          </p>
           <p className="text-xs text-gray-500">Nomor WhatsApp</p>
         </div>
       ),
@@ -174,10 +176,12 @@ const UserManagement: React.FC = () => {
       label: "Alamat Lengkap",
       render: (_value: any, user: User) => (
         <div className="space-y-1 max-w-xs">
-          <p className="text-sm text-gray-900 line-clamp-2">{user.alamat}</p>
+          <p className="text-sm text-gray-900 line-clamp-2">
+            {user.alamat || "Tidak ada alamat"}
+          </p>
           <div className="flex items-center space-x-2">
             <Badge className="bg-gray-100 text-gray-700 text-xs px-2 py-1">
-              Rumah #{user.nomor_rumah}
+              Rumah #{user.nomor_rumah || "N/A"}
             </Badge>
             {user.tipe_rumah && (
               <Badge className="bg-blue-100 text-blue-700 text-xs px-2 py-1">
@@ -232,14 +236,14 @@ const UserManagement: React.FC = () => {
             onClick={() => handleViewUser(user)}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50">
+            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
             <Eye className="w-4 h-4" />
           </Button>
           <Button
             onClick={() => handleEditUser(user)}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50">
             <Edit className="w-4 h-4" />
           </Button>
         </div>
@@ -364,7 +368,7 @@ const UserManagement: React.FC = () => {
                 description="Terdaftar di sistem"
                 icon={<Users className="w-7 h-7" />}
                 iconBgColor="bg-gradient-to-br from-blue-100 to-blue-50"
-                iconTextColor="text-blue-600"
+                iconTextColor="text-green-600"
               />
               <AdminStatsCard
                 title="Administrator"
@@ -407,7 +411,7 @@ const UserManagement: React.FC = () => {
                 rightActions={
                   <Button
                     onClick={handleCreateUser}
-                    className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium">
+                    className="cursor-pointer flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium">
                     <UserPlus className="w-4 h-4" />
                     <span className="hidden sm:inline">Tambah User</span>
                   </Button>
@@ -418,7 +422,7 @@ const UserManagement: React.FC = () => {
               <AdminTable
                 title="Database Warga RT/RW"
                 description={`Menampilkan ${filteredUsers.length} dari ${users.length} total pengguna`}
-                icon={<Eye className="w-5 h-5 text-blue-600" />}
+                icon={<Eye className="w-5 h-5 text-green-600" />}
                 columns={tableColumns}
                 data={paginatedUsers}
                 emptyState={{
@@ -442,7 +446,7 @@ const UserManagement: React.FC = () => {
                         setSearchTerm("");
                         setFilterRole("all");
                       }}
-                      className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                      className="cursor-pointer mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
                       Reset Pencarian
                     </Button>
                   ),
@@ -470,7 +474,7 @@ const UserManagement: React.FC = () => {
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
                   <div className="flex items-center space-x-4">
                     <div className="p-2 bg-blue-100 rounded-lg">
-                      <Eye className="w-5 h-5 text-blue-600" />
+                      <Eye className="w-5 h-5 text-green-600" />
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900">
@@ -478,7 +482,7 @@ const UserManagement: React.FC = () => {
                       </CardTitle>
                       <p className="text-sm text-gray-600 mt-1">
                         Menampilkan{" "}
-                        <span className="font-semibold text-blue-600">
+                        <span className="font-semibold text-green-600">
                           {filteredUsers.length}
                         </span>{" "}
                         dari{" "}
@@ -512,7 +516,7 @@ const UserManagement: React.FC = () => {
                           isAdmin ? setSearchTerm(e.target.value) : null
                         }
                         disabled={!isAdmin}
-                        className={`pl-10 pr-4 py-2.5 border-gray-200 focus:border-blue-300 focus:ring-blue-200 rounded-lg text-sm ${
+                        className={`pl-10 pr-4 py-2.5 border-gray-200 focus:border-green-300 focus:ring-green-200 rounded-lg text-sm ${
                           !isAdmin ? "bg-gray-100 cursor-not-allowed" : ""
                         }`}
                       />
@@ -538,7 +542,7 @@ const UserManagement: React.FC = () => {
                             : null
                         }
                         disabled={!isAdmin}
-                        className={`pl-10 pr-8 py-2.5 border border-gray-200 focus:border-blue-300 focus:ring-blue-200 rounded-lg text-sm appearance-none min-w-32 ${
+                        className={`pl-10 pr-8 py-2.5 border border-gray-200 focus:border-green-300 focus:ring-green-200 rounded-lg text-sm appearance-none min-w-32 ${
                           !isAdmin
                             ? "bg-gray-100 cursor-not-allowed"
                             : "bg-white"
@@ -554,7 +558,7 @@ const UserManagement: React.FC = () => {
                       {isAdmin && (
                         <Button
                           onClick={handleCreateUser}
-                          className="flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium cursor-pointer">
+                          className="cursor-pointer flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium">
                           <UserPlus className="w-4 h-4" />
                           <span className="hidden sm:inline">Tambah User</span>
                         </Button>
@@ -565,9 +569,9 @@ const UserManagement: React.FC = () => {
                           onClick={handleRefresh}
                           disabled={isRefreshing}
                           // variant="outline"
-                          className="flex items-center space-x-2 px-4 py-2.5 border-blue-300 text-blue-600 hover:bg-green-50  disabled:opacity-50 rounded-lg transition-colors text-sm font-medium">
+                          className="cursor-pointer flex items-center space-x-2 px-4 py-2.5 border-green-300 text-green-600 hover:bg-green-50  disabled:opacity-50 rounded-lg transition-colors text-sm font-medium">
                           <RefreshCw
-                            className={`w-4 h-4 cursor-pointer ${
+                            className={`w-4 h-4 ${
                               isRefreshing ? "animate-spin" : ""
                             }`}
                           />
@@ -608,7 +612,7 @@ const UserManagement: React.FC = () => {
                         setSearchTerm("");
                         setFilterRole("all");
                       }}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                      className="text-sm text-green-600 hover:text-green-800 font-medium">
                       Reset Filter
                     </button>
                   )}
@@ -652,7 +656,8 @@ const UserManagement: React.FC = () => {
                                 <div className="flex items-center space-x-4">
                                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
                                     <span className="text-lg font-bold text-white">
-                                      {user.nama.charAt(0).toUpperCase()}
+                                      {user.nama?.charAt(0)?.toUpperCase() ||
+                                        "?"}
                                     </span>
                                   </div>
                                   <div className="min-w-0">
@@ -670,7 +675,7 @@ const UserManagement: React.FC = () => {
                               <TableCell className="py-4 px-6">
                                 <div className="space-y-1">
                                   <p className="text-sm font-medium text-gray-900">
-                                    {user.nomor_hp}
+                                    {user.nomor_hp || "Tidak ada nomor HP"}
                                   </p>
                                   <p className="text-xs text-gray-500">
                                     Nomor WhatsApp
@@ -682,11 +687,11 @@ const UserManagement: React.FC = () => {
                               <TableCell className="py-4 px-6">
                                 <div className="space-y-1 max-w-xs">
                                   <p className="text-sm text-gray-900 line-clamp-2">
-                                    {user.alamat}
+                                    {user.alamat || "Tidak ada alamat"}
                                   </p>
                                   <div className="flex items-center space-x-2">
                                     <Badge className="bg-gray-100 text-gray-700 text-xs px-2 py-1">
-                                      Rumah #{user.nomor_rumah}
+                                      Rumah #{user.nomor_rumah || "N/A"}
                                     </Badge>
                                     {user.tipe_rumah && (
                                       <Badge className="bg-blue-100 text-blue-700 text-xs px-2 py-1">
@@ -739,7 +744,7 @@ const UserManagement: React.FC = () => {
                                       onClick={() => handleViewUser(user)}
                                       variant="ghost"
                                       size="sm"
-                                      className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50">
+                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
                                       <Eye className="w-4 h-4" />
                                     </Button>
                                     <Button

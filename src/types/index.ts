@@ -4,11 +4,11 @@ export interface User {
   id: string;
   username: string;
   nama: string;
-  alamat: string;
-  nomor_rumah: string;
-  nomor_hp: string;
+  alamat: string | null;
+  nomor_rumah: string | null;
+  nomor_hp: string | null;
   is_admin: boolean;
-  tipe_rumah?: string;
+  tipe_rumah?: string | null;
   created_at: string;
 }
 
