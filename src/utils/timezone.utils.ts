@@ -10,23 +10,21 @@ export const UTC_OFFSET_HOURS = 7;
 
 /**
  * Convert a date string to Jakarta timezone
- * Backend now sends UTC time, so we convert UTC to Jakarta
+ * Backend sends UTC time, so we convert UTC to Jakarta
  */
 export const toJakartaTime = (dateString: string): Date => {
   try {
     const date = new Date(dateString);
 
-    // Backend sends UTC time, so we always convert to Jakarta time
-    // Check if it's already a valid date
+    // Check if date is valid
     if (isNaN(date.getTime())) {
       console.error("Invalid date string:", dateString);
       return new Date();
     }
 
-    // Convert UTC to Jakarta time
-    return new Date(
-      date.toLocaleString("en-US", { timeZone: JAKARTA_TIMEZONE })
-    );
+    // JavaScript Date automatically handles UTC to local timezone conversion
+    // We just need to ensure it's treated as UTC and displayed in Jakarta timezone
+    return date;
   } catch (error) {
     console.error("Error converting to Jakarta time:", dateString, error);
     return new Date();
@@ -43,16 +41,21 @@ export const getCurrentJakartaTime = (): Date => {
 
 /**
  * Format relative time in Indonesian locale
- * @param dateString - Date string from backend
+ * @param dateString - Date string from backend (UTC)
  * @returns Formatted relative time string (e.g., "2 jam yang lalu")
  */
 export const formatRelativeTime = (dateString: string): string => {
   const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
 
-  const now = getCurrentJakartaTime();
-  const then = toJakartaTime(dateString);
+  // Get current time in Jakarta timezone
+  const now = new Date();
+  const nowJakarta = new Date(now.toLocaleString("en-US", { timeZone: JAKARTA_TIMEZONE }));
+  
+  // Convert UTC date to Jakarta timezone for comparison
+  const utcDate = new Date(dateString);
+  const thenJakarta = new Date(utcDate.toLocaleString("en-US", { timeZone: JAKARTA_TIMEZONE }));
 
-  const diffMs = then.getTime() - now.getTime();
+  const diffMs = thenJakarta.getTime() - nowJakarta.getTime();
   const minutes = Math.round(diffMs / 60000);
   const hours = Math.round(minutes / 60);
   const days = Math.round(hours / 24);
@@ -68,12 +71,12 @@ export const formatRelativeTime = (dateString: string): string => {
 
 /**
  * Format absolute time in Jakarta timezone
- * @param dateString - Date string from backend
+ * @param dateString - Date string from backend (UTC)
  * @returns Formatted absolute time string (e.g., "3 Okt 2024, 14:30")
  */
 export const formatAbsoluteTime = (dateString: string): string => {
-  const date = toJakartaTime(dateString);
-  return date.toLocaleString("id-ID", {
+  const utcDate = new Date(dateString);
+  return utcDate.toLocaleString("id-ID", {
     timeZone: JAKARTA_TIMEZONE,
     year: "numeric",
     month: "short",

@@ -10,6 +10,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatRelativeTime } from "../../utils/timezone.utils";
 
 interface NotificationCardProps {
   id: string;
@@ -90,25 +91,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     }
   };
 
-  const formatRelativeTime = (dateString: string) => {
-    const rtf = new Intl.RelativeTimeFormat("id-ID", { numeric: "auto" });
-    const now = new Date();
-    const then = new Date(dateString);
-    const diffMs = then.getTime() - now.getTime();
-    const minutes = Math.round(diffMs / 60000);
-    const hours = Math.round(minutes / 60);
-    const days = Math.round(hours / 24);
-
-    if (Math.abs(minutes) < 60) return rtf.format(minutes, "minute");
-    if (Math.abs(hours) < 24) return rtf.format(hours, "hour");
-    if (Math.abs(days) < 7) return rtf.format(days, "day");
-
-    return then.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
+  // Use the timezone utility function for consistent time formatting
 
   // Extract payment amount and due date from message if available
   const extractPaymentInfo = () => {
