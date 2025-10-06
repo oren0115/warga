@@ -164,21 +164,21 @@ const Profile: React.FC = () => {
               />
               <Textarea
                 name="alamat"
-                value={formData.alamat}
+                value={formData.alamat || ""}
                 onChange={handleChange}
                 disabled={!isEditing}
               />
               <Input
                 type="text"
                 name="nomor_rumah"
-                value={formData.nomor_rumah}
+                value={formData.nomor_rumah || ""}
                 onChange={handleChange}
                 disabled={!isEditing}
               />
               <Input
                 type="tel"
                 name="nomor_hp"
-                value={formData.nomor_hp}
+                value={formData.nomor_hp || ""}
                 onChange={handleChange}
                 disabled={!isEditing}
               />

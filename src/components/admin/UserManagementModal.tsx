@@ -66,9 +66,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       setFormData({
         username: user.username,
         nama: user.nama,
-        alamat: user.alamat,
-        nomor_rumah: user.nomor_rumah,
-        nomor_hp: user.nomor_hp,
+        alamat: user.alamat || "",
+        nomor_rumah: user.nomor_rumah || "",
+        nomor_hp: user.nomor_hp || "",
         password: "",
         is_admin: user.is_admin,
         tipe_rumah: user.tipe_rumah || "",
