@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/auth.context";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+// import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import {
   LuHouse,
   LuReceipt,
@@ -29,14 +29,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Initialize real-time notifications
-  const { permissionGranted, requestNotificationPermission } =
-    useRealtimeNotifications({
-      userId: authState.user?.id || null,
-      token: authState.token || null,
-      onNewNotification: () => {
-        // You can add additional handling here if needed
-      },
-    });
+  // const { permissionGranted, requestNotificationPermission } =
+  //   useRealtimeNotifications({
+  //     userId: authState.user?.id || null,
+  //     token: authState.token || null,
+  //     onNewNotification: () => {
+  //       // You can add additional handling here if needed
+  //     },
+  //   });
 
   const handleLogout = () => {
     logout();
@@ -122,7 +122,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         {/* Connection Status */}
-        {isSidebarOpen && (
+        {/* {isSidebarOpen && (
           <div className="px-3 py-2 border-t border-gray-100">
             <div className="space-y-2">
               {!permissionGranted && (
@@ -136,7 +136,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* User Profile Section */}
         <div className="border-t border-gray-100 p-3 flex-shrink-0">
