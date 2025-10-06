@@ -8,6 +8,9 @@ import type {
   DashboardStats,
   GenerateFeesRequest,
   BroadcastNotificationRequest,
+  UsersWithPhoneResponse,
+  TelegramTestResponse,
+  BroadcastResponse,
 } from "../types";
 
 export const adminService = {
@@ -69,7 +72,7 @@ export const adminService = {
 
   broadcastNotification: async (
     data: BroadcastNotificationRequest
-  ): Promise<any> => {
+  ): Promise<BroadcastResponse> => {
     const response = await api.post("/admin/notifications/broadcast", null, {
       params: {
         title: data.title,
@@ -77,6 +80,21 @@ export const adminService = {
         notification_type: data.notification_type || "pengumuman",
       },
     });
+    return response.data;
+  },
+
+  // Telegram related services
+  testTelegramConnection: async (): Promise<TelegramTestResponse> => {
+    const response: AxiosResponse<TelegramTestResponse> = await api.get(
+      "/admin/telegram/test"
+    );
+    return response.data;
+  },
+
+  getUsersWithPhone: async (): Promise<UsersWithPhoneResponse> => {
+    const response: AxiosResponse<UsersWithPhoneResponse> = await api.get(
+      "/admin/users/with-phone"
+    );
     return response.data;
   },
 

@@ -112,6 +112,34 @@ export interface BroadcastNotificationRequest {
   notification_type?: string;
 }
 
+export interface UserWithPhone {
+  id: string;
+  nama: string;
+  nomor_hp: string;
+  nomor_rumah: string;
+}
+
+export interface UsersWithPhoneResponse {
+  users: UserWithPhone[];
+  total: number;
+}
+
+export interface TelegramTestResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface BroadcastResponse {
+  message: string;
+  telegram_result?: {
+    success: boolean;
+    message: string;
+    total_users?: number;
+    success_count?: number;
+    failed_users?: string[];
+  };
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -120,14 +148,14 @@ export interface ApiResponse<T> {
 }
 
 export interface DashboardStats {
-    totalUsers: number;
-    totalFees: number;
-    pendingPayments: number;
-    approvedPayments: number;
-    currentMonthCollection: number;
-    collectionRate: number;
-    monthlyFees: { month: string; total: number }[];
-  }
+  totalUsers: number;
+  totalFees: number;
+  pendingPayments: number;
+  approvedPayments: number;
+  currentMonthCollection: number;
+  collectionRate: number;
+  monthlyFees: { month: string; total: number }[];
+}
 
 // Auth context types
 export interface AuthState {

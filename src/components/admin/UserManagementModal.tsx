@@ -24,6 +24,7 @@ import {
   Eye,
   EyeOff,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 
 interface UserManagementModalProps {
@@ -507,6 +508,20 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                   disabled={isLoading}>
                   Batal
                 </Button>
+
+                {/* Tombol Delete - hanya untuk mode edit dan admin */}
+                {mode === "edit" && isAdmin && user && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isLoading}
+                    className="bg-red-600 hover:bg-red-700">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Hapus
+                  </Button>
+                )}
+
                 {!isReadOnly && isAdmin && (
                   <Button
                     type="submit"

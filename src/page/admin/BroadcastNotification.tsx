@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { adminService } from "../../services/admin.service";
-import type { BroadcastNotificationRequest } from "../../types";
+import type {
+  BroadcastNotificationRequest,
+  UserWithPhone,
+  TelegramTestResponse,
+  BroadcastResponse,
+} from "../../types";
 
 // shadcn + lucide
 import { Button } from "@/components/ui/button";
@@ -21,7 +26,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Bell, Send, Volume2, CreditCard, Clock } from "lucide-react";
+import {
+  Bell,
+  Send,
+  Volume2,
+  CreditCard,
+  Clock,
+  Users,
+  Phone,
+  CheckCircle,
+  XCircle,
+  Wifi,
+  WifiOff,
+} from "lucide-react";
 import { AdminPageHeader } from "../../components/admin";
 import { Skeleton } from "../../components/ui/skeleton";
 
@@ -35,15 +52,64 @@ const BroadcastNotification: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // New states for enhanced features
+  const [usersWithPhone, setUsersWithPhone] = useState<UserWithPhone[]>([]);
+  const [telegramStatus, setTelegramStatus] =
+    useState<TelegramTestResponse | null>(null);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isTestingTelegram, setIsTestingTelegram] = useState(false);
+  const [broadcastResult, setBroadcastResult] =
+    useState<BroadcastResponse | null>(null);
+
+  // Load users with phone numbers on component mount
+  useEffect(() => {
+    loadUsersWithPhone();
+    testTelegramConnection();
+  }, []);
+
+  const loadUsersWithPhone = async () => {
+    setIsLoadingUsers(true);
+    try {
+      const response = await adminService.getUsersWithPhone();
+      setUsersWithPhone(response.users);
+    } catch (error) {
+      console.error("Error loading users with phone:", error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const testTelegramConnection = async () => {
+    setIsTestingTelegram(true);
+    try {
+      const response = await adminService.testTelegramConnection();
+      setTelegramStatus(response);
+    } catch (error) {
+      console.error("Error testing Telegram connection:", error);
+      setTelegramStatus({
+        success: false,
+        message: "Gagal menguji koneksi Telegram",
+      });
+    } finally {
+      setIsTestingTelegram(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setMessage(null);
+    setBroadcastResult(null);
 
     try {
       const response = await adminService.broadcastNotification(formData);
+      setBroadcastResult(response);
       setMessage(response.message);
+
+      // Reload users list after successful broadcast
+      await loadUsersWithPhone();
+
       setFormData({
         title: "",
         message: "",
@@ -80,6 +146,115 @@ const BroadcastNotification: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 md:px-6 space-y-6">
+        {/* Telegram Status Card */}
+        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {telegramStatus?.success ? (
+                <Wifi className="w-5 h-5 text-green-600" />
+              ) : (
+                <WifiOff className="w-5 h-5 text-red-600" />
+              )}
+              Status Telegram Bot
+            </CardTitle>
+            <CardDescription>
+              Status koneksi ke Telegram Bot untuk pengiriman notifikasi
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isTestingTelegram ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm text-gray-600">
+                  Menguji koneksi...
+                </span>
+              </div>
+            ) : telegramStatus ? (
+              <div
+                className={`flex items-center gap-2 p-3 rounded-lg ${
+                  telegramStatus.success
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
+                }`}>
+                {telegramStatus.success ? (
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-red-600" />
+                )}
+                <span
+                  className={`text-sm ${
+                    telegramStatus.success ? "text-green-800" : "text-red-800"
+                  }`}>
+                  {telegramStatus.message}
+                </span>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500">Belum diuji</div>
+            )}
+            <Button
+              onClick={testTelegramConnection}
+              disabled={isTestingTelegram}
+              variant="outline"
+              size="sm"
+              className="mt-3">
+              {isTestingTelegram ? "Menguji..." : "Test Koneksi"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Users List Card */}
+        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              Daftar Penerima Notifikasi
+            </CardTitle>
+            <CardDescription>
+              User yang akan menerima notifikasi via Telegram
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoadingUsers ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-center space-x-3 p-3 border rounded-lg">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ))}
+              </div>
+            ) : usersWithPhone.length > 0 ? (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {usersWithPhone.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <Phone className="w-4 h-4 text-green-600" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{user.nama}</div>
+                      <div className="text-xs text-gray-500">
+                        {user.nomor_hp} • Rumah {user.nomor_rumah}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>Tidak ada user dengan nomor HP</p>
+              </div>
+            )}
+            <div className="mt-4 text-sm text-gray-600">
+              Total: {usersWithPhone.length} user
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Broadcast Form Card */}
         <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -243,6 +418,77 @@ const BroadcastNotification: React.FC = () => {
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <p className="text-red-800 text-sm">{error}</p>
+                  </div>
+                )}
+
+                {/* Detailed Broadcast Result */}
+                {broadcastResult && (
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium text-blue-900 mb-2">
+                        Hasil Pengiriman
+                      </h4>
+                      <p className="text-blue-800 text-sm">
+                        {broadcastResult.message}
+                      </p>
+                    </div>
+
+                    {broadcastResult.telegram_result && (
+                      <div
+                        className={`border rounded-lg p-4 ${
+                          broadcastResult.telegram_result.success
+                            ? "bg-green-50 border-green-200"
+                            : "bg-red-50 border-red-200"
+                        }`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          {broadcastResult.telegram_result.success ? (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <XCircle className="w-4 h-4 text-red-600" />
+                          )}
+                          <h4
+                            className={`font-medium ${
+                              broadcastResult.telegram_result.success
+                                ? "text-green-900"
+                                : "text-red-900"
+                            }`}>
+                            Status Telegram
+                          </h4>
+                        </div>
+                        <p
+                          className={`text-sm ${
+                            broadcastResult.telegram_result.success
+                              ? "text-green-800"
+                              : "text-red-800"
+                          }`}>
+                          {broadcastResult.telegram_result.message}
+                        </p>
+
+                        {broadcastResult.telegram_result.total_users && (
+                          <div className="mt-2 text-xs text-gray-600">
+                            <div>
+                              Total User:{" "}
+                              {broadcastResult.telegram_result.total_users}
+                            </div>
+                            <div>
+                              Berhasil:{" "}
+                              {broadcastResult.telegram_result.success_count}
+                            </div>
+                            {broadcastResult.telegram_result.failed_users &&
+                              broadcastResult.telegram_result.failed_users
+                                .length > 0 && (
+                                <div>
+                                  Gagal:{" "}
+                                  {
+                                    broadcastResult.telegram_result.failed_users
+                                      .length
+                                  }
+                                </div>
+                              )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
