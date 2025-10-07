@@ -23,6 +23,7 @@ interface PaymentCardProps {
   onRefresh?: () => Promise<void>;
   onForceCheck?: (paymentId: string) => Promise<void>;
   className?: string;
+  isAdmin?: boolean;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -30,6 +31,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   onRefresh,
   onForceCheck,
   className = "",
+  isAdmin = false,
 }) => {
   const [isForceChecking, setIsForceChecking] = useState(false);
 
@@ -54,7 +56,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
     pending: {
       text: "Menunggu",
       variant: "secondary",
-      icon: <Clock className="text-amber-500 w-5 h-5" />,
+      icon: <Clock className="text-yellow-600 w-5 h-5" />,
     },
     failed: {
       text: "Gagal",
@@ -144,7 +146,16 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {status.icon}
           <Badge
             variant={status.variant}
-            className="px-3 py-1 text-xs font-medium">
+            className={`px-3 py-1 text-xs font-medium ${
+              payment.status.toLowerCase() === "pending"
+                ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                : payment.status.toLowerCase() === "failed" ||
+                  payment.status.toLowerCase() === "deny" ||
+                  payment.status.toLowerCase() === "cancel" ||
+                  payment.status.toLowerCase() === "expire"
+                ? "bg-red-100 text-red-800 border-red-200"
+                : ""
+            }`}>
             {status.text}
           </Badge>
         </div>
@@ -161,6 +172,13 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         </div>
 
         <div className="space-y-2 text-sm">
+          {payment.user && (
+            <Row 
+              label="Nama Pembayar" 
+              value={payment.user.nama} 
+              color="text-blue-700 font-semibold"
+            />
+          )}
           {payment.transaction_id && (
             <Row label="ID Transaksi" value={payment.transaction_id} isCode />
           )}
@@ -189,7 +207,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
 
         {payment.status.toLowerCase() === "pending" && (
           <div className="pt-4 flex flex-col sm:flex-row gap-2">
-            {payment.payment_url && (
+            {!isAdmin && payment.payment_url && (
               <Button
                 asChild
                 className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">

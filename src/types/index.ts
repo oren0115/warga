@@ -41,6 +41,8 @@ export interface Payment {
   va_number?: string;
   expiry_time?: string;
   settled_at?: string;
+  user?: User;
+  fee?: Fee;
 }
 
 export interface Notification {

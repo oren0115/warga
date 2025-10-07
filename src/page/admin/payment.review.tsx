@@ -80,7 +80,7 @@ const PaymentReview: React.FC = () => {
   const fetchPayments = async () => {
     setIsLoading(true);
     try {
-      const paymentsData = await adminService.getAdminPayments();
+      const paymentsData = await adminService.getAdminPaymentsWithDetails();
       setPayments(paymentsData);
     } catch (error) {
       console.error("Error fetching payments:", error);
@@ -836,6 +836,7 @@ const PaymentReview: React.FC = () => {
                       payment={payment}
                       onRefresh={handleRefresh}
                       className="w-full"
+                      isAdmin={true}
                     />
                   ))}
                 </div>

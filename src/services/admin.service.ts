@@ -46,6 +46,11 @@ export const adminService = {
     return response.data;
   },
 
+  getAdminPaymentsWithDetails: async (): Promise<Payment[]> => {
+    const response: AxiosResponse<Payment[]> = await api.get("/admin/payments/with-details");
+    return response.data;
+  },
+
   // Export reports
   exportFeesReport: async (
     bulan: string,
