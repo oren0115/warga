@@ -28,16 +28,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Initialize real-time notifications
-  // const { permissionGranted, requestNotificationPermission } =
-  //   useRealtimeNotifications({
-  //     userId: authState.user?.id || null,
-  //     token: authState.token || null,
-  //     onNewNotification: () => {
-  //       // You can add additional handling here if needed
-  //     },
-  //   });
-
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -79,7 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-green-200 hover:text-primary-green focus:bg-green-200 focus:text-primary-green focus:ring-0 focus:outline-none transition-all duration-200 ml-auto"
+            className="cursor-pointer hover:bg-green-200 hover:text-primary-green focus:bg-green-200 focus:text-primary-green focus:ring-0 focus:outline-none transition-all duration-200 ml-auto"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             {isSidebarOpen ? (
               <LuChevronLeft className="h-5 w-5" />
@@ -99,13 +89,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Button
                   key={item.path}
                   variant="ghost"
-                  className={`w-full transition-all duration-200 h-11 focus:ring-0 focus:outline-none ${
+                  className={`cursor-pointer w-full transition-all duration-200 h-11 focus:ring-0 focus:outline-none ${
                     isSidebarOpen
                       ? "justify-start gap-3 px-3"
                       : "justify-center px-0"
                   } ${
                     active
-                      ? "bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
+                      ? "cursor-pointer bg-green-100 text-primary-green border-r-2 border-primary-green font-medium hover:bg-green-200"
                       : "text-gray-700 hover:bg-green-200 hover:text-primary-green focus:bg-green-200 focus:text-primary-green"
                   }`}
                   onClick={() => navigate(item.path)}>

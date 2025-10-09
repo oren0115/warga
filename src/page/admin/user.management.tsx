@@ -420,7 +420,7 @@ const UserManagement: React.FC = () => {
 
               {/* Table */}
               <AdminTable
-                title="Database Warga RT/RW"
+                title="Daftar Pengguna IPL Cluster Cannary"
                 description={`Menampilkan ${filteredUsers.length} dari ${users.length} total pengguna`}
                 icon={<Eye className="w-5 h-5 text-green-600" />}
                 columns={tableColumns}
@@ -478,7 +478,7 @@ const UserManagement: React.FC = () => {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900">
-                        Database Warga RT/RW
+                        Daftar Pengguna IPL Cluster Cannary
                       </CardTitle>
                       <p className="text-sm text-gray-600 mt-1">
                         Menampilkan{" "}
@@ -744,14 +744,14 @@ const UserManagement: React.FC = () => {
                                       onClick={() => handleViewUser(user)}
                                       variant="ghost"
                                       size="sm"
-                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 cursor-pointer">
                                       <Eye className="w-4 h-4" />
                                     </Button>
                                     <Button
                                       onClick={() => handleEditUser(user)}
                                       variant="ghost"
                                       size="sm"
-                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-blue-600 cursor-pointer">
                                       <Edit className="w-4 h-4" />
                                     </Button>
                                   </div>
@@ -787,7 +787,7 @@ const UserManagement: React.FC = () => {
                           <button
                             onClick={() => (isAdmin ? setCurrentPage(1) : null)}
                             disabled={currentPage === 1 || !isAdmin}
-                            className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                            className={`px-3 py-2 rounded-lg border text-sm transition-colors cursor-pointer ${
                               !isAdmin
                                 ? "bg-gray-100 cursor-not-allowed opacity-50"
                                 : "bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -802,7 +802,7 @@ const UserManagement: React.FC = () => {
                                 : null
                             }
                             disabled={currentPage === 1 || !isAdmin}
-                            className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                            className={`px-3 py-2 rounded-lg border text-sm transition-colors cursor-pointer ${
                               !isAdmin
                                 ? "bg-gray-100 cursor-not-allowed opacity-50"
                                 : "bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -833,7 +833,7 @@ const UserManagement: React.FC = () => {
                                       isAdmin ? setCurrentPage(pageNum) : null
                                     }
                                     disabled={!isAdmin}
-                                    className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                                    className={`px-3 py-2 rounded-lg border text-sm transition-colors cursor-pointer ${
                                       !isAdmin
                                         ? "bg-gray-100 cursor-not-allowed opacity-50"
                                         : currentPage === pageNum
@@ -861,7 +861,7 @@ const UserManagement: React.FC = () => {
                                 : null
                             }
                             disabled={currentPage === totalPages || !isAdmin}
-                            className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                            className={`px-3 py-2 rounded-lg border text-sm transition-colors cursor-pointer ${
                               !isAdmin
                                 ? "bg-gray-100 cursor-not-allowed opacity-50"
                                 : "bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"

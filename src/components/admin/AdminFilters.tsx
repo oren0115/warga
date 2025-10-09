@@ -88,7 +88,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               disabled={isRefreshing}
               variant="outline"
               size="sm"
-              className="font-medium"
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white"
             >
               <RefreshCw
                 className={`w-4 h-4 mr-2 ${
@@ -105,7 +105,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               disabled={isExporting}
               variant="outline"
               size="sm"
-              className="font-medium"
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white"
             >
               <Download className="w-4 h-4 mr-2" />
               {isExporting ? "Mengekspor..." : "Export"}
@@ -116,13 +116,13 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
 
       {/* Filter Buttons */}
       {showFilters && filters.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {filters.map((filter) => (
             <Button
               key={filter.key}
               variant={activeFilter === filter.key ? "default" : "outline"}
               onClick={() => onFilterChange(filter.key)}
-              className="text-sm font-medium"
+              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white"
               size="sm"
             >
               {filter.icon && <span className="mr-2">{filter.icon}</span>}
@@ -134,21 +134,19 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               )}
             </Button>
           ))}
-        </div>
-      )}
-
-      {/* Reset Button */}
-      {showReset && hasActiveFilters && onReset && (
-        <div className="flex justify-end">
-          <Button
-            onClick={onReset}
-            variant="outline"
-            size="sm"
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-          >
-            <Filter className="w-4 h-4 mr-2" />
-            Reset Semua Filter
-          </Button>
+          
+          {/* Reset Button - Inline with filter buttons */}
+          {showReset && hasActiveFilters && onReset && (
+            <Button
+              onClick={onReset}
+              variant="outline"
+              size="sm"
+              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white ml-auto"
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              Reset Semua Filter
+            </Button>
+          )}
         </div>
       )}
     </div>
