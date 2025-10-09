@@ -6,6 +6,7 @@ import type {
   Fee,
   Payment,
   DashboardStats,
+  UnpaidUser,
   GenerateFeesRequest,
   BroadcastNotificationRequest,
   UsersWithPhoneResponse,
@@ -17,6 +18,15 @@ export const adminService = {
   getDashboard: async (): Promise<DashboardStats> => {
     const response: AxiosResponse<DashboardStats> = await api.get(
       "/admin/dashboard"
+    );
+    return response.data;
+  },
+
+  getUnpaidUsers: async (bulan?: string): Promise<UnpaidUser[]> => {
+    const params = bulan ? { bulan } : {};
+    const response: AxiosResponse<UnpaidUser[]> = await api.get(
+      "/admin/unpaid-users",
+      { params }
     );
     return response.data;
   },

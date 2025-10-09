@@ -21,6 +21,10 @@ import {
   User2,
   Receipt,
   LogOut,
+  AlertCircle,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
 } from "lucide-react";
 
 import {
@@ -42,6 +46,7 @@ import {
   AdminPageHeader,
   AdminStatsCard,
   AdminLoading,
+  UnpaidUsersCard,
 } from "../../components/admin";
 
 const Dashboard: React.FC = () => {
@@ -50,6 +55,7 @@ const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [chartZoom, setChartZoom] = useState(1);
 
   // Menggunakan data user dari context atau API
 
@@ -79,6 +85,7 @@ const Dashboard: React.FC = () => {
         approvedPayments: 12,
         currentMonthCollection: 1200000,
         collectionRate: 75.5,
+        unpaidFees: 5,
         monthlyFees: [
           { month: "Jul", total: 800000 },
           { month: "Aug", total: 950000 },
@@ -96,6 +103,18 @@ const Dashboard: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleZoomIn = () => {
+    setChartZoom(prev => Math.min(prev + 0.2, 2));
+  };
+
+  const handleZoomOut = () => {
+    setChartZoom(prev => Math.max(prev - 0.2, 0.5));
+  };
+
+  const handleResetZoom = () => {
+    setChartZoom(1);
   };
 
   // Mobile logout button component
@@ -125,7 +144,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pb-2">
       {/* Header */}
       <AdminPageHeader
         title="Selamat Datang, Admin!"
@@ -157,10 +176,10 @@ const Dashboard: React.FC = () => {
       {stats && (
         <>
           <div className="container mx-auto px-4 md:px-6 space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {/* Stats Grid - Top Row (3 cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               <AdminStatsCard
-                title="Total Pengguna"
+                title="Total Warga"
                 value={stats.totalUsers}
                 description="Terdaftar di sistem"
                 icon={<Users className="w-7 h-7" />}
@@ -184,6 +203,10 @@ const Dashboard: React.FC = () => {
                 iconTextColor="text-yellow-700"
                 valueColor="text-yellow-600"
               />
+            </div>
+
+            {/* Stats Grid - Bottom Row (2 cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
               <AdminStatsCard
                 title="Pembayaran Berhasil"
                 value={stats.approvedPayments}
@@ -192,6 +215,15 @@ const Dashboard: React.FC = () => {
                 iconBgColor="bg-gradient-to-br from-purple-100 to-purple-50"
                 iconTextColor="text-purple-700"
                 valueColor="text-green-600"
+              />
+              <AdminStatsCard
+                title="Belum Membayar"
+                value={stats.unpaidFees || 0}
+                description="Perlu tindak lanjut"
+                icon={<AlertCircle className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-red-100 to-red-50"
+                iconTextColor="text-red-700"
+                valueColor="text-red-600"
               />
             </div>
 
@@ -230,37 +262,99 @@ const Dashboard: React.FC = () => {
               {/* Bar Chart */}
               <Card className="rounded-2xl shadow-md hover:shadow-xl transition">
                 <CardHeader>
-                  <CardTitle>Grafik Iuran Bulanan</CardTitle>
-                  <CardDescription>
-                    Ringkasan total iuran tiap bulan
-                  </CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Grafik Iuran Bulanan</CardTitle>
+                      <CardDescription>
+                        Ringkasan total iuran tiap bulan - Scroll horizontal untuk melihat data lebih detail
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleZoomOut}
+                        disabled={chartZoom <= 0.5}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ZoomOut className="w-4 h-4" />
+                      </Button>
+                      <span className="text-xs text-gray-500 min-w-[3rem] text-center">
+                        {Math.round(chartZoom * 100)}%
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleZoomIn}
+                        disabled={chartZoom >= 2}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ZoomIn className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleResetZoom}
+                        className="h-8 w-8 p-0"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={monthlyFees}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      {/* <Tooltip
-                      formatter={(val: number | undefined) =>
-                        `Rp ${val?.toLocaleString()}`
-                      }
-                    /> */}
-                      <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]}>
-                        <LabelList
-                          dataKey="total"
-                          position="top"
-                          content={({ value }) =>
-                            value != null ? (
-                              <tspan>{`Rp ${Number(
-                                value
-                              ).toLocaleString()}`}</tspan>
-                            ) : null
-                          }
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="w-full h-full overflow-x-auto overflow-y-hidden">
+                    <div 
+                      className="h-full"
+                      style={{ 
+                        minWidth: `${600 * chartZoom}px`,
+                        transform: `scale(${chartZoom})`,
+                        transformOrigin: 'top left'
+                      }}
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={monthlyFees} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey="month" 
+                            tick={{ fontSize: 12 }}
+                            interval={0}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(value) => `Rp ${(value / 1000000).toFixed(1)}M`}
+                          />
+                          <Tooltip
+                            formatter={(val: any) => [
+                              `Rp ${Number(val)?.toLocaleString()}`,
+                              'Total Iuran'
+                            ]}
+                            labelFormatter={(label) => `Bulan: ${label}`}
+                            contentStyle={{
+                              backgroundColor: 'white',
+                              border: '1px solid #e5e7eb',
+                              borderRadius: '8px',
+                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                            }}
+                          />
+                          <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]}>
+                            <LabelList
+                              dataKey="total"
+                              position="top"
+                              content={({ value }) =>
+                                value != null ? (
+                                  <tspan fontSize="10">{`Rp ${(Number(value) / 1000000).toFixed(1)}M`}</tspan>
+                                ) : null
+                              }
+                            />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -299,36 +393,8 @@ const Dashboard: React.FC = () => {
               </Card>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
-              {[
-                {
-                  title: "Kelola Pengguna",
-                  icon: <Users className="w-8 h-8 text-blue-600" />,
-                  link: "/admin/users",
-                },
-                {
-                  title: "Generate Iuran",
-                  icon: <FileText className="w-8 h-8 text-green-600" />,
-                  link: "/admin/fees",
-                },
-                {
-                  title: "Review Pembayaran",
-                  icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
-                  link: "/admin/payments",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  onClick={() => navigate(item.link)}
-                  className="cursor-pointer rounded-2xl border p-6 bg-white hover:shadow-xl hover:scale-105 transition transform flex flex-col items-center space-y-3 mb-4">
-                  {item.icon}
-                  <span className="font-medium text-gray-700">
-                    {item.title}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {/* Unpaid Users Section */}
+            <UnpaidUsersCard className="mb-6" />
           </div>
         </>
       )}

@@ -157,6 +157,22 @@ export interface DashboardStats {
   currentMonthCollection: number;
   collectionRate: number;
   monthlyFees: { month: string; total: number }[];
+  unpaidFees: number;
+}
+
+export interface UnpaidUser {
+  user_id: string;
+  username: string;
+  nama: string;
+  nomor_rumah: string;
+  nomor_hp: string;
+  tipe_rumah: string;
+  fee_id: string;
+  kategori: string;
+  nominal: number;
+  due_date: string;
+  created_at: string;
+  is_orphaned?: boolean;
 }
 
 // Auth context types
