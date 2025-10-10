@@ -683,7 +683,9 @@ const PaymentReview: React.FC = () => {
               <div className="lg:hidden w-full">
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full hover:bg-green-500 cursor-pointer">
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-green-500 cursor-pointer">
                       <Filter className="w-4 h-4 mr-2" />
                       Filter Status{" "}
                       {filter !== "all" && (
@@ -727,7 +729,6 @@ const PaymentReview: React.FC = () => {
                         </div>
                       </Button>
                       <Button
-                        
                         onClick={() => setFilter("success")}
                         variant={filter === "berhasil" ? "default" : "outline"}
                         className="justify-start h-12">

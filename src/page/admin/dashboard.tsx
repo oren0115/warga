@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
     { name: "Menunggu", value: stats?.pendingPayments || 0 },
   ];
 
-  const COLORS = ["#22c55e", "#f59e0b"]; // hijau & oranye
+  const COLORS = ["#22c55e", "#f59e0b"];
 
   if (isLoading) {
     return <AdminLoading type="page" />;
@@ -401,15 +401,17 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Users Payment Status - Two Column Layout */}
-            <div className="space-y-4 mb-6">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  Status Pembayaran Warga
-                </h2>
-                <p className="text-gray-600">
-                  Pantau warga yang sudah dan belum membayar iuran
-                </p>
-              </div>
+            <div className="space-y-4 mb-6 ">
+              <Card className="text-center hover:shadow-xl transition">
+                <CardHeader>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                    Status Pembayaran Warga
+                  </h2>
+                  <p className="text-gray-600">
+                    Pantau warga yang sudah dan belum membayar iuran
+                  </p>
+                </CardHeader>
+              </Card>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Unpaid Users Section */}

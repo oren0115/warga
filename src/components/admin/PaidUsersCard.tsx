@@ -38,7 +38,6 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
   });
 
   useEffect(() => {
-    console.log("Selected month changed:", selectedMonth);
     fetchPaidUsers();
   }, [selectedMonth]);
 
@@ -46,14 +45,9 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     setIsLoading(true);
     setError("");
     try {
-      console.log(
-        "Fetching paid users for month:",
-        selectedMonth || "current month"
-      );
       const response = await adminService.getPaidUsers(
         selectedMonth || undefined
       );
-      console.log("Paid users response:", response);
       setPaidUsers(response);
     } catch (err: any) {
       console.error("Error fetching paid users:", err);
@@ -81,7 +75,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
       });
       months.push({ value, label });
     }
-    console.log("Available months:", months);
+    // console.log("Available months:", months);
     return months;
   };
 
@@ -149,29 +143,31 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
               Daftar warga yang telah menyelesaikan pembayaran iuran
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Semua Bulan</option>
-              {getMonthOptions().map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={fetchPaidUsers}
-              className="h-8">
-              Refresh
-            </Button>
-          </div>
         </div>
       </CardHeader>
       <CardContent>
+        <div className="flex items-center gap-2 mb-4">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-400 transition-colors cursor-pointer appearance-none">
+            <option value="">Semua Bulan</option>
+            {getMonthOptions().map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-2 mb-4">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={fetchPaidUsers}
+            className="h-8 hover:bg-green-600 hover:text-white cursor-pointer">
+            Refresh
+          </Button>
+        </div>
         {error ? (
           <div className="text-center py-8">
             <p className="text-red-600 mb-4">{error}</p>
@@ -204,8 +200,8 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
               <Badge
                 variant="secondary"
                 className="bg-green-100 text-green-800">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Semua Lunas
+                <Users className="w-3 h-3 mr-1" />
+                Sudah Bayar
               </Badge>
             </div>
 
@@ -284,6 +280,19 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
                 </div>
               ))}
             </div>
+
+            {paidUsers.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>Total yang sudah dibayar:</span>
+                  <span className="font-semibold text-green-600">
+                    {formatCurrency(
+                      paidUsers.reduce((sum, user) => sum + user.nominal, 0)
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

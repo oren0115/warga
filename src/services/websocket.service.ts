@@ -42,8 +42,6 @@ class WebSocketServiceImpl implements WebSocketService {
         .replace(/\/$/, "") + // Remove trailing slash
       `/ws/${userId}?token=${encodeURIComponent(token)}`;
 
-    console.log("Connecting to WebSocket:", wsUrl); // For debugging
-
     try {
       this.ws = new WebSocket(wsUrl);
 

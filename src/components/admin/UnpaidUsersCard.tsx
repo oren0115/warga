@@ -43,15 +43,36 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
   // Generate available months (last 12 months)
   const generateAvailableMonths = () => {
     const months = [];
-    const now = new Date();
+    // Use Jakarta timezone to get correct current month
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
 
     for (let i = 0; i < 12; i++) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthStr = date.toISOString().slice(0, 7); // YYYY-MM format
-      const monthLabel = date.toLocaleDateString("id-ID", {
-        year: "numeric",
-        month: "long",
-      });
+
+      // Create month string manually to avoid timezone issues
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Convert to 1-based and pad
+      const monthStr = `${year}-${month}`;
+
+      // Create label manually
+      const monthNames = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
+      const monthLabel = `${monthNames[date.getMonth()]} ${year}`;
+
       months.push({ value: monthStr, label: monthLabel });
     }
 
@@ -166,9 +187,6 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
         <CardTitle className="flex items-center gap-2">
           <Users className="w-5 h-5 text-red-600" />
           Warga Belum Membayar
-          <Badge variant="destructive" className="ml-2">
-            {filteredUsers.length}
-          </Badge>
         </CardTitle>
         <CardDescription>
           Daftar warga yang belum membayar iuran
@@ -185,14 +203,14 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="appearance-none bg-white border border-blue-300 rounded-lg px-3 py-1.5 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-colors cursor-pointer min-w-[180px]">
+              className="w-full px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-400 transition-colors cursor-pointer appearance-none">
               {generateAvailableMonths().map((month) => (
                 <option key={month.value} value={month.value}>
                   {month.label}
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500 pointer-events-none" />
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
           </div>
         </div>
 
@@ -289,117 +307,130 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4 max-h-80 overflow-y-auto">
-            {filteredUsers.map((user) => (
-              <div
-                key={user.fee_id}
-                className={`border rounded-lg p-4 transition-colors ${
-                  user.is_orphaned
-                    ? "border-orange-300 bg-orange-50 hover:bg-orange-100"
-                    : "border-red-200 bg-red-50 hover:bg-red-100"
-                }`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      {user.is_orphaned ? (
-                        <UserX className="w-4 h-4 text-orange-600" />
-                      ) : (
-                        <Users className="w-4 h-4 text-red-600" />
-                      )}
-                      <h4
-                        className={`font-semibold ${
-                          user.is_orphaned ? "text-orange-900" : "text-gray-900"
-                        }`}>
-                        {user.nama}
-                      </h4>
-                      <Badge
-                        variant={user.is_orphaned ? "secondary" : "outline"}
-                        className={`text-xs ${
-                          user.is_orphaned
-                            ? "bg-orange-200 text-orange-800"
-                            : ""
-                        }`}>
-                        {user.username}
-                      </Badge>
-                      {user.is_orphaned && (
-                        <Badge variant="destructive" className="text-xs">
-                          User Dihapus
-                        </Badge>
-                      )}
-                      {user.payment_failed && (
-                        <Badge
-                          variant="destructive"
-                          className="text-xs bg-red-600">
-                          Gagal Bayar
-                        </Badge>
-                      )}
-                    </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-600">
+                Total:{" "}
+                <span className="font-semibold text-red-600">
+                  {filteredUsers.length}
+                </span>{" "}
+                warga
+              </p>
+              <Badge variant="secondary" className="bg-red-100 text-red-800">
+                <Users className="w-3 h-3 mr-1" />
+                Belum Bayar
+              </Badge>
+            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <Home className="w-4 h-4" />
-                        <span>
-                          {user.is_orphaned
-                            ? "Rumah N/A"
-                            : `Rumah ${user.nomor_rumah}`}
-                        </span>
-                        {!user.is_orphaned && (
-                          <Badge variant="secondary" className="text-xs">
-                            {user.tipe_rumah}
+            <div className="max-h-80 overflow-y-auto space-y-3">
+              {filteredUsers.map((user) => (
+                <div
+                  key={user.fee_id}
+                  className={`border rounded-lg p-4 transition-colors ${
+                    user.is_orphaned
+                      ? "border-orange-300 bg-orange-50 hover:bg-orange-100"
+                      : "border-red-200 bg-red-50 hover:bg-red-100"
+                  }`}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {user.is_orphaned ? (
+                          <UserX className="w-4 h-4 text-orange-600" />
+                        ) : (
+                          <Users className="w-4 h-4 text-red-600" />
+                        )}
+                        <h4
+                          className={`font-semibold ${
+                            user.is_orphaned
+                              ? "text-orange-900"
+                              : "text-gray-900"
+                          }`}>
+                          {user.nama}
+                        </h4>
+                        <Badge
+                          variant={user.is_orphaned ? "secondary" : "outline"}
+                          className={`text-xs ${
+                            user.is_orphaned
+                              ? "bg-orange-200 text-orange-800"
+                              : ""
+                          }`}>
+                          {user.username}
+                        </Badge>
+                        {user.payment_failed && (
+                          <Badge
+                            variant="destructive"
+                            className="text-xs bg-red-600">
+                            Gagal Bayar
                           </Badge>
                         )}
                       </div>
 
-                      {!user.is_orphaned && user.nomor_hp && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          <span>{user.nomor_hp}</span>
+                          <Home className="w-4 h-4" />
+                          <span>
+                            {user.is_orphaned
+                              ? "Rumah N/A"
+                              : `Rumah ${user.nomor_rumah}`}
+                          </span>
+                          {!user.is_orphaned && (
+                            <Badge variant="secondary" className="text-xs">
+                              {user.tipe_rumah}
+                            </Badge>
+                          )}
+                        </div>
+
+                        {!user.is_orphaned && user.nomor_hp && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            <span>{user.nomor_hp}</span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="w-4 h-4" />
+                          <span
+                            className={`font-semibold ${
+                              user.is_orphaned
+                                ? "text-orange-600"
+                                : "text-red-600"
+                            }`}>
+                            {formatCurrency(user.nominal)}
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {user.kategori}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>
+                            Jatuh tempo: {formatAbsoluteTime(user.due_date)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {user.is_orphaned && (
+                        <div className="mt-2 p-2 bg-orange-100 rounded text-xs text-orange-800">
+                          <strong>Perhatian:</strong> User ini sudah dihapus
+                          dari sistem, tetapi tagihan masih tersisa.
+                          Pertimbangkan untuk menghapus tagihan ini atau
+                          menghubungi admin untuk penanganan lebih lanjut.
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
-                        <span
-                          className={`font-semibold ${
-                            user.is_orphaned
-                              ? "text-orange-600"
-                              : "text-red-600"
-                          }`}>
-                          {formatCurrency(user.nominal)}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {user.kategori}
-                        </Badge>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          Jatuh tempo: {formatAbsoluteTime(user.due_date)}
-                        </span>
-                      </div>
+                      {user.payment_failed && (
+                        <div className="mt-2 p-2 bg-red-100 rounded text-xs text-red-800">
+                          <strong>Status Pembayaran:</strong> Pembayaran
+                          sebelumnya gagal ({user.payment_status}). User perlu
+                          melakukan pembayaran ulang.
+                        </div>
+                      )}
                     </div>
-
-                    {user.is_orphaned && (
-                      <div className="mt-2 p-2 bg-orange-100 rounded text-xs text-orange-800">
-                        <strong>Perhatian:</strong> User ini sudah dihapus dari
-                        sistem, tetapi tagihan masih tersisa. Pertimbangkan
-                        untuk menghapus tagihan ini atau menghubungi admin untuk
-                        penanganan lebih lanjut.
-                      </div>
-                    )}
-
-                    {user.payment_failed && (
-                      <div className="mt-2 p-2 bg-red-100 rounded text-xs text-red-800">
-                        <strong>Status Pembayaran:</strong> Pembayaran
-                        sebelumnya gagal ({user.payment_status}). User perlu
-                        melakukan pembayaran ulang.
-                      </div>
-                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
