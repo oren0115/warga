@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/admin.service";
 import { useAuth } from "../../context/auth.context";
+import { useRealtimeDashboard } from "../../hooks/useRealtimeDashboard";
 import type { DashboardStats } from "../../types";
 
 import {
@@ -52,13 +53,24 @@ import {
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, authState } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [chartZoom, setChartZoom] = useState(1);
-
-  // Menggunakan data user dari context atau API
+  // Real-time dashboard updates
+  useRealtimeDashboard({
+    userId: authState.user?.id || null,
+    token: authState.token,
+    onDashboardUpdate: (newStats) => {
+      if (newStats) {
+        setStats(newStats);
+      } else {
+        // Manual refresh triggered
+        fetchDashboardData();
+      }
+    },
+  });
 
   useEffect(() => {
     fetchDashboardData();

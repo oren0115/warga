@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { adminService } from "../../services/admin.service";
+import { websocketService } from "../../services/websocket.service";
 import type { PaidUser } from "../../types";
 import {
   Card,
@@ -40,6 +41,20 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
   useEffect(() => {
     fetchPaidUsers();
   }, [selectedMonth]);
+
+  // Listen for real-time updates
+  useEffect(() => {
+    const handleDashboardUpdate = (data: any) => {
+      // Refresh paid users when dashboard updates
+      fetchPaidUsers();
+    };
+
+    websocketService.onDashboardUpdate(handleDashboardUpdate);
+
+    return () => {
+      // Cleanup handled by service
+    };
+  }, []);
 
   const fetchPaidUsers = async () => {
     setIsLoading(true);

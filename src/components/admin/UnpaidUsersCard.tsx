@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { adminService } from "../../services/admin.service";
+import { websocketService } from "../../services/websocket.service";
 import type { UnpaidUser } from "../../types";
 import {
   Card,
@@ -88,6 +89,22 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
     if (selectedMonth) {
       fetchUnpaidUsers(selectedMonth);
     }
+  }, [selectedMonth]);
+
+  // Listen for real-time updates
+  useEffect(() => {
+    const handleDashboardUpdate = (data: any) => {
+      // Refresh unpaid users when dashboard updates
+      if (selectedMonth) {
+        fetchUnpaidUsers(selectedMonth);
+      }
+    };
+
+    websocketService.onDashboardUpdate(handleDashboardUpdate);
+
+    return () => {
+      // Cleanup handled by service
+    };
   }, [selectedMonth]);
 
   // Filter users based on selected filter

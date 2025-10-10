@@ -12,6 +12,7 @@ export interface WebSocketService {
   isConnected: () => boolean;
   onNotification: (callback: (notification: Notification) => void) => void;
   onConnectionChange: (callback: (connected: boolean) => void) => void;
+  onDashboardUpdate: (callback: (data: any) => void) => void;
 }
 
 class WebSocketServiceImpl implements WebSocketService {
@@ -23,6 +24,7 @@ class WebSocketServiceImpl implements WebSocketService {
   private reconnectInterval = 3000; // 3 seconds
   private notificationCallbacks: ((notification: Notification) => void)[] = [];
   private connectionCallbacks: ((connected: boolean) => void)[] = [];
+  private dashboardUpdateCallbacks: ((data: any) => void)[] = [];
 
   connect(userId: string, token: string) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -56,6 +58,8 @@ class WebSocketServiceImpl implements WebSocketService {
 
           if (message.type === "notification") {
             this.notifyNotificationCallbacks(message.data);
+          } else if (message.type === "dashboard_update") {
+            this.notifyDashboardUpdateCallbacks(message.data);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -117,6 +121,10 @@ class WebSocketServiceImpl implements WebSocketService {
     this.connectionCallbacks.push(callback);
   }
 
+  onDashboardUpdate(callback: (data: any) => void) {
+    this.dashboardUpdateCallbacks.push(callback);
+  }
+
   private notifyNotificationCallbacks(notification: Notification) {
     this.notificationCallbacks.forEach((callback) => {
       try {
@@ -133,6 +141,16 @@ class WebSocketServiceImpl implements WebSocketService {
         callback(connected);
       } catch (error) {
         console.error("Error in connection callback:", error);
+      }
+    });
+  }
+
+  private notifyDashboardUpdateCallbacks(data: any) {
+    this.dashboardUpdateCallbacks.forEach((callback) => {
+      try {
+        callback(data);
+      } catch (error) {
+        console.error("Error in dashboard update callback:", error);
       }
     });
   }
