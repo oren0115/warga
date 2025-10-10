@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { userService } from "../services/user.service";
-import { formatRelativeTime } from "../utils/timezone.utils";
+import {
+  // formatRelativeTime,
+  formatTelegramStyleTime,
+} from "../utils/timezone.utils";
 import type { Notification } from "../types";
 
 // shadcn + lucide
@@ -34,6 +37,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     setError(null);
     try {
       const notificationsData = await userService.getNotifications();
+
       setNotifications(notificationsData);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -233,7 +237,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                           </span>
                           <span className="text-[10px] text-gray-500">•</span>
                           <span className="text-[10px] text-gray-500 font-medium">
-                            {formatRelativeTime(notification.created_at)}
+                            {formatTelegramStyleTime(notification.created_at)}
                           </span>
                         </div>
                         {!notification.is_read && (

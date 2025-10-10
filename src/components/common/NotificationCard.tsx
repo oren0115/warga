@@ -10,7 +10,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { formatRelativeTime } from "../../utils/timezone.utils";
+import { formatTelegramStyleTime } from "../../utils/timezone.utils";
 
 interface NotificationCardProps {
   id: string;
@@ -139,7 +139,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
               </span>
               <span>•</span>
               <span className="font-medium">
-                {formatRelativeTime(createdAt)}
+                {formatTelegramStyleTime(createdAt)}
               </span>
             </div>
           </div>
