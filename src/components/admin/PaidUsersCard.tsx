@@ -44,7 +44,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
 
   // Listen for real-time updates
   useEffect(() => {
-    const handleDashboardUpdate = (data: any) => {
+    const handleDashboardUpdate = (_data: any) => {
       // Refresh paid users when dashboard updates
       fetchPaidUsers();
     };

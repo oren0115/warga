@@ -93,7 +93,7 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
 
   // Listen for real-time updates
   useEffect(() => {
-    const handleDashboardUpdate = (data: any) => {
+    const handleDashboardUpdate = () => {
       // Refresh unpaid users when dashboard updates
       if (selectedMonth) {
         fetchUnpaidUsers(selectedMonth);
