@@ -63,7 +63,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
   useEffect(() => {
     if (user && (mode === "edit" || mode === "view")) {
-      setFormData({
+      // console.log("Setting form data for user:", user);
+      // console.log("User tipe_rumah:", user.tipe_rumah);
+      const newFormData = {
         username: user.username,
         nama: user.nama,
         alamat: user.alamat || "",
@@ -72,7 +74,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         password: "",
         is_admin: user.is_admin,
         tipe_rumah: user.tipe_rumah || "",
-      });
+      };
+      // console.log("New form data tipe_rumah:", newFormData.tipe_rumah);
+      setFormData(newFormData);
     } else if (mode === "create") {
       setFormData({
         username: "",
@@ -363,9 +367,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                 <Label htmlFor="tipe_rumah">Tipe Rumah</Label>
                 <Select
                   value={formData.tipe_rumah}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, tipe_rumah: value })
-                  }
+                  onValueChange={(value) => {
+                    // console.log("Changing tipe_rumah to:", value);
+                    setFormData({ ...formData, tipe_rumah: value });
+                  }}
                   disabled={
                     isReadOnly ||
                     (!isAdmin && (mode === "create" || mode === "edit"))

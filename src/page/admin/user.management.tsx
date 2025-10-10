@@ -81,6 +81,11 @@ const UserManagement: React.FC = () => {
     setIsLoading(true);
     try {
       const usersData = await adminService.getUsers();
+      // console.log("Fetched users data:", usersData);
+      // Debug first user's tipe_rumah
+      if (usersData.length > 0) {
+        // console.log("First user tipe_rumah:", usersData[0].tipe_rumah);
+      }
       setUsers(usersData);
     } catch (error) {
       console.error("Error fetching users:", error);
