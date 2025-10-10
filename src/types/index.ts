@@ -173,6 +173,25 @@ export interface UnpaidUser {
   due_date: string;
   created_at: string;
   is_orphaned?: boolean;
+  payment_status?: string;
+  payment_failed?: boolean;
+}
+
+export interface PaidUser {
+  user_id: string;
+  username: string;
+  nama: string;
+  nomor_rumah: string;
+  nomor_hp: string;
+  tipe_rumah: string;
+  fee_id: string;
+  kategori: string;
+  nominal: number;
+  due_date: string;
+  created_at: string;
+  payment_date: string;
+  payment_method: string;
+  is_orphaned?: boolean;
 }
 
 // Auth context types

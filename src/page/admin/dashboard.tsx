@@ -47,6 +47,7 @@ import {
   AdminStatsCard,
   AdminLoading,
   UnpaidUsersCard,
+  PaidUsersCard,
 } from "../../components/admin";
 
 const Dashboard: React.FC = () => {
@@ -106,11 +107,11 @@ const Dashboard: React.FC = () => {
   };
 
   const handleZoomIn = () => {
-    setChartZoom(prev => Math.min(prev + 0.2, 2));
+    setChartZoom((prev) => Math.min(prev + 0.2, 2));
   };
 
   const handleZoomOut = () => {
-    setChartZoom(prev => Math.max(prev - 0.2, 0.5));
+    setChartZoom((prev) => Math.max(prev - 0.2, 0.5));
   };
 
   const handleResetZoom = () => {
@@ -177,7 +178,7 @@ const Dashboard: React.FC = () => {
         <>
           <div className="container mx-auto px-4 md:px-6 space-y-6">
             {/* Stats Grid - Top Row (3 cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
               <AdminStatsCard
                 title="Total Warga"
                 value={stats.totalUsers}
@@ -194,19 +195,10 @@ const Dashboard: React.FC = () => {
                 iconBgColor="bg-gradient-to-br from-green-100 to-green-50"
                 iconTextColor="text-green-700"
               />
-              <AdminStatsCard
-                title="Menunggu Verifikasi"
-                value={stats.pendingPayments}
-                description="Perlu tindak lanjut"
-                icon={<CheckCircle2 className="w-7 h-7" />}
-                iconBgColor="bg-gradient-to-br from-yellow-100 to-yellow-50"
-                iconTextColor="text-yellow-700"
-                valueColor="text-yellow-600"
-              />
             </div>
 
             {/* Stats Grid - Bottom Row (2 cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
               <AdminStatsCard
                 title="Pembayaran Berhasil"
                 value={stats.approvedPayments}
@@ -215,6 +207,15 @@ const Dashboard: React.FC = () => {
                 iconBgColor="bg-gradient-to-br from-purple-100 to-purple-50"
                 iconTextColor="text-purple-700"
                 valueColor="text-green-600"
+              />
+              <AdminStatsCard
+                title="Menunggu Verifikasi"
+                value={stats.pendingPayments}
+                description="Perlu tindak lanjut"
+                icon={<CheckCircle2 className="w-7 h-7" />}
+                iconBgColor="bg-gradient-to-br from-yellow-100 to-yellow-50"
+                iconTextColor="text-yellow-700"
+                valueColor="text-yellow-600"
               />
               <AdminStatsCard
                 title="Belum Membayar"
@@ -266,7 +267,8 @@ const Dashboard: React.FC = () => {
                     <div>
                       <CardTitle>Grafik Iuran Bulanan</CardTitle>
                       <CardDescription>
-                        Ringkasan total iuran tiap bulan - Scroll horizontal untuk melihat data lebih detail
+                        Ringkasan total iuran tiap bulan - Scroll horizontal
+                        untuk melihat data lebih detail
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
@@ -275,8 +277,7 @@ const Dashboard: React.FC = () => {
                         variant="outline"
                         onClick={handleZoomOut}
                         disabled={chartZoom <= 0.5}
-                        className="h-8 w-8 p-0"
-                      >
+                        className="h-8 w-8 p-0">
                         <ZoomOut className="w-4 h-4" />
                       </Button>
                       <span className="text-xs text-gray-500 min-w-[3rem] text-center">
@@ -287,16 +288,14 @@ const Dashboard: React.FC = () => {
                         variant="outline"
                         onClick={handleZoomIn}
                         disabled={chartZoom >= 2}
-                        className="h-8 w-8 p-0"
-                      >
+                        className="h-8 w-8 p-0">
                         <ZoomIn className="w-4 h-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={handleResetZoom}
-                        className="h-8 w-8 p-0"
-                      >
+                        className="h-8 w-8 p-0">
                         <RotateCcw className="w-4 h-4" />
                       </Button>
                     </div>
@@ -304,49 +303,57 @@ const Dashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent className="h-72">
                   <div className="w-full h-full overflow-x-auto overflow-y-hidden">
-                    <div 
+                    <div
                       className="h-full"
-                      style={{ 
+                      style={{
                         minWidth: `${600 * chartZoom}px`,
                         transform: `scale(${chartZoom})`,
-                        transformOrigin: 'top left'
-                      }}
-                    >
+                        transformOrigin: "top left",
+                      }}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={monthlyFees} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <BarChart
+                          data={monthlyFees}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis 
-                            dataKey="month" 
+                          <XAxis
+                            dataKey="month"
                             tick={{ fontSize: 12 }}
                             interval={0}
                             angle={-45}
                             textAnchor="end"
                             height={60}
                           />
-                          <YAxis 
+                          <YAxis
                             tick={{ fontSize: 12 }}
-                            tickFormatter={(value) => `Rp ${(value / 1000000).toFixed(1)}M`}
+                            tickFormatter={(value) =>
+                              `Rp ${(value / 1000000).toFixed(1)}M`
+                            }
                           />
                           <Tooltip
                             formatter={(val: any) => [
                               `Rp ${Number(val)?.toLocaleString()}`,
-                              'Total Iuran'
+                              "Total Iuran",
                             ]}
                             labelFormatter={(label) => `Bulan: ${label}`}
                             contentStyle={{
-                              backgroundColor: 'white',
-                              border: '1px solid #e5e7eb',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              backgroundColor: "white",
+                              border: "1px solid #e5e7eb",
+                              borderRadius: "8px",
+                              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                             }}
                           />
-                          <Bar dataKey="total" fill="#3b82f6" radius={[6, 6, 0, 0]}>
+                          <Bar
+                            dataKey="total"
+                            fill="#3b82f6"
+                            radius={[6, 6, 0, 0]}>
                             <LabelList
                               dataKey="total"
                               position="top"
                               content={({ value }) =>
                                 value != null ? (
-                                  <tspan fontSize="10">{`Rp ${(Number(value) / 1000000).toFixed(1)}M`}</tspan>
+                                  <tspan fontSize="10">{`Rp ${(
+                                    Number(value) / 1000000
+                                  ).toFixed(1)}M`}</tspan>
                                 ) : null
                               }
                             />
@@ -393,8 +400,25 @@ const Dashboard: React.FC = () => {
               </Card>
             </div>
 
-            {/* Unpaid Users Section */}
-            <UnpaidUsersCard className="mb-6" />
+            {/* Users Payment Status - Two Column Layout */}
+            <div className="space-y-4 mb-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Status Pembayaran Warga
+                </h2>
+                <p className="text-gray-600">
+                  Pantau warga yang sudah dan belum membayar iuran
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Unpaid Users Section */}
+                <UnpaidUsersCard className="h-fit" />
+
+                {/* Paid Users Section */}
+                <PaidUsersCard className="h-fit" />
+              </div>
+            </div>
           </div>
         </>
       )}

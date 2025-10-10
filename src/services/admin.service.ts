@@ -7,6 +7,7 @@ import type {
   Payment,
   DashboardStats,
   UnpaidUser,
+  PaidUser,
   GenerateFeesRequest,
   BroadcastNotificationRequest,
   UsersWithPhoneResponse,
@@ -26,6 +27,15 @@ export const adminService = {
     const params = bulan ? { bulan } : {};
     const response: AxiosResponse<UnpaidUser[]> = await api.get(
       "/admin/unpaid-users",
+      { params }
+    );
+    return response.data;
+  },
+
+  getPaidUsers: async (bulan?: string): Promise<PaidUser[]> => {
+    const params = bulan ? { bulan } : {};
+    const response: AxiosResponse<PaidUser[]> = await api.get(
+      "/admin/paid-users",
       { params }
     );
     return response.data;
@@ -57,7 +67,9 @@ export const adminService = {
   },
 
   getAdminPaymentsWithDetails: async (): Promise<Payment[]> => {
-    const response: AxiosResponse<Payment[]> = await api.get("/admin/payments/with-details");
+    const response: AxiosResponse<Payment[]> = await api.get(
+      "/admin/payments/with-details"
+    );
     return response.data;
   },
 

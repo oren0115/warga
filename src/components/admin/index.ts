@@ -6,3 +6,4 @@ export { default as AdminFilters } from "./AdminFilters";
 export { default as AdminPagination } from "./AdminPagination";
 export { default as AdminLoading } from "./AdminLoading";
 export { default as UnpaidUsersCard } from "./UnpaidUsersCard";
+export { default as PaidUsersCard } from "./PaidUsersCard";
