@@ -32,8 +32,6 @@ import {
   Volume2,
   CreditCard,
   Clock,
-  Users,
-  Phone,
   CheckCircle,
   XCircle,
   Wifi,
@@ -53,10 +51,10 @@ const BroadcastNotification: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // New states for enhanced features
-  const [usersWithPhone, setUsersWithPhone] = useState<UserWithPhone[]>([]);
+  const [, setUsersWithPhone] = useState<UserWithPhone[]>([]);
   const [telegramStatus, setTelegramStatus] =
     useState<TelegramTestResponse | null>(null);
-  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [, setIsLoadingUsers] = useState(false);
   const [isTestingTelegram, setIsTestingTelegram] = useState(false);
   const [broadcastResult, setBroadcastResult] =
     useState<BroadcastResponse | null>(null);
@@ -199,58 +197,6 @@ const BroadcastNotification: React.FC = () => {
               className="mt-3">
               {isTestingTelegram ? "Menguji..." : "Test Koneksi"}
             </Button>
-          </CardContent>
-        </Card>
-
-        {/* Users List Card */}
-        <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              Daftar Penerima Notifikasi
-            </CardTitle>
-            <CardDescription>
-              User yang akan menerima notifikasi via Telegram
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoadingUsers ? (
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="flex items-center space-x-3 p-3 border rounded-lg">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                ))}
-              </div>
-            ) : usersWithPhone.length > 0 ? (
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {usersWithPhone.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Phone className="w-4 h-4 text-green-600" />
-                    <div className="flex-1">
-                      <div className="font-medium text-sm">{user.nama}</div>
-                      <div className="text-xs text-gray-500">
-                        {user.nomor_hp} • Rumah {user.nomor_rumah}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p>Tidak ada user dengan nomor HP</p>
-              </div>
-            )}
-            <div className="mt-4 text-sm text-gray-600">
-              Total: {usersWithPhone.length} user
-            </div>
           </CardContent>
         </Card>
 
