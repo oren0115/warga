@@ -67,14 +67,6 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     }
   };
 
-  const getCurrentMonth = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
   const getMonthOptions = () => {
     const months = [];
     const now = new Date();
@@ -218,7 +210,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
             </div>
 
             <div className="max-h-80 overflow-y-auto space-y-3">
-              {paidUsers.map((user, index) => (
+              {paidUsers.map((user) => (
                 <div
                   key={`${user.user_id}-${user.fee_id}`}
                   className="p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
