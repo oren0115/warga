@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAuth } from "../../context/auth.context";
-import type { User } from "../../types";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
@@ -12,72 +11,30 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Alert, AlertDescription } from "../../components/ui/alert";
 import {
-  X,
-  Save,
   User as UserIcon,
   LogOut,
-  Camera,
   CheckCircle,
+  MapPin,
+  Phone,
+  Home,
+  Calendar,
+  Shield,
 } from "lucide-react";
 import { PageHeader, PageLayout } from "../../components/common";
 import { useNavigate } from "react-router-dom";
+import { Label } from "../../components/ui/label";
 
 const Profile: React.FC = () => {
-  const { authState, updateProfile, logout } = useAuth();
+  const { authState, logout } = useAuth();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<Partial<User>>({
-    nama: authState.user?.nama || "",
-    alamat: authState.user?.alamat || "",
-    nomor_rumah: authState.user?.nomor_rumah || "",
-    nomor_hp: authState.user?.nomor_hp || "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      await updateProfile(formData);
-      setIsEditing(false);
-    } catch (error: any) {
-      setError(error.response?.data?.detail || "Gagal memperbarui profil");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      nama: authState.user?.nama || "",
-      alamat: authState.user?.alamat || "",
-      nomor_rumah: authState.user?.nomor_rumah || "",
-      nomor_hp: authState.user?.nomor_hp || "",
-    });
-    setIsEditing(false);
-    setError("");
-  };
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  // Mobile logout button component
   const MobileLogoutButton = () => (
     <Button
       onClick={handleLogout}
@@ -91,7 +48,6 @@ const Profile: React.FC = () => {
 
   return (
     <PageLayout>
-      {/* Header */}
       <PageHeader
         title="Halo"
         subtitle="Kelola IPL Anda dengan mudah"
@@ -100,131 +56,183 @@ const Profile: React.FC = () => {
         rightAction={<MobileLogoutButton />}
       />
 
-      <div className="p-4 space-y-6 -mt-2">
-        {/* Profile Header */}
-        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <div className="relative flex-shrink-0">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-4 ring-white/60">
-                  <UserIcon className="w-9 h-9 md:w-11 md:h-11 text-white" />
+      <div className="p-4 pb-8 space-y-5 -mt-2 w-full mx-auto">
+        {/* Profile Header Card - Enhanced */}
+        <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full" />
+          <CardContent className="p-5 md:p-7 relative">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              <div className="relative flex-shrink-0 group">
+                <div className="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+                  <UserIcon className="w-11 h-11 md:w-13 md:h-13 text-white" />
                 </div>
-                <Button
-                  size="icon"
-                  className="absolute -bottom-1 -right-1 w-7 h-7 md:w-9 md:h-9 bg-green-600 hover:bg-green-700 rounded-full shadow-lg">
-                  <Camera className="w-4 h-4 text-white" />
-                </Button>
               </div>
+              
               <div className="flex-1 min-w-0 w-full">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
-                  {authState.user?.nama}
-                </h2>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                      {authState.user?.nama}
+                    </h2>
+                    <p className="text-sm text-gray-500 mb-3">@{authState.user?.username}</p>
+                  </div>
+                </div>
                 <Badge
                   variant={authState.user?.is_admin ? "secondary" : "outline"}
-                  className={`mt-2 px-2 py-1 text-xs ${
+                  className={`px-3 py-1.5 text-xs font-medium ${
                     authState.user?.is_admin
                       ? "bg-purple-100 text-purple-800 border-purple-200"
                       : "bg-blue-100 text-blue-800 border-blue-200"
                   }`}>
-                  {authState.user?.is_admin ? "Administrator" : "Warga"}
+                  {authState.user?.is_admin ? (
+                    <><Shield className="w-3 h-3 mr-1 inline" />Administrator</>
+                  ) : (
+                    <><UserIcon className="w-3 h-3 mr-1 inline" />Warga</>
+                  )}
                 </Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Informasi Pribadi */}
+
+        {/* Informasi Pribadi - Enhanced */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserIcon className="w-5 h-5 text-blue-600" />
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
+                <UserIcon className="w-5 h-5 text-blue-600" />
+              </div>
               Informasi Pribadi
             </CardTitle>
-            <CardDescription>Ubah detail profil Anda</CardDescription>
+            <CardDescription className="text-sm">
+              Detail profil Anda
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          <CardContent className="space-y-5">
             <div className="space-y-4">
-              <Input
-                type="text"
-                value={authState.user?.username || ""}
-                disabled
-                className="bg-gray-50"
-              />
-              <Input
-                type="text"
-                name="nama"
-                value={formData.nama}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-              <Textarea
-                name="alamat"
-                value={formData.alamat || ""}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-              <Input
-                type="text"
-                name="nomor_rumah"
-                value={formData.nomor_rumah || ""}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-              <Input
-                type="tel"
-                name="nomor_hp"
-                value={formData.nomor_hp || ""}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              {/* Username - Read Only */}
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <UserIcon className="w-4 h-4 text-gray-400" />
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={authState.user?.username || ""}
+                  disabled
+                  className="bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                />
+              </div>
+
+              {/* Nama */}
+              <div className="space-y-2">
+                <Label htmlFor="nama" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <UserIcon className="w-4 h-4 text-gray-400" />
+                  Nama Lengkap
+                </Label>
+                <Input
+                  id="nama"
+                  type="text"
+                  value={authState.user?.nama || ""}
+                  disabled
+                  className="bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                />
+              </div>
+
+              {/* Alamat */}
+              <div className="space-y-2">
+                <Label htmlFor="alamat" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  Alamat
+                </Label>
+                <Textarea
+                  id="alamat"
+                  value={authState.user?.alamat || ""}
+                  disabled
+                  rows={3}
+                  className="bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed resize-none"
+                />
+              </div>
+
+              {/* Two Column Layout for Phone and House Number */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Nomor Rumah */}
+                <div className="space-y-2">
+                  <Label htmlFor="nomor_rumah" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Home className="w-4 h-4 text-gray-400" />
+                    Nomor Rumah
+                  </Label>
+                  <Input
+                    id="nomor_rumah"
+                    type="text"
+                    value={authState.user?.nomor_rumah || ""}
+                    disabled
+                    className="bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+
+                {/* Nomor HP */}
+                <div className="space-y-2">
+                  <Label htmlFor="nomor_hp" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    Nomor HP
+                  </Label>
+                  <Input
+                    id="nomor_hp"
+                    type="tel"
+                    value={authState.user?.nomor_hp || ""}
+                    disabled
+                    className="bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+              </div>
             </div>
 
-            {isEditing && (
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={handleSave}
-                  disabled={isLoading}
-                  className="bg-green-600 hover:bg-green-700">
-                  <Save className="w-4 h-4 mr-2" />
-                  {isLoading ? "Menyimpan..." : "Simpan"}
-                </Button>
-                <Button onClick={handleCancel} variant="secondary">
-                  <X className="w-4 h-4 mr-2" /> Batal
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
 
-        {/* Informasi Akun */}
+        {/* Informasi Akun - Enhanced */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+              </div>
               Informasi Akun
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
-              Status: {authState.user?.is_admin ? "Administrator" : "Warga"}
-            </p>
-            <p>
-              Bergabung:{" "}
-              {new Date(authState.user?.created_at || "").toLocaleDateString(
-                "id-ID",
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  timeZone: "Asia/Jakarta",
-                }
-              )}
-            </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Shield className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Status Akun</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {authState.user?.is_admin ? "Administrator" : "Warga"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Bergabung Sejak</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {new Date(authState.user?.created_at || "").toLocaleDateString(
+                      "id-ID",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        timeZone: "Asia/Jakarta",
+                      }
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
