@@ -20,7 +20,7 @@ import {
   Phone,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/format.utils";
-import { LoadingSpinner } from "../common";
+import { Skeleton } from "../ui/skeleton";
 
 interface PaidUsersCardProps {
   className?: string;
@@ -122,6 +122,53 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     }
   };
 
+  // Skeleton component for user items
+  const UserItemSkeleton = () => (
+    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-16 rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-24" />
+            <div className="text-right">
+              <div className="flex items-center gap-1 mb-1">
+                <Skeleton className="h-3 w-3" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <div className="flex items-center gap-1">
+                <Skeleton className="h-3 w-3" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <Card
@@ -136,8 +183,24 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner size="lg" />
+          <div className="flex items-center gap-2 mb-4">
+            <Skeleton className="h-8 w-32" />
+          </div>
+          <div className="flex items-center gap-2 mb-4">
+            <Skeleton className="h-8 w-16" />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+
+            <div className="max-h-80 overflow-y-auto space-y-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <UserItemSkeleton key={index} />
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>

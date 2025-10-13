@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "../../utils/format.utils";
 import { formatAbsoluteTime } from "../../utils/timezone.utils";
+import { Skeleton } from "../ui/skeleton";
 
 interface UnpaidUsersCardProps {
   className?: string;
@@ -145,6 +146,43 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
     }
   };
 
+  // Skeleton component for user items
+  const UnpaidUserItemSkeleton = () => (
+    <div className="border rounded-lg p-4 border-red-200 bg-red-50">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-16 rounded-full" />
+            <Skeleton className="h-4 w-20 rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-12 rounded-full" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-16 rounded-full" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <Card
@@ -155,12 +193,43 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
             Warga Belum Membayar
           </CardTitle>
           <CardDescription>
-            Daftar warga yang belum membayar iuran bulan ini
+            Daftar warga yang belum membayar iuran
           </CardDescription>
+
+          {/* Month Selector Skeleton */}
+          <div className="flex flex-wrap items-center gap-2 mt-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <Skeleton className="h-8 w-40" />
+          </div>
+
+          {/* Filter Controls Skeleton */}
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-8 w-20 rounded-full" />
+              <Skeleton className="h-8 w-24 rounded-full" />
+              <Skeleton className="h-8 w-28 rounded-full" />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+
+            <div className="max-h-80 overflow-y-auto space-y-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <UnpaidUserItemSkeleton key={index} />
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
