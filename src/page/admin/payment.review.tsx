@@ -818,7 +818,7 @@ const PaymentReview: React.FC = () => {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                    className="text-sm text-green-600 hover:text-green-800 font-medium">
                     Reset Semua Filter
                   </Button>
                 </div>

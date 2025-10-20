@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "../ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import {
   Table,
   TableHeader,
@@ -35,9 +30,9 @@ interface AdminTableProps {
     description: string;
     action?: React.ReactNode;
   };
-  onSort?: (field: string, direction: 'asc' | 'desc') => void;
+  onSort?: (field: string, direction: "asc" | "desc") => void;
   sortField?: string;
-  sortDirection?: 'asc' | 'desc';
+  sortDirection?: "asc" | "desc";
   className?: string;
   headerActions?: React.ReactNode;
 }
@@ -52,46 +47,38 @@ const AdminTable: React.FC<AdminTableProps> = ({
   emptyState,
   onSort,
   sortField,
-  sortDirection = 'desc',
+  sortDirection = "desc",
   className = "",
   headerActions,
 }) => {
   const handleSort = (field: string) => {
     if (onSort) {
-      const newDirection = sortField === field && sortDirection === 'desc' ? 'asc' : 'desc';
+      const newDirection =
+        sortField === field && sortDirection === "desc" ? "asc" : "desc";
       onSort(field, newDirection);
     }
   };
 
   const renderSortIcon = (field: string) => {
     if (!onSort || sortField !== field) return null;
-    
-    return (
-      <span className="ml-1">
-        {sortDirection === 'asc' ? '↑' : '↓'}
-      </span>
-    );
+
+    return <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>;
   };
 
   if (loading) {
     return (
-      <Card className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
+      <Card
+        className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
         <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-gray-100/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {icon && (
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  {icon}
-                </div>
-              )}
+              {icon && <div className="p-2 bg-blue-100 rounded-lg">{icon}</div>}
               <div>
                 <CardTitle className="text-xl font-bold text-gray-900">
                   {title}
                 </CardTitle>
                 {description && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    {description}
-                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{description}</p>
                 )}
               </div>
             </div>
@@ -113,23 +100,18 @@ const AdminTable: React.FC<AdminTableProps> = ({
 
   if (data.length === 0) {
     return (
-      <Card className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
+      <Card
+        className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
         <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-gray-100/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {icon && (
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  {icon}
-                </div>
-              )}
+              {icon && <div className="p-2 bg-blue-100 rounded-lg">{icon}</div>}
               <div>
                 <CardTitle className="text-xl font-bold text-gray-900">
                   {title}
                 </CardTitle>
                 {description && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    {description}
-                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{description}</p>
                 )}
               </div>
             </div>
@@ -151,9 +133,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                     {emptyState.description}
                   </p>
                   {emptyState.action && (
-                    <div className="mt-4">
-                      {emptyState.action}
-                    </div>
+                    <div className="mt-4">{emptyState.action}</div>
                   )}
                 </div>
               </div>
@@ -169,23 +149,18 @@ const AdminTable: React.FC<AdminTableProps> = ({
   }
 
   return (
-    <Card className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
+    <Card
+      className={`shadow-lg rounded-xl border border-gray-100 ${className}`}>
       <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-gray-100/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {icon && (
-              <div className="p-2 bg-blue-100 rounded-lg">
-                {icon}
-              </div>
-            )}
+            {icon && <div className="p-2 bg-blue-100 rounded-lg">{icon}</div>}
             <div>
               <CardTitle className="text-xl font-bold text-gray-900">
                 {title}
               </CardTitle>
               {description && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {description}
-                </p>
+                <p className="text-sm text-gray-600 mt-1">{description}</p>
               )}
             </div>
           </div>
@@ -200,11 +175,16 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 {columns.map((column) => (
                   <TableHead
                     key={column.key}
-                    className={`uppercase text-xs text-gray-600 font-bold tracking-wider py-4 px-6 ${column.className || ''} ${
-                      column.sortable ? 'cursor-pointer hover:text-blue-600' : ''
+                    className={`uppercase text-xs text-gray-600 font-bold tracking-wider py-4 px-6 ${
+                      column.className || ""
+                    } ${
+                      column.sortable
+                        ? "cursor-pointer hover:text-green-600"
+                        : ""
                     }`}
-                    onClick={column.sortable ? () => handleSort(column.key) : undefined}
-                  >
+                    onClick={
+                      column.sortable ? () => handleSort(column.key) : undefined
+                    }>
                     <div className="flex items-center space-x-1">
                       <span>{column.label}</span>
                       {column.sortable && renderSortIcon(column.key)}
@@ -219,13 +199,11 @@ const AdminTable: React.FC<AdminTableProps> = ({
                   key={item.id || index}
                   className={`hover:bg-green-50 transition-colors border-b border-gray-100 ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-                  }`}
-                >
+                  }`}>
                   {columns.map((column) => (
                     <TableCell
                       key={column.key}
-                      className={`py-4 px-6 ${column.className || ''}`}
-                    >
+                      className={`py-4 px-6 ${column.className || ""}`}>
                       {column.render
                         ? column.render(item[column.key], item)
                         : item[column.key]}

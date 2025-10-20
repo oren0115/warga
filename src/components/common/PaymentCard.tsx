@@ -173,9 +173,9 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
 
         <div className="space-y-2 text-sm">
           {payment.user && (
-            <Row 
-              label="Nama Pembayar" 
-              value={payment.user.nama} 
+            <Row
+              label="Nama Pembayar"
+              value={payment.user.nama}
               color="text-blue-700 font-semibold"
             />
           )}
@@ -225,7 +225,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               <Button
                 disabled={isForceChecking}
                 onClick={handleForceCheck}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
                 {isForceChecking ? "Memeriksa..." : "Perbarui Status"}
               </Button>
             )}

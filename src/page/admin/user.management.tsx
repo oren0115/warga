@@ -248,7 +248,7 @@ const UserManagement: React.FC = () => {
             onClick={() => handleEditUser(user)}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50">
+            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
             <Edit className="w-4 h-4" />
           </Button>
         </div>
@@ -756,7 +756,7 @@ const UserManagement: React.FC = () => {
                                       onClick={() => handleEditUser(user)}
                                       variant="ghost"
                                       size="sm"
-                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-blue-600 cursor-pointer">
+                                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 cursor-pointer">
                                       <Edit className="w-4 h-4" />
                                     </Button>
                                   </div>
@@ -917,7 +917,7 @@ const UserManagement: React.FC = () => {
                               setSearchTerm("");
                               setFilterRole("all");
                             }}
-                            className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                            className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
                             Reset Pencarian
                           </button>
                         )}
