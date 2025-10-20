@@ -25,6 +25,9 @@ import {
   CreditCard,
   Home,
   Phone,
+  Filter,
+  X,
+  UserX,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/format.utils";
 import { Skeleton } from "../ui/skeleton";
@@ -33,11 +36,15 @@ interface PaidUsersCardProps {
   className?: string;
 }
 
+type FilterType = "all" | "normal" | "orphaned";
+
 const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
   const [paidUsers, setPaidUsers] = useState<PaidUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<PaidUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [filter, setFilter] = useState<FilterType>("all");
 
   useEffect(() => {
     fetchPaidUsers();
@@ -56,6 +63,26 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
       // Cleanup handled by service
     };
   }, []);
+
+  // Filter users based on selected filter
+  useEffect(() => {
+    let filtered = paidUsers;
+
+    switch (filter) {
+      case "normal":
+        filtered = paidUsers.filter((user) => !user.is_orphaned);
+        break;
+      case "orphaned":
+        filtered = paidUsers.filter((user) => user.is_orphaned);
+        break;
+      case "all":
+      default:
+        filtered = paidUsers;
+        break;
+    }
+
+    setFilteredUsers(filtered);
+  }, [paidUsers, filter]);
 
   const fetchPaidUsers = async () => {
     setIsLoading(true);
@@ -246,6 +273,66 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Filter Controls */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600">Filter:</span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={filter === "all" ? "default" : "outline"}
+              onClick={() => setFilter("all")}
+              className={`h-8 text-xs cursor-pointer ${
+                filter === "all"
+                  ? "bg-green-900 hover:bg-green-800 text-white"
+                  : "border-green-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              }`}>
+              Semua ({paidUsers.length})
+            </Button>
+
+            <Button
+              size="sm"
+              variant={filter === "normal" ? "default" : "outline"}
+              onClick={() => setFilter("normal")}
+              className={`h-8 text-xs cursor-pointer ${
+                filter === "normal"
+                  ? "bg-green-900 hover:bg-green-800 text-white"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              }`}>
+              <Users className="w-3 h-3 mr-1" />
+              User Aktif ({paidUsers.filter((u) => !u.is_orphaned).length})
+            </Button>
+
+            <Button
+              size="sm"
+              variant={filter === "orphaned" ? "default" : "outline"}
+              onClick={() => setFilter("orphaned")}
+              className={`h-8 text-xs cursor-pointer ${
+                filter === "orphaned"
+                  ? "bg-red-900 hover:bg-red-800 text-white"
+                  : "border-red-300 text-gray-700 hover:bg-red-100 hover:text-gray-900"
+              }`}>
+              <UserX className="w-3 h-3 mr-1" />
+              User Dihapus ({paidUsers.filter((u) => u.is_orphaned).length})
+            </Button>
+          </div>
+
+          {filter !== "all" && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setFilter("all")}
+              className="cursor-pointer h-8 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100">
+              <X className="w-3 h-3 mr-1" />
+              Clear Filter
+            </Button>
+          )}
+        </div>
+
         {error ? (
           <div className="text-center py-8">
             <p className="text-red-600 mb-4">{error}</p>
@@ -265,13 +352,32 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
                 : "Belum ada warga yang membayar"}
             </p>
           </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <Filter className="w-8 h-8 text-gray-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              Tidak Ada Data
+            </h3>
+            <p className="text-gray-500">
+              Tidak ada data yang sesuai dengan filter yang dipilih.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-3"
+              onClick={() => setFilter("all")}>
+              Tampilkan Semua
+            </Button>
+          </div>
         ) : (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-gray-600">
                 Total:{" "}
                 <span className="font-semibold text-green-600">
-                  {paidUsers.length}
+                  {filteredUsers.length}
                 </span>{" "}
                 warga
               </p>
@@ -284,7 +390,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
             </div>
 
             <div className="max-h-80 overflow-y-auto space-y-3">
-              {paidUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <div
                   key={`${user.user_id}-${user.fee_id}`}
                   className="p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
@@ -359,13 +465,20 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
               ))}
             </div>
 
-            {paidUsers.length > 0 && (
+            {filteredUsers.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span>Total yang sudah dibayar:</span>
+                  <span>
+                    Total yang sudah dibayar
+                    {filter !== "all" &&
+                      ` (${
+                        filter === "normal" ? "User Aktif" : "User Dihapus"
+                      })`}
+                    :
+                  </span>
                   <span className="font-semibold text-green-600">
                     {formatCurrency(
-                      paidUsers.reduce((sum, user) => sum + user.nominal, 0)
+                      filteredUsers.reduce((sum, user) => sum + user.nominal, 0)
                     )}
                   </span>
                 </div>
