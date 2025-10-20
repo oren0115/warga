@@ -289,14 +289,14 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-400 transition-colors cursor-pointer appearance-none">
+              className="w-full px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer appearance-none">
               {generateAvailableMonths().map((month) => (
                 <option key={month.value} value={month.value}>
                   {month.label}
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-600 pointer-events-none" />
           </div>
         </div>
 

@@ -595,7 +595,7 @@ const UserManagement: React.FC = () => {
                       value={itemsPerPage}
                       onChange={(e) => setItemsPerPage(Number(e.target.value))}
                       disabled={!isAdmin}
-                      className={`border border-gray-200 rounded px-2 py-1 text-sm ${
+                      className={`border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-400 transition-colors ${
                         !isAdmin ? "bg-gray-100 cursor-not-allowed" : ""
                       }`}>
                       <option value={5}>5</option>

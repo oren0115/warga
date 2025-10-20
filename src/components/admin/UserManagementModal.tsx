@@ -561,17 +561,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     <span className="font-semibold">{user?.nama}</span>?
                     Tindakan ini tidak dapat dibatalkan.
                   </p>
-                  <div className="flex space-x-2 justify-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      disabled={isLoading}>
-                      Batal
-                    </Button>
+                  <div className="flex justify-end">
                     <Button
                       variant="destructive"
                       onClick={handleDelete}
-                      disabled={isLoading}>
+                      disabled={isLoading}
+                      className="bg-red-600 hover:bg-red-700">
                       {isLoading ? "Menghapus..." : "Hapus"}
                     </Button>
                   </div>

@@ -61,16 +61,16 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
   }
 
   return (
-    <div className={`flex flex-col gap-3 px-4 sm:px-6 py-4 bg-gray-50 border-t ${className}`}>
+    <div
+      className={`flex flex-col gap-3 px-4 sm:px-6 py-4 bg-gray-50 border-t ${className}`}>
       {/* Items Info */}
       <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
-        Menampilkan{" "}
-        <span className="font-semibold">{startIndex + 1}</span> sampai{" "}
-        <span className="font-semibold">{endIndex}</span> dari{" "}
+        Menampilkan <span className="font-semibold">{startIndex + 1}</span>{" "}
+        sampai <span className="font-semibold">{endIndex}</span> dari{" "}
         <span className="font-semibold">{totalItems.toLocaleString()}</span>{" "}
         {filterInfo || "hasil"}
         {totalUnfilteredItems && totalUnfilteredItems !== totalItems && (
-          <span className="block sm:inline text-blue-600 sm:ml-1 mt-1 sm:mt-0">
+          <span className="block sm:inline text-green-600 sm:ml-1 mt-1 sm:mt-0">
             (difilter dari {totalUnfilteredItems.toLocaleString()} total)
           </span>
         )}
@@ -83,8 +83,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           <select
             value={itemsPerPage}
             onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-            className="border border-gray-300 rounded-md px-2 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
+            className="border border-gray-300 rounded-md px-2 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
             {itemsPerPageOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -103,8 +102,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === 1}
           variant="outline"
           size="sm"
-          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50"
-        >
+          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50">
           ‹‹
         </Button>
 
@@ -114,8 +112,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === 1}
           variant="outline"
           size="sm"
-          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm"
-        >
+          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm">
           <span className="hidden sm:inline">‹ Sebelumnya</span>
           <span className="sm:hidden">‹ Prev</span>
         </Button>
@@ -132,8 +129,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
                 currentPage === pageNum
                   ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
                   : "bg-white hover:bg-green-50 border-gray-300"
-              }`}
-            >
+              }`}>
               {pageNum}
             </Button>
           ))}
@@ -163,8 +159,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === totalPages}
           variant="outline"
           size="sm"
-          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm"
-        >
+          className="px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm">
           <span className="hidden sm:inline">Selanjutnya ›</span>
           <span className="sm:hidden">Next ›</span>
         </Button>
@@ -175,8 +170,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === totalPages}
           variant="outline"
           size="sm"
-          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50"
-        >
+          className="hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50">
           ››
         </Button>
       </div>

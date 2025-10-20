@@ -65,13 +65,12 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               placeholder={searchPlaceholder}
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+              className="pl-10 border-gray-200 focus:border-green-300 focus:ring-green-200"
             />
             {searchTerm && (
               <button
                 onClick={() => onSearchChange("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -81,19 +80,16 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
         {/* Right Actions */}
         <div className="flex items-center gap-2">
           {rightActions}
-          
+
           {showRefresh && onRefresh && (
             <Button
               onClick={onRefresh}
               disabled={isRefreshing}
               variant="outline"
               size="sm"
-              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white"
-            >
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white">
               <RefreshCw
-                className={`w-4 h-4 mr-2 ${
-                  isRefreshing ? "animate-spin" : ""
-                }`}
+                className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
               />
               {isRefreshing ? "Memuat..." : "Refresh"}
             </Button>
@@ -105,8 +101,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               disabled={isExporting}
               variant="outline"
               size="sm"
-              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white"
-            >
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white">
               <Download className="w-4 h-4 mr-2" />
               {isExporting ? "Mengekspor..." : "Export"}
             </Button>
@@ -123,8 +118,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               variant={activeFilter === filter.key ? "default" : "outline"}
               onClick={() => onFilterChange(filter.key)}
               className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white"
-              size="sm"
-            >
+              size="sm">
               {filter.icon && <span className="mr-2">{filter.icon}</span>}
               {filter.label}
               {filter.count !== undefined && (
@@ -134,15 +128,14 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               )}
             </Button>
           ))}
-          
+
           {/* Reset Button - Inline with filter buttons */}
           {showReset && hasActiveFilters && onReset && (
             <Button
               onClick={onReset}
               variant="outline"
               size="sm"
-              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white ml-auto"
-            >
+              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white ml-auto">
               <Filter className="w-4 h-4 mr-2" />
               Reset Semua Filter
             </Button>

@@ -593,7 +593,7 @@ const PaymentReview: React.FC = () => {
                     placeholder="Cari metode, ID transaksi, atau nominal..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+                    className="pl-10 border-gray-200 focus:border-green-300 focus:ring-green-200"
                   />
                   {searchTerm && (
                     <button

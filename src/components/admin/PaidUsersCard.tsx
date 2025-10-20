@@ -18,6 +18,7 @@ import {
   CreditCard,
   Home,
   Phone,
+  ChevronDown,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/format.utils";
 import { Skeleton } from "../ui/skeleton";
@@ -225,26 +226,20 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-400 transition-colors cursor-pointer appearance-none">
-            <option value="">Semua Bulan</option>
-            {getMonthOptions().map((month) => (
-              <option key={month.value} value={month.value}>
-                {month.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center gap-2 mb-4">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={fetchPaidUsers}
-            className="h-8 hover:bg-green-600 hover:text-white cursor-pointer">
-            Refresh
-          </Button>
+          <div className="relative">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer appearance-none">
+              <option value="">Semua Bulan</option>
+              {getMonthOptions().map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-600 pointer-events-none" />
+          </div>
         </div>
         {error ? (
           <div className="text-center py-8">
