@@ -13,6 +13,13 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Alert, AlertDescription } from "../ui/alert";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
   AlertCircle,
   Users,
   Phone,
@@ -22,7 +29,6 @@ import {
   UserX,
   Filter,
   X,
-  ChevronDown,
 } from "lucide-react";
 import { formatCurrency } from "../../utils/format.utils";
 import { formatAbsoluteTime } from "../../utils/timezone.utils";
@@ -285,19 +291,18 @@ const UnpaidUsersCard: React.FC<UnpaidUsersCardProps> = ({ className }) => {
             <span className="text-sm text-gray-600">Bulan:</span>
           </div>
 
-          <div className="relative">
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full px-3 py-1.5 pr-8 text-sm bg-white border border-green-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-green-500 hover:bg-green-50 transition-colors cursor-pointer appearance-none">
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-[200px] border-green-300 focus:ring-green-500 focus:border-green-500 hover:border-green-500 hover:bg-green-50">
+              <SelectValue placeholder="Pilih bulan" />
+            </SelectTrigger>
+            <SelectContent>
               {generateAvailableMonths().map((month) => (
-                <option key={month.value} value={month.value}>
+                <SelectItem key={month.value} value={month.value}>
                   {month.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-600 pointer-events-none" />
-          </div>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Filter Controls */}

@@ -30,7 +30,14 @@ export interface Payment {
   user_id: string;
   amount: number;
   payment_method: string;
-  status: "Pending" | "Settlement" | "Success" | "Deny" | "Cancel" | "Expire";
+  status:
+    | "Pending"
+    | "Settlement"
+    | "Success"
+    | "Deny"
+    | "Cancel"
+    | "Expire"
+    | "Failed";
   created_at: string;
   transaction_id?: string;
   payment_token?: string;

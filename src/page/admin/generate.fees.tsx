@@ -246,12 +246,15 @@ const GenerateFees: React.FC = () => {
                       onValueChange={(val: string) =>
                         setFormData((prev) => ({ ...prev, bulan: val }))
                       }>
-                      <SelectTrigger id="bulan">
+                      <SelectTrigger id="bulan" className="cursor-pointer">
                         <SelectValue placeholder="-- Pilih Bulan --" />
                       </SelectTrigger>
                       <SelectContent>
                         {months.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>
+                          <SelectItem
+                            key={m.value}
+                            value={m.value}
+                            className="cursor-pointer">
                             {m.label} {currentYear}
                           </SelectItem>
                         ))}
@@ -474,12 +477,15 @@ const GenerateFees: React.FC = () => {
 
             <div className="flex justify-end gap-3">
               <Button
-              variant="outline"
+                variant="outline"
                 onClick={() => setShowConfirm(false)}
                 className="px-4 hover:bg-red-600 cursor-pointer">
                 Batal
               </Button>
-              <Button onClick={handleGenerate} disabled={isLoading} className="hover:bg-green-900 cursor-pointer">
+              <Button
+                onClick={handleGenerate}
+                disabled={isLoading}
+                className="hover:bg-green-900 cursor-pointer">
                 {isLoading ? "Memproses..." : "Ya, Generate"}
               </Button>
             </div>

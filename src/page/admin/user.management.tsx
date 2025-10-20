@@ -241,14 +241,14 @@ const UserManagement: React.FC = () => {
             onClick={() => handleViewUser(user)}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 cursor-pointer">
             <Eye className="w-4 h-4" />
           </Button>
           <Button
             onClick={() => handleEditUser(user)}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50">
+            className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 cursor-pointer">
             <Edit className="w-4 h-4" />
           </Button>
         </div>

@@ -20,7 +20,6 @@ import {
   Eye,
   Calendar as CalendarIcon,
   Clock3,
-  CreditCard,
   Clock,
   CheckCircle,
   XCircle,
@@ -130,7 +129,8 @@ const PaymentReview: React.FC = () => {
       statusMatch =
         payment.status === "Deny" ||
         payment.status === "Cancel" ||
-        payment.status === "Expire";
+        payment.status === "Expire" ||
+        payment.status === "Failed";
 
     // Filter by search term
     const searchMatch =
@@ -186,7 +186,10 @@ const PaymentReview: React.FC = () => {
       success: successPayments.length,
       failed: payments.filter(
         (p) =>
-          p.status === "Deny" || p.status === "Cancel" || p.status === "Expire"
+          p.status === "Deny" ||
+          p.status === "Cancel" ||
+          p.status === "Expire" ||
+          p.status === "Failed"
       ).length,
       todayTotal: todayPayments.length,
       thisMonthTotal: monthPayments.length,
@@ -256,30 +259,24 @@ const PaymentReview: React.FC = () => {
 
           <div className="relative p-4 md:p-6">
             <div className="hidden md:flex items-center gap-3 mb-4">
-              <div className="p-2 bg-white/20 rounded-lg">
-                <Receipt className="w-6 h-6 text-white" />
+              <div className="p-2 bg-white/20 rounded-lg animate-pulse">
+                <div className="w-6 h-6 bg-white/30 rounded"></div>
               </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold">
-                  Dashboard Review Pembayaran RT/RW
-                </h1>
-                <p className="text-green-100 text-sm">
-                  Sistem Review Pembayaran
-                </p>
+              <div className="space-y-2 flex-1">
+                <div className="h-8 bg-white/20 rounded animate-pulse w-80"></div>
+                <div className="h-4 bg-white/20 rounded animate-pulse w-48"></div>
               </div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg">
               <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="p-1.5 md:p-2 bg-white/20 rounded-full">
-                    <CreditCard className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <div className="flex items-center gap-2 md:gap-3 flex-1">
+                  <div className="p-1.5 md:p-2 bg-white/20 rounded-full animate-pulse">
+                    <div className="w-5 h-5 md:w-6 md:h-6 bg-white/30 rounded"></div>
                   </div>
-                  <div>
-                    <h2 className="text-lg md:text-xl font-semibold mb-1">
-                      Review Pembayaran
-                    </h2>
-                    <div className="h-4 bg-white/20 rounded animate-pulse w-48"></div>
+                  <div className="space-y-2 flex-1">
+                    <div className="h-6 bg-white/20 rounded animate-pulse w-48"></div>
+                    <div className="h-4 bg-white/20 rounded animate-pulse w-64"></div>
                   </div>
                 </div>
               </div>
@@ -565,7 +562,7 @@ const PaymentReview: React.FC = () => {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold  text-gray-900">
-                      Database Transaksi Pembayaran
+                      Tabel Data Transaksi Pembayaran
                     </CardTitle>
                   </div>
                 </div>
@@ -648,23 +645,27 @@ const PaymentReview: React.FC = () => {
                 <Button
                   variant={filter === "all" ? "default" : "outline"}
                   onClick={() => setFilter("all")}
-                  className="text-sm font-medium"
+                  className="text-sm font-medium cursor-pointer"
                   size="sm">
-                  <TrendingUp className="w-4 h-4 mr-2" />
+                  <TrendingUp className="w-4 h-4 mr-2 " />
                   Semua ({stats.total.toLocaleString()})
                 </Button>
                 <Button
                   variant={filter === "pending" ? "default" : "outline"}
                   onClick={() => setFilter("pending")}
-                  className="text-sm font-medium hover:bg-amber-600 hover:text-white"
+                  className={`text-sm font-medium cursor-pointer ${
+                    filter === "pending"
+                      ? "bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600"
+                      : "hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-600"
+                  }`}
                   size="sm">
-                  <Clock className="w-4 h-4 mr-2" />
+                  <Clock className="w-4 h-4 mr-2 cursor-pointer " />
                   Menunggu ({stats.pending.toLocaleString()})
                 </Button>
                 <Button
                   variant={filter === "success" ? "default" : "outline"}
                   onClick={() => setFilter("success")}
-                  className="text-sm font-medium"
+                  className="text-sm font-medium cursor-pointer"
                   size="sm">
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Berhasil ({stats.success.toLocaleString()})
@@ -672,7 +673,11 @@ const PaymentReview: React.FC = () => {
                 <Button
                   variant={filter === "failed" ? "default" : "outline"}
                   onClick={() => setFilter("failed")}
-                  className="text-sm font-medium"
+                  className={`text-sm font-medium cursor-pointer ${
+                    filter === "failed"
+                      ? "bg-red-600 hover:bg-red-700 text-white border-red-600"
+                      : "hover:bg-red-50 hover:text-red-700 hover:border-red-600"
+                  }`}
                   size="sm">
                   <XCircle className="w-4 h-4 mr-2" />
                   Gagal ({stats.failed.toLocaleString()})
@@ -689,7 +694,16 @@ const PaymentReview: React.FC = () => {
                       <Filter className="w-4 h-4 mr-2" />
                       Filter Status{" "}
                       {filter !== "all" && (
-                        <span className="ml-2 px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">
+                        <span
+                          className={`ml-2 px-2 py-0.5 text-white text-xs rounded-full ${
+                            filter === "pending"
+                              ? "bg-yellow-600"
+                              : filter === "success"
+                              ? "bg-green-600"
+                              : filter === "failed"
+                              ? "bg-red-600"
+                              : "bg-blue-500"
+                          }`}>
                           {filter === "pending"
                             ? "Menunggu"
                             : filter === "success"
@@ -719,7 +733,11 @@ const PaymentReview: React.FC = () => {
                       <Button
                         variant={filter === "pending" ? "default" : "outline"}
                         onClick={() => setFilter("pending")}
-                        className="justify-start h-12">
+                        className={`justify-start h-12 ${
+                          filter === "pending"
+                            ? "bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600"
+                            : "hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-600"
+                        }`}>
                         <Clock className="w-5 h-5 mr-3" />
                         <div className="flex-1 text-left">
                           <div className="font-medium">Menunggu</div>
@@ -730,7 +748,7 @@ const PaymentReview: React.FC = () => {
                       </Button>
                       <Button
                         onClick={() => setFilter("success")}
-                        variant={filter === "berhasil" ? "default" : "outline"}
+                        variant={filter === "success" ? "default" : "outline"}
                         className="justify-start h-12">
                         <CheckCircle className="w-5 h-5 mr-3" />
                         <div className="flex-1 text-left">
@@ -743,7 +761,11 @@ const PaymentReview: React.FC = () => {
                       <Button
                         variant={filter === "failed" ? "default" : "outline"}
                         onClick={() => setFilter("failed")}
-                        className="justify-start h-12">
+                        className={`justify-start h-12 ${
+                          filter === "failed"
+                            ? "bg-red-600 hover:bg-red-700 text-white border-red-600"
+                            : "hover:bg-red-50 hover:text-red-700 hover:border-red-600"
+                        }`}>
                         <XCircle className="w-5 h-5 mr-3" />
                         <div className="flex-1 text-left">
                           <div className="font-medium">Gagal</div>

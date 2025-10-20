@@ -222,7 +222,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
               // variant="outline"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8 bg-green-600 text-white hover:bg-green-700 ">
+              className="h-8 w-8 bg-green-600 text-white hover:bg-green-700 cursor-pointer">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -512,7 +512,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     variant="destructive"
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={isLoading}
-                    className="bg-red-600 hover:bg-red-700">
+                    className="bg-red-600 hover:bg-red-700 cursor-pointer">
                     <Trash2 className="w-4 h-4 mr-2" />
                     Hapus
                   </Button>
@@ -522,7 +522,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-green-600 hover:bg-green-700">
+                    className="bg-green-600 hover:bg-green-700 cursor-pointer">
                     <Save className="w-4 h-4 mr-2" />
                     {isLoading ? "Menyimpan..." : "Simpan"}
                   </Button>
@@ -552,19 +552,19 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     <span className="font-semibold">{user?.nama}</span>?
                     Tindakan ini tidak dapat dibatalkan.
                   </p>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end space-x-2">
                     <Button
                       variant="outline"
                       onClick={() => setShowDeleteConfirm(false)}
                       disabled={isLoading}
-                      className="bg-gray-600 hover:bg-gray-700">
+                      className="bg-green-600 hover:bg-green-700 text-white hover:text-white cursor-pointer">
                       Batal
                     </Button>
                     <Button
                       variant="destructive"
                       onClick={handleDelete}
                       disabled={isLoading}
-                      className="bg-red-600 hover:bg-red-700">
+                      className="bg-red-600 hover:bg-red-700 cursor-pointer">
                       {isLoading ? "Menghapus..." : "Hapus"}
                     </Button>
                   </div>
