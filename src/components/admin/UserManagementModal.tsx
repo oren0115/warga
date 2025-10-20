@@ -505,15 +505,6 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-6 border-t">
               <div className="flex space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className=" hover:bg-red-700"
-                  onClick={onClose}
-                  disabled={isLoading}>
-                  Batal
-                </Button>
-
                 {/* Tombol Delete - hanya untuk mode edit dan admin */}
                 {mode === "edit" && isAdmin && user && (
                   <Button
@@ -562,6 +553,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     Tindakan ini tidak dapat dibatalkan.
                   </p>
                   <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isLoading}
+                      className="bg-gray-600 hover:bg-gray-700">
+                      Batal
+                    </Button>
                     <Button
                       variant="destructive"
                       onClick={handleDelete}
