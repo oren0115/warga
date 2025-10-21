@@ -54,20 +54,14 @@ const FeeCard: React.FC<FeeCardProps> = ({
     return months[month - 1] || monthNum;
   };
 
-  const getDaysUntilDueDate = (month: string) => {
+  const getDaysUntilDueDate = (dueDateString: string) => {
     const currentDate = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
     );
-    let dueDate: Date;
-
-    if (month.includes("-")) {
-      const [year, monthNum] = month.split("-");
-      dueDate = new Date(parseInt(year), parseInt(monthNum), 0);
-    } else {
-      const currentYear = currentDate.getFullYear();
-      dueDate = new Date(currentYear, parseInt(month), 0);
-    }
-
+    
+    // Parse due_date from database (ISO string)
+    const dueDate = new Date(dueDateString);
+    
     const timeDiff = dueDate.getTime() - currentDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return daysDiff;
@@ -92,7 +86,7 @@ const FeeCard: React.FC<FeeCardProps> = ({
       .toString();
   };
 
-  const daysUntilDue = getDaysUntilDueDate(fee.bulan);
+  const daysUntilDue = getDaysUntilDueDate(fee.due_date);
   const canPay =
     fee.status.toLowerCase() === "belum bayar" ||
     fee.status.toLowerCase() === "pending";
@@ -134,39 +128,12 @@ const FeeCard: React.FC<FeeCardProps> = ({
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Jatuh Tempo:</span>
               <span className="font-medium">
-                {(() => {
-                  if (fee.bulan.includes("-")) {
-                    const [year, month] = fee.bulan.split("-");
-                    const dueDate = new Date(
-                      parseInt(year),
-                      parseInt(month),
-                      0
-                    );
-                    return dueDate.toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      timeZone: "Asia/Jakarta",
-                    });
-                  } else {
-                    const currentYear = new Date(
-                      new Date().toLocaleString("en-US", {
-                        timeZone: "Asia/Jakarta",
-                      })
-                    ).getFullYear();
-                    const dueDate = new Date(
-                      currentYear,
-                      parseInt(fee.bulan),
-                      0
-                    );
-                    return dueDate.toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      timeZone: "Asia/Jakarta",
-                    });
-                  }
-                })()}
+                {new Date(fee.due_date).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  timeZone: "Asia/Jakarta",
+                })}
               </span>
             </div>
 

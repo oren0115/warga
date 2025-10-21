@@ -87,7 +87,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               disabled={isRefreshing}
               variant="outline"
               size="sm"
-              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white">
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white hover:text-white border-green-600 hover:border-green-700">
               <RefreshCw
                 className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
               />
@@ -101,7 +101,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               disabled={isExporting}
               variant="outline"
               size="sm"
-              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white">
+              className="font-medium cursor-pointer bg-green-600 hover:bg-green-700 text-white hover:text-white border-green-600 hover:border-green-700">
               <Download className="w-4 h-4 mr-2" />
               {isExporting ? "Mengekspor..." : "Export"}
             </Button>
@@ -117,7 +117,11 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               key={filter.key}
               variant={activeFilter === filter.key ? "default" : "outline"}
               onClick={() => onFilterChange(filter.key)}
-              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white"
+              className={`text-sm font-medium cursor-pointer ${
+                activeFilter === filter.key 
+                  ? "bg-green-600 hover:bg-green-700 text-white hover:text-white" 
+                  : "hover:bg-green-700 hover:text-white"
+              }`}
               size="sm">
               {filter.icon && <span className="mr-2">{filter.icon}</span>}
               {filter.label}
@@ -135,7 +139,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               onClick={onReset}
               variant="outline"
               size="sm"
-              className="text-sm font-medium cursor-pointer  hover:bg-green-700 hover:text-white ml-auto">
+              className="text-sm font-medium cursor-pointer hover:bg-green-700 hover:text-white ml-auto">
               <Filter className="w-4 h-4 mr-2" />
               Reset Semua Filter
             </Button>

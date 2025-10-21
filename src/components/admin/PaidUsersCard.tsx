@@ -46,15 +46,25 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [filter, setFilter] = useState<FilterType>("all");
 
+  // Set default month to current month
   useEffect(() => {
-    fetchPaidUsers();
+    const months = generateAvailableMonths();
+    setSelectedMonth(months[0].value); // Set to current month
+  }, []);
+
+  useEffect(() => {
+    if (selectedMonth) {
+      fetchPaidUsers();
+    }
   }, [selectedMonth]);
 
   // Listen for real-time updates
   useEffect(() => {
-    const handleDashboardUpdate = (_data: any) => {
+    const handleDashboardUpdate = () => {
       // Refresh paid users when dashboard updates
-      fetchPaidUsers();
+      if (selectedMonth) {
+        fetchPaidUsers(selectedMonth);
+      }
     };
 
     websocketService.onDashboardUpdate(handleDashboardUpdate);
@@ -62,7 +72,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     return () => {
       // Cleanup handled by service
     };
-  }, []);
+  }, [selectedMonth]);
 
   // Filter users based on selected filter
   useEffect(() => {
@@ -84,13 +94,11 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     setFilteredUsers(filtered);
   }, [paidUsers, filter]);
 
-  const fetchPaidUsers = async () => {
+  const fetchPaidUsers = async (bulan?: string) => {
     setIsLoading(true);
     setError("");
     try {
-      const response = await adminService.getPaidUsers(
-        selectedMonth || undefined
-      );
+      const response = await adminService.getPaidUsers(bulan);
       setPaidUsers(response);
     } catch (err: any) {
       console.error("Error fetching paid users:", err);
@@ -104,21 +112,42 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     }
   };
 
-  const getMonthOptions = () => {
+  // Generate available months (last 12 months) - same as UnpaidUsersCard
+  const generateAvailableMonths = () => {
     const months = [];
-    const now = new Date();
-    for (let i = 0; i < 6; i++) {
+    // Use Jakarta timezone to get correct current month
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
+
+    for (let i = 0; i < 12; i++) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const value = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const label = date.toLocaleDateString("id-ID", {
-        year: "numeric",
-        month: "long",
-      });
-      months.push({ value, label });
+
+      // Create month string manually to avoid timezone issues
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Convert to 1-based and pad
+      const monthStr = `${year}-${month}`;
+
+      // Create label manually
+      const monthNames = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
+      const monthLabel = `${monthNames[date.getMonth()]} ${year}`;
+
+      months.push({ value: monthStr, label: monthLabel });
     }
-    // console.log("Available months:", months);
+
     return months;
   };
 
@@ -239,33 +268,27 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
     <Card
       className={`rounded-2xl shadow-md hover:shadow-xl transition ${className}`}>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              Warga yang Sudah Membayar
-            </CardTitle>
-            <CardDescription>
-              Daftar warga yang telah menyelesaikan pembayaran iuran
-            </CardDescription>
+        <CardTitle className="flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-green-600" />
+          Warga yang Sudah Membayar
+        </CardTitle>
+        <CardDescription>
+          Daftar warga yang telah menyelesaikan pembayaran iuran
+        </CardDescription>
+
+        {/* Month Selector */}
+        <div className="flex flex-wrap items-center gap-2 mt-4">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600">Bulan:</span>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-600">Bulan:</span>
-          <Select
-            value={selectedMonth || "all"}
-            onValueChange={(value) =>
-              setSelectedMonth(value === "all" ? "" : value)
-            }>
+
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
             <SelectTrigger className="w-[200px] border-green-300 focus:ring-green-500 focus:border-green-500 hover:border-green-500 hover:bg-green-50">
-              <SelectValue placeholder="Semua Bulan" />
+              <SelectValue placeholder="Pilih bulan" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Bulan</SelectItem>
-              {getMonthOptions().map((month) => (
+              {generateAvailableMonths().map((month) => (
                 <SelectItem key={month.value} value={month.value}>
                   {month.label}
                 </SelectItem>
@@ -275,7 +298,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
         </div>
 
         {/* Filter Controls */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mt-3">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-600">Filter:</span>
@@ -332,11 +355,12 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
             </Button>
           )}
         </div>
-
+      </CardHeader>
+      <CardContent>
         {error ? (
           <div className="text-center py-8">
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchPaidUsers} variant="outline">
+            <Button onClick={() => fetchPaidUsers(selectedMonth)} variant="outline">
               Coba Lagi
             </Button>
           </div>
@@ -346,7 +370,7 @@ const PaidUsersCard: React.FC<PaidUsersCardProps> = ({ className = "" }) => {
             <p className="text-gray-500">
               {selectedMonth
                 ? `Belum ada warga yang membayar pada ${
-                    getMonthOptions().find((m) => m.value === selectedMonth)
+                    generateAvailableMonths().find((m) => m.value === selectedMonth)
                       ?.label || selectedMonth
                   }`
                 : "Belum ada warga yang membayar"}
