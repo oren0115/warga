@@ -153,6 +153,7 @@ export const adminService = {
       nomor_hp: string;
       is_admin: boolean;
       tipe_rumah: string;
+      password?: string;
     }>
   ): Promise<User> => {
     const response: AxiosResponse<User> = await api.put(

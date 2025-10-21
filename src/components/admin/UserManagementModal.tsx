@@ -122,7 +122,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
     if (mode === "create" && !formData.password.trim()) {
       newErrors.password = "Password wajib diisi";
-    } else if (formData.password && formData.password.length < 6) {
+    } else if (formData.password && formData.password.trim() !== "" && formData.password.length < 6) {
       newErrors.password = "Password minimal 6 karakter";
     }
 
@@ -154,7 +154,8 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         await adminService.createUser(formData);
       } else if (mode === "edit" && user) {
         const updateData = { ...formData };
-        if (!updateData.password) {
+        // Only include password if it's not empty
+        if (!updateData.password || updateData.password.trim() === "") {
           delete (updateData as any).password;
         }
         await adminService.updateUser(user.id, updateData);
@@ -392,7 +393,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                 )}
               </div>
 
-              {(isCreate || (isEdit && formData.password)) && (
+              {(isCreate || isEdit) && (
                 <div className="space-y-2">
                   <Label htmlFor="password">
                     Password {isCreate ? "*" : "(kosongkan jika tidak diubah)"}
@@ -412,7 +413,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                       className={
                         errors.password ? "border-red-300 pr-10" : "pr-10"
                       }
-                      placeholder="Masukkan password"
+                      placeholder={isCreate ? "Masukkan password" : "Kosongkan jika tidak diubah"}
                     />
                     <Button
                       type="button"

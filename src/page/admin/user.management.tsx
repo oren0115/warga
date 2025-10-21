@@ -573,8 +573,7 @@ const UserManagement: React.FC = () => {
                         <Button
                           onClick={handleRefresh}
                           disabled={isRefreshing}
-                          // variant="outline"
-                          className="cursor-pointer flex items-center space-x-2 px-4 py-2.5 border-green-300 text-green-600 hover:bg-green-50  disabled:opacity-50 rounded-lg transition-colors text-sm font-medium">
+                          className="cursor-pointer text-white flex items-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700  rounded-lg transition-colors text-sm font-medium">
                           <RefreshCw
                             className={`w-4 h-4 ${
                               isRefreshing ? "animate-spin" : ""
