@@ -30,8 +30,8 @@ import PaymentFailed from "./page/user/payment.failed";
 import UnauthorizedPage from "./page/unauthorized";
 
 // proteksi
-import { ProtectedRoute } from "./components/protected.route";
 import { AdminRoute } from "./components/admin.route";
+import { UserRoute } from "./components/user.route";
 
 function App() {
   return (
@@ -45,71 +45,71 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <Home />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/iuran"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <Iuran />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/iuran/:id"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <IuranDetail />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/riwayat"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentHistory />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         {/* <Route
           path="/payment-history"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentHistory />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         /> */}
         <Route
           path="/notifications"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <Notifications />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <Profile />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
 
@@ -117,41 +117,41 @@ function App() {
         <Route
           path="/payment/processing"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentProcessing />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/payment/success"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentSuccess />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/payment/pending"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentPending />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
         <Route
           path="/payment/failed"
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <Layout>
                 <PaymentFailed />
               </Layout>
-            </ProtectedRoute>
+            </UserRoute>
           }
         />
 

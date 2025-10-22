@@ -17,9 +17,18 @@ import {
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import BottomNav from "../components/common/buttom.navigasi";
+// import AdvancedSubmenu from "../components/layout/AdvancedSubmenu";
 
 interface LayoutProps {
   children: React.ReactNode;
+}
+
+interface NavItem {
+  path: string;
+  label: string;
+  icon: any;
+  isAdvanced?: boolean;
+  submenu?: NavItem[];
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -42,7 +51,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: "/profile", label: "Profil", icon: LuUser },
   ];
 
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
     { path: "/admin/dashboard", label: "Dashboard", icon: LuStar },
     { path: "/admin/users", label: "Pengguna", icon: LuUser },
     { path: "/admin/fees", label: "Generate Iuran", icon: LuReceipt },
@@ -85,6 +94,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
+              
+              // Handle Advanced submenu
+              // if ((item as NavItem).isAdvanced) {
+              //   return (
+              //     <AdvancedSubmenu
+              //       key={item.path}
+              //       isActive={active}
+              //       isOpen={isAdvancedOpen}
+              //       onToggle={() => setIsAdvancedOpen(!isAdvancedOpen)}
+              //       className=""
+              //     />
+              //   );
+              // }
+              
               return (
                 <Button
                   key={item.path}
@@ -111,22 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        {/* Connection Status */}
-        {/* {isSidebarOpen && (
-          <div className="px-3 py-2 border-t border-gray-100">
-            <div className="space-y-2">
-              {!permissionGranted && (
-                <Button
-                  onClick={requestNotificationPermission}
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs h-7">
-                  Aktifkan Notifikasi
-                </Button>
-              )}
-            </div>
-          </div>
-        )} */}
+        
 
         {/* User Profile Section */}
         <div className="border-t border-gray-100 p-3 flex-shrink-0">

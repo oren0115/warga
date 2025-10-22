@@ -13,6 +13,10 @@ import type {
   UsersWithPhoneResponse,
   TelegramTestResponse,
   BroadcastResponse,
+  RegenerationHistory,
+  FeeVersion,
+  RollbackResponse,
+  TelegramStatusResponse,
 } from "../types";
 
 export const adminService = {
@@ -188,5 +192,45 @@ export const adminService = {
     await api.patch(`/admin/users/${userId}/reset-password`, {
       password: newPassword,
     });
+  },
+
+  // Regeneration History & Management
+  getRegenerationHistory: async (bulan: string): Promise<RegenerationHistory[]> => {
+    const response: AxiosResponse<RegenerationHistory[]> = await api.get(
+      `/admin/fees/regeneration-history/${bulan}`
+    );
+    return response.data;
+  },
+
+  getFeeVersions: async (feeId: string): Promise<FeeVersion[]> => {
+    const response: AxiosResponse<FeeVersion[]> = await api.get(
+      `/admin/fees/versions/${feeId}`
+    );
+    return response.data;
+  },
+
+  rollbackRegeneration: async (bulan: string): Promise<RollbackResponse> => {
+    const response: AxiosResponse<RollbackResponse> = await api.post(
+      `/admin/fees/rollback/${bulan}`
+    );
+    return response.data;
+  },
+
+  // Telegram Management
+  getTelegramStatus: async (): Promise<TelegramStatusResponse> => {
+    const response: AxiosResponse<TelegramStatusResponse> = await api.get(
+      "/admin/users/telegram-status"
+    );
+    return response.data;
+  },
+
+  activateTelegram: async (userId: string, telegramChatId: string): Promise<void> => {
+    await api.patch(`/admin/users/${userId}/activate-telegram`, null, {
+      params: { telegram_chat_id: telegramChatId }
+    });
+  },
+
+  deactivateTelegram: async (userId: string): Promise<void> => {
+    await api.patch(`/admin/users/${userId}/deactivate-telegram`);
   },
 };

@@ -201,6 +201,65 @@ export interface PaidUser {
   is_orphaned?: boolean;
 }
 
+// Regeneration History Types
+export interface RegenerationHistory {
+  id: string;
+  action: string;
+  month: string;
+  admin_user: string;
+  timestamp: string;
+  details: {
+    paid_fees_preserved: number;
+    unpaid_fees_regenerated: number;
+    new_fees_created: number;
+    reason?: string;
+  };
+  affected_fees_count: number;
+  paid_fees_preserved: number;
+  unpaid_fees_regenerated: number;
+  reason?: string;
+}
+
+export interface FeeVersion {
+  id: string;
+  user_id: string;
+  kategori: string;
+  nominal: number;
+  bulan: string;
+  status: string;
+  due_date: string;
+  created_at: string;
+  version: number;
+  regenerated_at?: string;
+  regenerated_reason?: string;
+  parent_fee_id?: string;
+  is_regenerated: boolean;
+}
+
+export interface RollbackResponse {
+  message: string;
+  fees_restored: number;
+  fees_removed: number;
+}
+
+// Telegram Management Types
+export interface TelegramUser {
+  id: string;
+  username: string;
+  nama: string;
+  nomor_hp: string;
+  telegram_chat_id?: string;
+  telegram_active: boolean;
+  created_at: string;
+}
+
+export interface TelegramStatusResponse {
+  users: TelegramUser[];
+  total_users: number;
+  active_telegram_users: number;
+  inactive_telegram_users: number;
+}
+
 // Auth context types
 export interface AuthState {
   token: string | null;
@@ -216,3 +275,4 @@ export interface AuthContextType {
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<void>;
 }
+
