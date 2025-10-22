@@ -2,17 +2,23 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import ConfirmationDialog from "../ui/confirmation-dialog";
 import Toast from "../ui/toast";
 import { useToast } from "../../hooks/useToast";
-import { 
-  History, 
-  RotateCcw, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  History,
+  RotateCcw,
+  AlertTriangle,
+  CheckCircle,
   Clock,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { adminService } from "../../services/admin.service";
 import type { RegenerationHistory as RegenerationHistoryType } from "../../types";
@@ -22,7 +28,9 @@ interface RegenerationHistoryProps {
   className?: string;
 }
 
-const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "" }) => {
+const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({
+  className = "",
+}) => {
   const [history, setHistory] = useState<RegenerationHistoryType[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,27 +44,33 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
   const generateAvailableMonths = () => {
     const months = [];
     const currentDate = new Date();
-    
+
     for (let i = 0; i < 12; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const monthValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const monthLabel = date.toLocaleDateString('id-ID', { 
-        year: 'numeric', 
-        month: 'long' 
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - i,
+        1
+      );
+      const monthValue = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}`;
+      const monthLabel = date.toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "long",
       });
-      
+
       months.push({ value: monthValue, label: monthLabel });
     }
-    
+
     return months;
   };
 
   const fetchHistory = async (bulan: string) => {
     if (!bulan) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const data = await adminService.getRegenerationHistory(bulan);
       setHistory(data);
@@ -132,7 +146,7 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full sm:w-48 cursor-pointer">
                 <SelectValue placeholder="Pilih bulan" />
               </SelectTrigger>
               <SelectContent>
@@ -147,8 +161,7 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
               onClick={() => fetchHistory(selectedMonth)}
               disabled={!selectedMonth || isLoading}
               size="sm"
-              className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
-            >
+              className="bg-green-600 hover:bg-green-700 w-full sm:w-auto cursor-pointer">
               {isLoading ? "Memuat..." : "Refresh"}
             </Button>
           </div>
@@ -180,8 +193,7 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
             {history.map((item) => (
               <div
                 key={item.id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
+                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
@@ -190,40 +202,55 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className={getActionColor(item.action)}>
-                          {item.action.replace('_', ' ').toUpperCase()}
+                          {item.action.replace("_", " ").toUpperCase()}
                         </Badge>
                         {getStatusIcon(item.action)}
                       </div>
-                      
+
                       <div className="text-sm text-gray-600 mb-2">
-                        <p><strong>Admin:</strong> {item.admin_user}</p>
-                        <p><strong>Waktu:</strong> {formatDateTimeWithPukul(item.timestamp)}</p>
+                        <p>
+                          <strong>Admin:</strong> {item.admin_user}
+                        </p>
+                        <p>
+                          <strong>Waktu:</strong>{" "}
+                          {formatDateTimeWithPukul(item.timestamp)}
+                        </p>
                         {item.reason && (
-                          <p><strong>Alasan:</strong> {item.reason}</p>
+                          <p>
+                            <strong>Alasan:</strong> {item.reason}
+                          </p>
                         )}
                       </div>
 
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
                         <div className="bg-green-50 p-2 rounded">
-                          <p className="text-green-700 font-medium text-xs">Tagihan Dibayar</p>
+                          <p className="text-green-700 font-medium text-xs">
+                            Tagihan Dibayar
+                          </p>
                           <p className="text-base sm:text-lg font-bold text-green-800">
                             {item.paid_fees_preserved}
                           </p>
                         </div>
                         <div className="bg-orange-50 p-2 rounded">
-                          <p className="text-orange-700 font-medium text-xs">Tagihan Diregenerate</p>
+                          <p className="text-orange-700 font-medium text-xs">
+                            Tagihan Diregenerate
+                          </p>
                           <p className="text-base sm:text-lg font-bold text-orange-800">
                             {item.unpaid_fees_regenerated}
                           </p>
                         </div>
                         <div className="bg-blue-50 p-2 rounded">
-                          <p className="text-blue-700 font-medium text-xs">Tagihan Baru</p>
+                          <p className="text-blue-700 font-medium text-xs">
+                            Tagihan Baru
+                          </p>
                           <p className="text-base sm:text-lg font-bold text-blue-800">
                             {item.details.new_fees_created}
                           </p>
                         </div>
                         <div className="bg-gray-50 p-2 rounded">
-                          <p className="text-gray-700 font-medium text-xs">Total Terpengaruh</p>
+                          <p className="text-gray-700 font-medium text-xs">
+                            Total Terpengaruh
+                          </p>
                           <p className="text-base sm:text-lg font-bold text-gray-800">
                             {item.affected_fees_count}
                           </p>
@@ -237,8 +264,7 @@ const RegenerationHistory: React.FC<RegenerationHistoryProps> = ({ className = "
                       onClick={() => handleRollback(item.month)}
                       variant="outline"
                       size="sm"
-                      className="text-orange-600 border-orange-200 hover:bg-orange-50"
-                    >
+                      className="text-orange-600 border-orange-200 hover:bg-orange-50 cursor-pointer">
                       <RotateCcw className="w-4 h-4 mr-1" />
                       Rollback
                     </Button>

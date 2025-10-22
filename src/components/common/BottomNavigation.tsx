@@ -20,7 +20,7 @@ interface NavItem {
   isSubmenu?: boolean;
 }
 
-const BottomNav: React.FC = () => {
+const BottomNavigation: React.FC = () => {
   const { authState } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,4 +74,4 @@ const BottomNav: React.FC = () => {
   );
 };
 
-export default BottomNav;
+export default BottomNavigation;

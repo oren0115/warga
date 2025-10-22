@@ -61,14 +61,14 @@ const GenerateFees: React.FC = () => {
       id: "generate",
       label: "Generate Iuran",
       icon: <Receipt className="w-4 h-4" />,
-      description: "Buat iuran baru untuk semua warga"
+      description: "Buat iuran baru untuk semua warga",
     },
     {
       id: "history regenerate iuran",
       label: "Riwayat Regenerate Iuran",
       icon: <History className="w-4 h-4" />,
-      description: "Lihat dan kelola history regenerate iuran"
-    }
+      description: "Lihat dan kelola history regenerate iuran",
+    },
   ];
 
   const handleGenerate = async () => {
@@ -174,7 +174,7 @@ const GenerateFees: React.FC = () => {
         return (
           <>
             {/* Form Card */}
-            <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl">
+            <Card className="hover:shadow-lg transition-all duration-300 border rounded-xl mb-4">
               <CardHeader>
                 <CardTitle className="text-xl text-gray-800">
                   Buat Iuran Baru
@@ -234,7 +234,9 @@ const GenerateFees: React.FC = () => {
                     {message && (
                       <Alert className="mb-4 bg-green-50 border-green-200">
                         <Info className="h-4 w-4 text-green-600" />
-                        <AlertTitle className="text-green-700">Berhasil</AlertTitle>
+                        <AlertTitle className="text-green-700">
+                          Berhasil
+                        </AlertTitle>
                         <AlertDescription className="text-green-700">
                           {message}
                         </AlertDescription>
@@ -376,9 +378,10 @@ const GenerateFees: React.FC = () => {
                           Perhatian
                         </AlertTitle>
                         <AlertDescription className="text-yellow-700">
-                          Pastikan Anda memilih bulan yang benar dan mengisi tarif
-                          yang sesuai. Proses ini akan membuat iuran untuk semua
-                          warga yang terdaftar berdasarkan tipe rumah mereka.
+                          Pastikan Anda memilih bulan yang benar dan mengisi
+                          tarif yang sesuai. Proses ini akan membuat iuran untuk
+                          semua warga yang terdaftar berdasarkan tipe rumah
+                          mereka.
                         </AlertDescription>
                       </Alert>
 
@@ -455,7 +458,9 @@ const GenerateFees: React.FC = () => {
           {/* Mobile Tab Navigation */}
           <div className="block sm:hidden">
             <div className="border-b border-gray-200">
-              <nav className="flex overflow-x-auto scrollbar-hide" aria-label="Tabs">
+              <nav
+                className="flex overflow-x-auto scrollbar-hide"
+                aria-label="Tabs">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -464,11 +469,10 @@ const GenerateFees: React.FC = () => {
                       activeTab === tab.id
                         ? "border-green-500 text-green-600 bg-green-50"
                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    } flex-shrink-0 py-3 px-4 border-b-2 font-medium text-sm flex items-center gap-2 min-w-fit`}
-                  >
+                    } flex-shrink-0 py-3 px-4 border-b-2 font-medium text-sm flex items-center gap-2 min-w-fit`}>
                     {tab.icon}
                     <span className="hidden xs:inline">{tab.label}</span>
-                    <span className="xs:hidden">{tab.label.split(' ')[0]}</span>
+                    <span className="xs:hidden">{tab.label.split(" ")[0]}</span>
                   </button>
                 ))}
               </nav>
@@ -485,10 +489,9 @@ const GenerateFees: React.FC = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`${
                       activeTab === tab.id
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
-                  >
+                        ? "border-green-500 text-green-600 cursor-pointer"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
+                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}>
                     {tab.icon}
                     {tab.label}
                   </button>
@@ -500,14 +503,12 @@ const GenerateFees: React.FC = () => {
           {/* Tab Description */}
           <div className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
             <p className="text-sm text-gray-600">
-              {tabs.find(tab => tab.id === activeTab)?.description}
+              {tabs.find((tab) => tab.id === activeTab)?.description}
             </p>
           </div>
 
           {/* Tab Content */}
-          <div className="p-4 sm:p-6">
-            {renderTabContent()}
-          </div>
+          <div className="p-4 sm:p-6">{renderTabContent()}</div>
         </div>
       </div>
 

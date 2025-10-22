@@ -9,6 +9,7 @@ import type {
   PaymentCreateResponse,
   PaymentStatusResponse,
 } from "../types";
+import { errorService } from "./error.service";
 
 // Helper untuk memastikan response berupa array
 const normalizeArrayResponse = <T>(data: any, key: string): T[] => {
@@ -49,7 +50,7 @@ export const userService = {
         "notifications"
       );
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      errorService.logApiError(error, "/notifications", "GET");
       throw new Error("Gagal memuat notifikasi");
     }
   },
@@ -59,7 +60,11 @@ export const userService = {
     try {
       await api.put(`/notifications/${notificationId}/read`);
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      errorService.logApiError(
+        error,
+        `/notifications/${notificationId}/read`,
+        "PUT"
+      );
       throw new Error("Gagal menandai notifikasi sebagai dibaca");
     }
   },
@@ -74,7 +79,7 @@ export const userService = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error checking payment status:", error);
+      errorService.logApiError(error, `/payments/check/${paymentId}`, "GET");
       throw new Error("Gagal mengecek status pembayaran");
     }
   },
@@ -97,7 +102,11 @@ export const userService = {
       > = await api.post(`/payments/force-check/${paymentId}`);
       return response.data;
     } catch (error) {
-      console.error("Error force checking payment status:", error);
+      errorService.logApiError(
+        error,
+        `/payments/force-check/${paymentId}`,
+        "POST"
+      );
       throw new Error("Gagal memaksa pengecekan status pembayaran");
     }
   },

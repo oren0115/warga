@@ -1,13 +1,50 @@
 {
-  "name": "frontend",
+  "name": "pkm-ipl-cluster-cannary-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "PKM IPL Cluster Cannary Financial Management System - Frontend",
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "tailwindcss",
+    "community",
+    "financial",
+    "management",
+    "pkm"
+  ],
+  "author": "PKM Development Team",
+  "license": "MIT",
+  "homepage": "https://github.com/your-org/pkm-frontend#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/pkm-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/pkm-frontend/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "clean": "rm -rf dist node_modules/.vite",
+    "prepare": "husky install",
+    "commit": "git-cz",
+    "release": "standard-version",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

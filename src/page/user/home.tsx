@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth.context";
+import { useError } from "../../context/error.context";
 import { userService } from "../../services/user.service";
 import type { Fee, Notification } from "../../types";
 import { AlertCircle, CheckCircle, User } from "lucide-react";
@@ -17,6 +18,7 @@ import {
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
+  const { logUserAction } = useError();
   const [fees, setFees] = useState<Fee[]>([]);
   const [, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,15 +34,27 @@ const Home: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
+      logUserAction("home_data_fetch_start", { page: "home" });
       const [feesData, notificationsData] = await Promise.all([
         userService.getFees(),
         userService.getNotifications(),
       ]);
       setFees(feesData);
       setNotifications(notificationsData);
+      logUserAction("home_data_fetch_success", {
+        feesCount: feesData.length,
+        notificationsCount: notificationsData.length,
+      });
     } catch (error) {
       console.error("Error fetching home data:", error);
       setError("Gagal memuat data. Silakan coba lagi.");
+      logUserAction(
+        "home_data_fetch_error",
+        {
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "high"
+      );
     } finally {
       setIsLoading(false);
     }

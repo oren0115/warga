@@ -15,6 +15,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Alert, AlertDescription } from "../../components/ui/alert";
+import { ErrorStats } from "../../components/admin";
 import {
   Users,
   FileText,
@@ -433,6 +434,23 @@ const Dashboard: React.FC = () => {
                 <PaidUsersCard className="h-fit" />
               </div>
             </div>
+
+            {/* Error Statistics - Development/Admin Only */}
+            {process.env.NODE_ENV === "development" && (
+              <div className="space-y-4 mb-6">
+                <Card className="text-center hover:shadow-xl transition">
+                  <CardHeader>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      Error Monitoring
+                    </h2>
+                    <p className="text-gray-600">
+                      Pantau error dan performa aplikasi (Development Mode)
+                    </p>
+                  </CardHeader>
+                </Card>
+                <ErrorStats />
+              </div>
+            )}
           </div>
         </>
       )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { adminService } from "../../services/admin.service";
 import { useAuth } from "../../context/auth.context";
+import { useErrorHandler } from "../../hooks/useErrorHandler";
 import type { User } from "../../types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -43,6 +44,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
   mode,
 }) => {
   const { authState } = useAuth();
+  const { handleApiError, logUserAction } = useErrorHandler();
   const [formData, setFormData] = useState({
     username: "",
     nama: "",
@@ -122,7 +124,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
     if (mode === "create" && !formData.password.trim()) {
       newErrors.password = "Password wajib diisi";
-    } else if (formData.password && formData.password.trim() !== "" && formData.password.length < 6) {
+    } else if (
+      formData.password &&
+      formData.password.trim() !== "" &&
+      formData.password.length < 6
+    ) {
       newErrors.password = "Password minimal 6 karakter";
     }
 
@@ -150,8 +156,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
     setIsLoading(true);
     try {
+      logUserAction("user_management_save_start", { mode, userId: user?.id });
+
       if (mode === "create") {
         await adminService.createUser(formData);
+        logUserAction("user_created", { username: formData.username });
       } else if (mode === "edit" && user) {
         const updateData = { ...formData };
         // Only include password if it's not empty
@@ -159,12 +168,21 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           delete (updateData as any).password;
         }
         await adminService.updateUser(user.id, updateData);
+        logUserAction("user_updated", {
+          userId: user.id,
+          username: formData.username,
+        });
       }
 
       onUserUpdated();
       onClose();
     } catch (error: any) {
-      console.error("Error saving user:", error);
+      handleApiError(
+        error,
+        "/admin/users",
+        mode === "create" ? "POST" : "PUT",
+        formData
+      );
       const errorMessage =
         error.response?.data?.detail || "Terjadi kesalahan saat menyimpan data";
       setErrors({ general: errorMessage });
@@ -191,7 +209,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       onUserUpdated();
       onClose();
     } catch (error: any) {
-      console.error("Error deleting user:", error);
+      handleApiError(error, `/admin/users/${user.id}`, "DELETE");
       setErrors({ general: "Terjadi kesalahan saat menghapus pengguna" });
     } finally {
       setIsLoading(false);
@@ -413,7 +431,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                       className={
                         errors.password ? "border-red-300 pr-10" : "pr-10"
                       }
-                      placeholder={isCreate ? "Masukkan password" : "Kosongkan jika tidak diubah"}
+                      placeholder={
+                        isCreate
+                          ? "Masukkan password"
+                          : "Kosongkan jika tidak diubah"
+                      }
                     />
                     <Button
                       type="button"

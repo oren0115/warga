@@ -16,7 +16,7 @@ import {
 
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import BottomNav from "../components/common/buttom.navigasi";
+import { BottomNavigation } from "../components/common";
 // import AdvancedSubmenu from "../components/layout/AdvancedSubmenu";
 
 interface LayoutProps {
@@ -195,7 +195,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Mobile Bottom Navigation */}
       <div className="lg:hidden">
-        <BottomNav />
+        <BottomNavigation />
       </div>
 
       {/* Bottom padding for mobile */}
