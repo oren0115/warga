@@ -1,17 +1,17 @@
 import React, {
   createContext,
   useContext,
-  useReducer,
   useEffect,
+  useReducer,
   type ReactNode,
-} from "react";
+} from 'react';
+import { authService } from '../services/auth.service';
 import type {
-  User,
-  AuthState,
   AuthContextType,
+  AuthState,
   RegisterRequest,
-} from "../types";
-import { authService } from "../services/auth.service";
+  User,
+} from '../types';
 
 // Initial state
 const initialState: AuthState = {
@@ -23,23 +23,23 @@ const initialState: AuthState = {
 
 // Action types
 type AuthAction =
-  | { type: "LOGIN_START" }
-  | { type: "LOGIN_SUCCESS"; payload: { token: string; user: User } }
-  | { type: "LOGIN_FAILURE"; payload: string }
-  | { type: "LOGOUT" }
-  | { type: "UPDATE_USER"; payload: User }
-  | { type: "SET_LOADING"; payload: boolean };
+  | { type: 'LOGIN_START' }
+  | { type: 'LOGIN_SUCCESS'; payload: { token: string; user: User } }
+  | { type: 'LOGIN_FAILURE'; payload: string }
+  | { type: 'LOGOUT' }
+  | { type: 'UPDATE_USER'; payload: User }
+  | { type: 'SET_LOADING'; payload: boolean };
 
 // Reducer
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "LOGIN_START":
+    case 'LOGIN_START':
       return {
         ...state,
         isLoading: true,
         error: null,
       };
-    case "LOGIN_SUCCESS":
+    case 'LOGIN_SUCCESS':
       return {
         ...state,
         token: action.payload.token,
@@ -47,7 +47,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: null,
       };
-    case "LOGIN_FAILURE":
+    case 'LOGIN_FAILURE':
       return {
         ...state,
         token: null,
@@ -55,7 +55,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: action.payload,
       };
-    case "LOGOUT":
+    case 'LOGOUT':
       return {
         ...state,
         token: null,
@@ -63,12 +63,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: null,
       };
-    case "UPDATE_USER":
+    case 'UPDATE_USER':
       return {
         ...state,
         user: action.payload,
       };
-    case "SET_LOADING":
+    case 'SET_LOADING':
       return {
         ...state,
         isLoading: action.payload,
@@ -90,24 +90,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Check for existing token on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("userToken");
-      const userInfo = localStorage.getItem("userInfo");
+      const token = localStorage.getItem('userToken');
+      const userInfo = localStorage.getItem('userInfo');
 
       if (token && userInfo) {
         try {
+          // Validate JWT expiry (without network call)
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            const exp =
+              typeof payload.exp === 'number' ? payload.exp * 1000 : 0;
+            if (exp && Date.now() >= exp) {
+              // Token expired
+              localStorage.removeItem('userToken');
+              localStorage.removeItem('userInfo');
+              dispatch({ type: 'SET_LOADING', payload: false });
+              return;
+            }
+          }
+
           const user = JSON.parse(userInfo);
           dispatch({
-            type: "LOGIN_SUCCESS",
+            type: 'LOGIN_SUCCESS',
             payload: { token, user },
           });
         } catch (error) {
           // Invalid stored data, clear it
-          localStorage.removeItem("userToken");
-          localStorage.removeItem("userInfo");
-          dispatch({ type: "SET_LOADING", payload: false });
+          localStorage.removeItem('userToken');
+          localStorage.removeItem('userInfo');
+          dispatch({ type: 'SET_LOADING', payload: false });
         }
       } else {
-        dispatch({ type: "SET_LOADING", payload: false });
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
@@ -115,47 +130,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const login = async (username: string, password: string): Promise<void> => {
-    dispatch({ type: "LOGIN_START" });
+    dispatch({ type: 'LOGIN_START' });
     try {
       const response = await authService.login(username, password);
-      localStorage.setItem("userToken", response.access_token);
-      localStorage.setItem("userInfo", JSON.stringify(response.user));
+      localStorage.setItem('userToken', response.access_token);
+      localStorage.setItem('userInfo', JSON.stringify(response.user));
       dispatch({
-        type: "LOGIN_SUCCESS",
+        type: 'LOGIN_SUCCESS',
         payload: { token: response.access_token, user: response.user },
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || "Login failed";
-      dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
+      const errorMessage = error.response?.data?.detail || 'Login failed';
+      dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error;
     }
   };
 
   const register = async (userData: RegisterRequest): Promise<void> => {
-    dispatch({ type: "LOGIN_START" });
+    dispatch({ type: 'LOGIN_START' });
     try {
       await authService.register(userData);
       // After successful registration, automatically log in
       await login(userData.username, userData.password);
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.detail || "Registration failed";
-      dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
+        error.response?.data?.detail || 'Registration failed';
+      dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error;
     }
   };
 
   const logout = (): void => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userInfo");
-    dispatch({ type: "LOGOUT" });
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userInfo');
+    dispatch({ type: 'LOGOUT' });
   };
 
   const updateProfile = async (userData: Partial<User>): Promise<void> => {
     try {
       const updatedUser = await authService.updateProfile(userData);
-      localStorage.setItem("userInfo", JSON.stringify(updatedUser));
-      dispatch({ type: "UPDATE_USER", payload: updatedUser });
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      dispatch({ type: 'UPDATE_USER', payload: updatedUser });
     } catch (error) {
       throw error;
     }
@@ -176,7 +191,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
