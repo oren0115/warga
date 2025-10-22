@@ -40,7 +40,6 @@
     "test:watch": "vitest --watch",
     "clean": "rm -rf dist node_modules/.vite",
     "prepare": "husky install",
-    "postinstall": "if [ \"$CI\" != \"true\" ]; then husky install; fi",
     "commit": "git-cz",
     "release": "standard-version",
     "docs:dev": "vitepress dev docs",
