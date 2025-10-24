@@ -19,7 +19,7 @@ export interface Fee {
   kategori: string;
   nominal: number;
   bulan: string;
-  status: "Belum Bayar" | "Pending" | "Lunas";
+  status: 'Belum Bayar' | 'Pending' | 'Lunas';
   due_date: string;
   created_at: string;
 }
@@ -31,13 +31,13 @@ export interface Payment {
   amount: number;
   payment_method: string;
   status:
-    | "Pending"
-    | "Settlement"
-    | "Success"
-    | "Deny"
-    | "Cancel"
-    | "Expire"
-    | "Failed";
+    | 'Pending'
+    | 'Settlement'
+    | 'Success'
+    | 'Deny'
+    | 'Cancel'
+    | 'Expire'
+    | 'Failed';
   created_at: string;
   transaction_id?: string;
   payment_token?: string;
@@ -161,6 +161,7 @@ export interface DashboardStats {
   totalFees: number;
   pendingPayments: number;
   approvedPayments: number;
+  failedPayments: number;
   currentMonthCollection: number;
   collectionRate: number;
   monthlyFees: { month: string; total: number }[];
@@ -275,4 +276,3 @@ export interface AuthContextType {
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<void>;
 }
-

@@ -96,6 +96,7 @@ const Dashboard: React.FC = () => {
         totalFees: 45,
         pendingPayments: 8,
         approvedPayments: 12,
+        failedPayments: 3,
         currentMonthCollection: 1200000,
         collectionRate: 75.5,
         unpaidFees: 5,
@@ -149,9 +150,10 @@ const Dashboard: React.FC = () => {
   const paymentStatus = [
     { name: 'Berhasil', value: stats?.approvedPayments || 0 },
     { name: 'Menunggu', value: stats?.pendingPayments || 0 },
+    { name: 'Gagal', value: stats?.failedPayments || 0 },
   ];
 
-  const COLORS = ['#22c55e', '#f59e0b'];
+  const COLORS = ['#22c55e', '#f59e0b', '#ef4444'];
 
   if (isLoading) {
     return <AdminLoading type='page' />;
