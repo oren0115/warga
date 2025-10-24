@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { userService } from "../../services/user.service";
-import type { Fee } from "../../types";
-import { User } from "lucide-react";
+import { User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { userService } from '../../../services/user.service';
+import type { Fee } from '../../../types';
 
 // shadcn/ui
-import NotificationPopup from "../../components/NotificationPopup";
+import NotificationPopup from '../../../components/NotificationPopup';
 import {
-  PageHeader,
-  LoadingSpinner,
-  ErrorState,
   EmptyState,
+  ErrorState,
   FeeCard,
+  LoadingSpinner,
+  PageHeader,
   PageLayout,
-} from "../../components/common";
+} from '../../../components/common';
 
 const IuranList: React.FC = () => {
   const navigate = useNavigate();
@@ -32,24 +32,24 @@ const IuranList: React.FC = () => {
       const feesData = await userService.getFees();
       setFees(feesData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleNotificationRead = () => {
-    setNotificationRefreshKey((prev) => prev + 1);
+    setNotificationRefreshKey(prev => prev + 1);
     // This will trigger NotificationBadge to refresh its data
   };
 
   if (isLoading) {
-    return <LoadingSpinner message="Memuat data..." />;
+    return <LoadingSpinner message='Memuat data...' />;
   }
 
   if (error) {
     return (
-      <ErrorState message={error || "Terjadi kesalahan"} onRetry={fetchData} />
+      <ErrorState message={error || 'Terjadi kesalahan'} onRetry={fetchData} />
     );
   }
 
@@ -57,9 +57,9 @@ const IuranList: React.FC = () => {
     <PageLayout>
       {/* Header */}
       <PageHeader
-        title="Daftar Iuran"
-        subtitle="Kelola pembayaran iuran IPL Anda"
-        icon={<User className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        title='Daftar Iuran'
+        subtitle='Kelola pembayaran iuran IPL Anda'
+        icon={<User className='w-5 h-5 md:w-6 md:h-6 text-white' />}
         showNotification={true}
         onNotificationClick={() => setShowNotificationPopup(true)}
         notificationRefreshKey={notificationRefreshKey}
@@ -73,15 +73,15 @@ const IuranList: React.FC = () => {
       />
 
       {/* Daftar Iuran */}
-      <div className="p-4 space-y-6 -mt-2">
+      <div className='p-4 space-y-6 -mt-2'>
         {fees.length > 0 ? (
-          <div className="space-y-6">
-            {fees.map((fee) => (
+          <div className='space-y-6'>
+            {fees.map(fee => (
               <FeeCard
                 key={fee.id}
                 fee={fee}
-                onPay={(feeId) => navigate(`/iuran/${feeId}`)}
-                onView={(feeId) => navigate(`/iuran/${feeId}`)}
+                onPay={feeId => navigate(`/iuran/${feeId}`)}
+                onView={feeId => navigate(`/iuran/${feeId}`)}
                 showDueDate={true}
                 showPaymentButton={true}
               />
@@ -89,9 +89,9 @@ const IuranList: React.FC = () => {
           </div>
         ) : (
           <EmptyState
-            title="Belum Ada Iuran"
-            description="Iuran akan muncul setelah admin membuatnya"
-            type="info"
+            title='Belum Ada Iuran'
+            description='Iuran akan muncul setelah admin membuatnya'
+            type='info'
           />
         )}
       </div>

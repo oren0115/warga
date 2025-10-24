@@ -1,24 +1,25 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { userService } from "../../services/user.service";
-import type { Payment } from "../../types";
+import React, { useCallback, useEffect, useState } from 'react';
+import { userService } from '../../../services/user.service';
+import type { Payment } from '../../../types';
 
 import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  Clipboard,
+  AlertTriangle,
   BarChart2,
-} from "lucide-react";
-import NotificationPopup from "../../components/NotificationPopup";
+  CheckCircle,
+  Clipboard,
+  Clock,
+  XCircle,
+} from 'lucide-react';
+import NotificationPopup from '../../../components/NotificationPopup';
 import {
-  PageHeader,
-  LoadingSpinner,
-  ErrorState,
-  PaymentCard,
-  FilterTabs,
   EmptyState,
+  ErrorState,
+  FilterTabs,
+  LoadingSpinner,
+  PageHeader,
   PageLayout,
-} from "../../components/common";
+  PaymentCard,
+} from '../../../components/common';
 
 // Mapping status pembayaran
 
@@ -28,7 +29,7 @@ const PaymentHistory: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -37,7 +38,7 @@ const PaymentHistory: React.FC = () => {
       setError(null);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Gagal memuat data");
+      setError(err.message || 'Gagal memuat data');
     }
   }, []);
 
@@ -61,26 +62,28 @@ const PaymentHistory: React.FC = () => {
   }, [fetchPayments]);
 
   const handleNotificationRead = () => {
-    setNotificationRefreshKey((prev) => prev + 1);
+    setNotificationRefreshKey(prev => prev + 1);
   };
 
   const filterPayments = (status: string) => {
     switch (status) {
-      case "all":
+      case 'all':
         return payments;
-      case "success":
-        return payments.filter((p) =>
-          ["success", "settlement"].includes(p.status.toLowerCase())
+      case 'success':
+        return payments.filter(p =>
+          ['success', 'settlement'].includes(p.status.toLowerCase())
         );
-      case "pending":
-        return payments.filter((p) =>
-          ["pending"].includes(p.status.toLowerCase())
+      case 'pending':
+        return payments.filter(p =>
+          ['pending'].includes(p.status.toLowerCase())
         );
-      case "failed":
-        return payments.filter((p) =>
-          ["failed", "deny", "cancel", "expire"].includes(
-            p.status.toLowerCase()
-          )
+      case 'failed':
+        return payments.filter(p =>
+          ['failed', 'deny', 'cancel'].includes(p.status.toLowerCase())
+        );
+      case 'expired':
+        return payments.filter(p =>
+          ['expire'].includes(p.status.toLowerCase())
         );
       default:
         return [];
@@ -88,18 +91,23 @@ const PaymentHistory: React.FC = () => {
   };
 
   const tabData = [
-    { value: "all", label: "Semua", icon: <Clipboard className="w-4 h-4" /> },
+    { value: 'all', label: 'Semua', icon: <Clipboard className='w-4 h-4' /> },
     {
-      value: "pending",
-      label: "Menunggu",
-      icon: <Clock className="w-4 h-4" />,
+      value: 'pending',
+      label: 'Menunggu',
+      icon: <Clock className='w-4 h-4' />,
     },
     {
-      value: "success",
-      label: "Lunas",
-      icon: <CheckCircle className="w-4 h-4" />,
+      value: 'success',
+      label: 'Lunas',
+      icon: <CheckCircle className='w-4 h-4' />,
     },
-    { value: "failed", label: "Gagal", icon: <XCircle className="w-4 h-4" /> },
+    { value: 'failed', label: 'Gagal', icon: <XCircle className='w-4 h-4' /> },
+    {
+      value: 'expired',
+      label: 'Kadaluarsa',
+      icon: <AlertTriangle className='w-4 h-4' />,
+    },
   ];
 
   const tabCounts = tabData.reduce((acc, tab) => {
@@ -109,7 +117,7 @@ const PaymentHistory: React.FC = () => {
 
   // --- Loading State ---
   if (isLoading) {
-    return <LoadingSpinner message="Memuat data..." />;
+    return <LoadingSpinner message='Memuat data...' />;
   }
 
   // --- Error State ---
@@ -121,48 +129,48 @@ const PaymentHistory: React.FC = () => {
     <PageLayout>
       {/* Header */}
       <PageHeader
-        title="Riwayat Pembayaran"
-        subtitle="Pantau semua transaksi pembayaran iuran IPL"
-        icon={<BarChart2 className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        title='Riwayat Pembayaran'
+        subtitle='Pantau semua transaksi pembayaran iuran IPL'
+        icon={<BarChart2 className='w-5 h-5 md:w-6 md:h-6 text-white' />}
         showNotification={true}
         onNotificationClick={() => setShowNotificationPopup(true)}
         notificationRefreshKey={notificationRefreshKey}
       />
 
       {/* Filter dan Content */}
-      <div className="p-4 space-y-6 -mt-2">
+      <div className='p-4 space-y-6 -mt-2'>
         {/* Filter */}
         <FilterTabs
-          tabs={tabData.map((tab) => ({
+          tabs={tabData.map(tab => ({
             ...tab,
             count: tabCounts[tab.value],
           }))}
           activeTab={selectedFilter}
           onTabChange={setSelectedFilter}
-          variant="select"
+          variant='select'
           onRefresh={fetchPayments}
           showCounts={true}
         />
 
         {/* Content */}
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {filterPayments(selectedFilter).length > 0 ? (
-            filterPayments(selectedFilter).map((payment) => (
+            filterPayments(selectedFilter).map(payment => (
               <PaymentCard
                 key={payment.id}
                 payment={payment}
                 onRefresh={fetchPayments}
-                onForceCheck={async (paymentId) => {
+                onForceCheck={async paymentId => {
                   await userService.forceCheckPaymentStatus(paymentId);
                 }}
               />
             ))
           ) : (
             <EmptyState
-              icon={<Clipboard className="w-12 h-12 text-gray-300 mb-4" />}
-              title="Belum ada data pembayaran"
-              description="Belum ada data pembayaran untuk kategori ini"
-              type="info"
+              icon={<Clipboard className='w-12 h-12 text-gray-300 mb-4' />}
+              title='Belum ada data pembayaran'
+              description='Belum ada data pembayaran untuk kategori ini'
+              type='info'
             />
           )}
         </div>

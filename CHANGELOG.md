@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom error handling hooks
 - Error statistics component for development
 - Comprehensive error documentation
+- Configurable payment expiry time (PAYMENT_EXPIRY_MINUTES environment variable)
+- Dedicated expired payment page with specific messaging
+- Enhanced payment status handling for expired payments
 
 ### Changed
 
@@ -22,12 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed components to follow consistent naming conventions
 - Updated file naming from dot notation to kebab-case
 - Enhanced component organization and exports
+- Payment expiry time reduced from 24 hours to 30 minutes (configurable)
+- PaymentStatusPage component now supports expired status
+- Payment processing logic improved to handle expired payments separately
 
 ### Fixed
 
 - Resolved linting errors in error handling components
 - Fixed import paths after file restructuring
 - Improved TypeScript type safety
+- Fixed admin users being able to access user pages
+- Fixed route protection to properly separate admin and user access
 
 ## [1.0.0] - 2024-01-XX
 

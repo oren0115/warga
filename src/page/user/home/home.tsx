@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/auth.context";
-import { useError } from "../../context/error.context";
-import { userService } from "../../services/user.service";
-import type { Fee, Notification } from "../../types";
-import { AlertCircle, CheckCircle, User } from "lucide-react";
-import NotificationPopup from "@/components/NotificationPopup";
+import { AlertCircle, CheckCircle, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import NotificationPopup from '../../../components/NotificationPopup';
 import {
-  PageHeader,
-  LoadingSpinner,
-  ErrorState,
   EmptyState,
+  ErrorState,
   FeeCard,
-  StatsCard,
+  LoadingSpinner,
+  PageHeader,
   PageLayout,
-} from "../../components/common";
+  StatsCard,
+} from '../../../components/common';
+import { useAuth } from '../../../context/auth.context';
+import { useError } from '../../../context/error.context';
+import { userService } from '../../../services/user.service';
+import type { Fee, Notification } from '../../../types';
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
@@ -34,26 +34,26 @@ const Home: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      logUserAction("home_data_fetch_start", { page: "home" });
+      logUserAction('home_data_fetch_start', { page: 'home' });
       const [feesData, notificationsData] = await Promise.all([
         userService.getFees(),
         userService.getNotifications(),
       ]);
       setFees(feesData);
       setNotifications(notificationsData);
-      logUserAction("home_data_fetch_success", {
+      logUserAction('home_data_fetch_success', {
         feesCount: feesData.length,
         notificationsCount: notificationsData.length,
       });
     } catch (error) {
-      console.error("Error fetching home data:", error);
-      setError("Gagal memuat data. Silakan coba lagi.");
+      console.error('Error fetching home data:', error);
+      setError('Gagal memuat data. Silakan coba lagi.');
       logUserAction(
-        "home_data_fetch_error",
+        'home_data_fetch_error',
         {
           error: error instanceof Error ? error.message : String(error),
         },
-        "high"
+        'high'
       );
     } finally {
       setIsLoading(false);
@@ -61,26 +61,26 @@ const Home: React.FC = () => {
   };
 
   if (isLoading) {
-    return <LoadingSpinner message="Memuat data..." />;
+    return <LoadingSpinner message='Memuat data...' />;
   }
 
   if (error) {
     return <ErrorState message={error} onRetry={fetchData} />;
   }
 
-  const currentFee = fees.find((fee) => {
+  const currentFee = fees.find(fee => {
     // Handle format "YYYY-MM" or just month number
     let feeMonth: number;
-    if (fee.bulan.includes("-")) {
+    if (fee.bulan.includes('-')) {
       // Format: "2025-09" -> extract month part
-      feeMonth = parseInt(fee.bulan.split("-")[1]);
+      feeMonth = parseInt(fee.bulan.split('-')[1]);
     } else {
       // Format: "9" -> direct parse
       feeMonth = parseInt(fee.bulan);
     }
     const currentMonth =
       new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+        new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })
       ).getMonth() + 1;
     return feeMonth === currentMonth;
   });
@@ -91,71 +91,67 @@ const Home: React.FC = () => {
       <NotificationPopup
         isOpen={showNotificationPopup}
         onClose={() => setShowNotificationPopup(false)}
-        onNotificationRead={() => setNotificationRefreshKey((prev) => prev + 1)}
+        onNotificationRead={() => setNotificationRefreshKey(prev => prev + 1)}
       />
 
       {/* Enhanced Header with Branding - Responsive */}
       <PageHeader
-        title="Halo"
-        subtitle="Kelola iuran IPL Anda dengan mudah"
-        icon={<User className="w-5 h-5 md:w-6 md:h-6 text-white" />}
+        title='Halo'
+        subtitle='Kelola iuran IPL Anda dengan mudah'
+        icon={<User className='w-5 h-5 md:w-6 md:h-6 text-white' />}
         userName={authState.user?.nama}
         showNotification={true}
         onNotificationClick={() => setShowNotificationPopup(true)}
         notificationRefreshKey={notificationRefreshKey}
       />
 
-      <div className="p-4 space-y-6 -mt-2">
+      <div className='p-4 space-y-6 -mt-2'>
         {/* Current Fee - Enhanced */}
         {currentFee ? (
           <FeeCard
             fee={currentFee}
-            onPay={(feeId) => navigate(`/iuran/${feeId}`)}
+            onPay={feeId => navigate(`/iuran/${feeId}`)}
             showDueDate={true}
             showPaymentButton={true}
           />
         ) : (
           <EmptyState
             icon={
-              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+              <CheckCircle className='w-12 h-12 text-green-500 mx-auto mb-3' />
             }
-            title="Tidak ada iuran tertunggak"
-            description="Semua iuran sudah lunas"
-            type="success"
+            title='Tidak ada iuran tertunggak'
+            description='Semua iuran sudah lunas'
+            type='success'
           />
         )}
 
         {/* Enhanced Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <StatsCard
-            title="Lunas"
-            value={
-              fees.filter((f) => f.status.toLowerCase() === "lunas").length
-            }
+            title='Lunas'
+            value={fees.filter(f => f.status.toLowerCase() === 'lunas').length}
             description={
-              fees.filter((f) => f.status.toLowerCase() === "lunas").length ===
-              0
-                ? "Belum ada data"
-                : "Pembayaran selesai"
+              fees.filter(f => f.status.toLowerCase() === 'lunas').length === 0
+                ? 'Belum ada data'
+                : 'Pembayaran selesai'
             }
-            icon={<CheckCircle className="w-6 h-6 text-white" />}
-            variant="success"
+            icon={<CheckCircle className='w-6 h-6 text-white' />}
+            variant='success'
           />
 
           <StatsCard
-            title="Tertunggak"
+            title='Tertunggak'
             value={
-              fees.filter((f) => f.status.toLowerCase() === "belum bayar")
-                .length
+              fees.filter(f => f.status.toLowerCase() === 'belum bayar').length
             }
             description={
-              fees.filter((f) => f.status.toLowerCase() === "belum bayar")
+              fees.filter(f => f.status.toLowerCase() === 'belum bayar')
                 .length === 0
-                ? "Semua lunas"
-                : "Perlu dibayar"
+                ? 'Semua lunas'
+                : 'Perlu dibayar'
             }
-            icon={<AlertCircle className="w-6 h-6 text-white" />}
-            variant="error"
+            icon={<AlertCircle className='w-6 h-6 text-white' />}
+            variant='error'
           />
         </div>
       </div>

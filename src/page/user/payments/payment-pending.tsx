@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { userService } from "../../services/user.service";
-import type { PaymentStatusResponse } from "../../types";
-import { PaymentStatusPage } from "../../components/common";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PaymentStatusPage } from '../../../components/common';
+import { userService } from '../../../services/user.service';
+import type { PaymentStatusResponse } from '../../../types';
 
 const PaymentPending: React.FC = () => {
   const navigate = useNavigate();
@@ -12,8 +12,8 @@ const PaymentPending: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
-  const paymentId = searchParams.get("payment_id");
-  const feeId = searchParams.get("fee_id");
+  const paymentId = searchParams.get('payment_id');
+  const feeId = searchParams.get('fee_id');
 
   useEffect(() => {
     if (paymentId) {
@@ -33,14 +33,14 @@ const PaymentPending: React.FC = () => {
       // Refresh fees to get updated status
       await userService.getFees();
     } catch (error) {
-      console.error("Error fetching payment details:", error);
+      console.error('Error fetching payment details:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleBack = () => {
-    navigate("/iuran");
+    navigate('/iuran');
   };
 
   const handleCheckStatus = async () => {
@@ -56,20 +56,21 @@ const PaymentPending: React.FC = () => {
 
       // Check if status changed
       if (
-        paymentData.status.toLowerCase() === "success" ||
-        paymentData.status.toLowerCase() === "settlement"
+        paymentData.status.toLowerCase() === 'success' ||
+        paymentData.status.toLowerCase() === 'settlement'
       ) {
         navigate(`/payment/success?payment_id=${paymentId}&fee_id=${feeId}`);
+      } else if (paymentData.status.toLowerCase() === 'expire') {
+        navigate(`/payment/expired?payment_id=${paymentId}&fee_id=${feeId}`);
       } else if (
-        paymentData.status.toLowerCase() === "failed" ||
-        paymentData.status.toLowerCase() === "deny" ||
-        paymentData.status.toLowerCase() === "cancel" ||
-        paymentData.status.toLowerCase() === "expire"
+        paymentData.status.toLowerCase() === 'failed' ||
+        paymentData.status.toLowerCase() === 'deny' ||
+        paymentData.status.toLowerCase() === 'cancel'
       ) {
         navigate(`/payment/failed?payment_id=${paymentId}&fee_id=${feeId}`);
       }
     } catch (error) {
-      console.error("Error checking payment status:", error);
+      console.error('Error checking payment status:', error);
     } finally {
       setIsCheckingStatus(false);
     }
@@ -79,14 +80,14 @@ const PaymentPending: React.FC = () => {
     if (feeId) {
       navigate(`/iuran/${feeId}`);
     } else {
-      navigate("/iuran");
+      navigate('/iuran');
     }
   };
 
   if (isLoading) {
     return (
       <PaymentStatusPage
-        status="pending"
+        status='pending'
         paymentId={paymentId || undefined}
         onBack={handleBack}
       />
@@ -95,7 +96,7 @@ const PaymentPending: React.FC = () => {
 
   return (
     <PaymentStatusPage
-      status="pending"
+      status='pending'
       paymentId={paymentStatus?.payment_id}
       onBack={handleBack}
       onRetry={handleRetry}

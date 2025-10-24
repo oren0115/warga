@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { userService } from "../../services/user.service";
-import type { Notification } from "../../types";
-import NotificationPopup from "../../components/NotificationPopup";
+import React, { useEffect, useState } from 'react';
+import NotificationPopup from '../../../components/NotificationPopup';
+import { userService } from '../../../services/user.service';
+import type { Notification } from '../../../types';
 // shadcn + lucide
-import { Bell, Info } from "lucide-react";
+import { Bell, Info } from 'lucide-react';
 import {
-  PageHeader,
-  LoadingSpinner,
-  ErrorState,
-  NotificationCard,
   EmptyState,
+  ErrorState,
+  LoadingSpinner,
+  NotificationCard,
+  PageHeader,
   PageLayout,
-} from "../../components/common";
+} from '../../../components/common';
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -31,8 +31,8 @@ const Notifications: React.FC = () => {
       const notificationsData = await userService.getNotifications();
       setNotifications(notificationsData);
     } catch (error) {
-      console.error("Error fetching notifications:", error);
-      setError("Gagal memuat notifikasi");
+      console.error('Error fetching notifications:', error);
+      setError('Gagal memuat notifikasi');
     } finally {
       setIsLoading(false);
     }
@@ -41,22 +41,22 @@ const Notifications: React.FC = () => {
   const markAsRead = async (notificationId: string) => {
     try {
       await userService.markNotificationAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((notif) =>
+      setNotifications(prev =>
+        prev.map(notif =>
           notif.id === notificationId ? { ...notif, is_read: true } : notif
         )
       );
       // Refresh badge count in header
-      setNotificationRefreshKey((prev) => prev + 1);
+      setNotificationRefreshKey(prev => prev + 1);
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      console.error('Error marking notification as read:', error);
     }
   };
 
   // const unreadCount = notifications.filter((notif) => !notif.is_read).length;
 
   if (isLoading) {
-    return <LoadingSpinner message="Memuat notifikasi..." />;
+    return <LoadingSpinner message='Memuat notifikasi...' />;
   }
 
   if (error) {
@@ -67,16 +67,16 @@ const Notifications: React.FC = () => {
     <PageLayout>
       {/* Header */}
       <PageHeader
-        title="Notifikasi"
-        subtitle="Informasi terbaru untuk Anda"
-        icon={<Bell className="w-6 h-6 text-white" />}
+        title='Notifikasi'
+        subtitle='Informasi terbaru untuk Anda'
+        icon={<Bell className='w-6 h-6 text-white' />}
       />
 
       {/* List Notifikasi */}
-      <div className="p-4">
+      <div className='p-4'>
         {notifications.length > 0 ? (
-          <div className="space-y-4">
-            {notifications.map((notification) => (
+          <div className='space-y-4'>
+            {notifications.map(notification => (
               <NotificationCard
                 key={notification.id}
                 id={notification.id}
@@ -92,10 +92,10 @@ const Notifications: React.FC = () => {
           </div>
         ) : (
           <EmptyState
-            icon={<Info className="w-16 h-16 text-gray-400 mx-auto mb-4" />}
-            title="Belum Ada Notifikasi"
-            description="Notifikasi akan muncul di sini"
-            type="info"
+            icon={<Info className='w-16 h-16 text-gray-400 mx-auto mb-4' />}
+            title='Belum Ada Notifikasi'
+            description='Notifikasi akan muncul di sini'
+            type='info'
           />
         )}
       </div>
@@ -103,7 +103,7 @@ const Notifications: React.FC = () => {
       <NotificationPopup
         isOpen={showNotificationPopup}
         onClose={() => setShowNotificationPopup(false)}
-        onNotificationRead={() => setNotificationRefreshKey((k) => k + 1)}
+        onNotificationRead={() => setNotificationRefreshKey(k => k + 1)}
       />
     </PageLayout>
   );

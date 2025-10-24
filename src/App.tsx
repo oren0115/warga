@@ -1,38 +1,39 @@
-import "./css/main.css";
-import { Routes, Route } from "react-router-dom";
-import Login from "./page/auth/login/login";
+import { Route, Routes } from 'react-router-dom';
+import './css/main.css';
+import Login from './page/auth/login/login';
 // import Register from "./page/auth/register/register";
-import { AuthProvider } from "./context/auth.context";
-import { ErrorProvider } from "./context/error.context";
-import { ErrorBoundary } from "./components/common";
-import Layout from "./layout/Layout";
+import { ErrorBoundary } from './components/common';
+import { AuthProvider } from './context/auth.context';
+import { ErrorProvider } from './context/error.context';
+import Layout from './layout/Layout';
 
 // admin pages
-import Dashboard from "./page/admin/dashboard";
-import UserManagement from "./page/admin/user-management";
-import GenerateFees from "./page/admin/generate-fees";
-import PaymentReview from "./page/admin/payment-review";
-import BroadcastNotification from "./page/admin/broadcast-notifications";
+import Dashboard from './page/admin/dashboard';
+import GenerateFees from './page/admin/manajemen-fees/generate-fees';
+import UserManagement from './page/admin/manajemen-users/user-management';
+import BroadcastNotification from './page/admin/notifications/broadcast-notifications';
+import PaymentReview from './page/admin/payment-review/payment-review';
 
 // user pages
-import Home from "./page/user/home";
-import FeesList from "./page/user/fees";
-import FeeDetail from "./page/user/fee-detail";
-import PaymentHistory from "./page/user/payment-history";
-import Notifications from "./page/user/notifications";
-import Profile from "./page/user/profile";
+import FeeDetail from './page/user/fees/fee-detail';
+import FeesList from './page/user/fees/fees';
+import Home from './page/user/home/home';
+import Notifications from './page/user/notifications/notifications';
+import PaymentHistory from './page/user/payments/payment-history';
+import Profile from './page/user/profile/profile';
 
 // payment status pages
-import PaymentProcessing from "./page/user/payment-processing";
-import PaymentSuccess from "./page/user/payment-success";
-import PaymentPending from "./page/user/payment-pending";
-import PaymentFailed from "./page/user/payment-failed";
+import PaymentExpired from './page/user/payments/payment-expired';
+import PaymentFailed from './page/user/payments/payment-failed';
+import PaymentPending from './page/user/payments/payment-pending';
+import PaymentProcessing from './page/user/payments/payment-processing';
+import PaymentSuccess from './page/user/payments/payment-success';
 
 // error pages
-import UnauthorizedPage from "./page/unauthorized";
+import UnauthorizedPage from './page/unauthorized';
 
 // proteksi
-import { AdminRoute, UserRoute } from "./routes";
+import { AdminRoute, UserRoute } from './routes';
 
 function App() {
   return (
@@ -41,12 +42,12 @@ function App() {
         <AuthProvider>
           <Routes>
             {/* Public routes */}
-            <Route path="/login" element={<Login />} />
+            <Route path='/login' element={<Login />} />
             {/* <Route path="/register" element={<Register />} /> */}
 
             {/* User routes */}
             <Route
-              path="/"
+              path='/'
               element={
                 <UserRoute>
                   <Layout>
@@ -56,7 +57,7 @@ function App() {
               }
             />
             <Route
-              path="/iuran"
+              path='/iuran'
               element={
                 <UserRoute>
                   <Layout>
@@ -66,7 +67,7 @@ function App() {
               }
             />
             <Route
-              path="/iuran/:id"
+              path='/iuran/:id'
               element={
                 <UserRoute>
                   <Layout>
@@ -76,7 +77,7 @@ function App() {
               }
             />
             <Route
-              path="/riwayat"
+              path='/riwayat'
               element={
                 <UserRoute>
                   <Layout>
@@ -96,7 +97,7 @@ function App() {
           }
         /> */}
             <Route
-              path="/notifications"
+              path='/notifications'
               element={
                 <UserRoute>
                   <Layout>
@@ -106,7 +107,7 @@ function App() {
               }
             />
             <Route
-              path="/profile"
+              path='/profile'
               element={
                 <UserRoute>
                   <Layout>
@@ -118,7 +119,7 @@ function App() {
 
             {/* Payment status routes */}
             <Route
-              path="/payment/processing"
+              path='/payment/processing'
               element={
                 <UserRoute>
                   <Layout>
@@ -128,7 +129,7 @@ function App() {
               }
             />
             <Route
-              path="/payment/success"
+              path='/payment/success'
               element={
                 <UserRoute>
                   <Layout>
@@ -138,7 +139,7 @@ function App() {
               }
             />
             <Route
-              path="/payment/pending"
+              path='/payment/pending'
               element={
                 <UserRoute>
                   <Layout>
@@ -148,7 +149,7 @@ function App() {
               }
             />
             <Route
-              path="/payment/failed"
+              path='/payment/failed'
               element={
                 <UserRoute>
                   <Layout>
@@ -157,10 +158,20 @@ function App() {
                 </UserRoute>
               }
             />
+            <Route
+              path='/payment/expired'
+              element={
+                <UserRoute>
+                  <Layout>
+                    <PaymentExpired />
+                  </Layout>
+                </UserRoute>
+              }
+            />
 
             {/* Admin routes */}
             <Route
-              path="/admin/dashboard"
+              path='/admin/dashboard'
               element={
                 <AdminRoute>
                   <Layout>
@@ -170,7 +181,7 @@ function App() {
               }
             />
             <Route
-              path="/admin/users"
+              path='/admin/users'
               element={
                 <AdminRoute>
                   <Layout>
@@ -180,7 +191,7 @@ function App() {
               }
             />
             <Route
-              path="/admin/fees"
+              path='/admin/fees'
               element={
                 <AdminRoute>
                   <Layout>
@@ -190,7 +201,7 @@ function App() {
               }
             />
             <Route
-              path="/admin/payments"
+              path='/admin/payments'
               element={
                 <AdminRoute>
                   <Layout>
@@ -200,7 +211,7 @@ function App() {
               }
             />
             <Route
-              path="/admin/broadcast"
+              path='/admin/broadcast'
               element={
                 <AdminRoute>
                   <Layout>
@@ -211,8 +222,8 @@ function App() {
             />
 
             {/* Unauthorized & Not Found */}
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            <Route path="*" element={<h1>404 - Not Found</h1>} />
+            <Route path='/unauthorized' element={<UnauthorizedPage />} />
+            <Route path='*' element={<h1>404 - Not Found</h1>} />
           </Routes>
         </AuthProvider>
       </ErrorBoundary>

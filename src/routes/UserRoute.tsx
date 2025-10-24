@@ -17,6 +17,11 @@ const UserRoute: React.FC<UserRouteProps> = ({ children }) => {
     return <Navigate to='/login' replace />;
   }
 
+  // Prevent admin from accessing user pages
+  if (authState.user.is_admin) {
+    return <Navigate to='/admin/dashboard' replace />;
+  }
+
   return <>{children}</>;
 };
 

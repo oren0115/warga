@@ -17,6 +17,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to='/login' replace />;
   }
 
+  // Redirect admin to admin dashboard, regular users to home
+  if (authState.user.is_admin) {
+    return <Navigate to='/admin/dashboard' replace />;
+  }
+
   return <>{children}</>;
 };
 

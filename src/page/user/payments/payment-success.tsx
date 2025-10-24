@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { userService } from "../../services/user.service";
-import type { PaymentStatusResponse } from "../../types";
-import { PaymentStatusPage } from "../../components/common";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PaymentStatusPage } from '../../../components/common';
+import { userService } from '../../../services/user.service';
+import type { PaymentStatusResponse } from '../../../types';
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const PaymentSuccess: React.FC = () => {
     useState<PaymentStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const paymentId = searchParams.get("payment_id");
+  const paymentId = searchParams.get('payment_id');
 
   useEffect(() => {
     if (paymentId) {
@@ -31,14 +31,14 @@ const PaymentSuccess: React.FC = () => {
       // Refresh fees to get updated status
       await userService.getFees();
     } catch (error) {
-      console.error("Error fetching payment details:", error);
+      console.error('Error fetching payment details:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleBack = () => {
-    navigate("/iuran");
+    navigate('/iuran');
   };
 
   const handleCheckStatus = async () => {
@@ -51,14 +51,14 @@ const PaymentSuccess: React.FC = () => {
       // Refresh fees to get updated status
       await userService.getFees();
     } catch (error) {
-      console.error("Error checking payment status:", error);
+      console.error('Error checking payment status:', error);
     }
   };
 
   if (isLoading) {
     return (
       <PaymentStatusPage
-        status="success"
+        status='success'
         paymentId={paymentId || undefined}
         onBack={handleBack}
       />
@@ -67,7 +67,7 @@ const PaymentSuccess: React.FC = () => {
 
   return (
     <PaymentStatusPage
-      status="success"
+      status='success'
       paymentId={paymentStatus?.payment_id}
       onBack={handleBack}
       onCheckStatus={handleCheckStatus}
