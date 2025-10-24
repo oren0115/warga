@@ -291,6 +291,7 @@ export function getErrorInfo(error: any): {
   severity: string;
   showRetry: boolean;
   showContact: boolean;
+  statusCode?: number;
 } {
   const errorMapping = getUserFriendlyError(error);
 
@@ -302,5 +303,6 @@ export function getErrorInfo(error: any): {
     severity: errorMapping.severity,
     showRetry: errorMapping.showRetry || false,
     showContact: errorMapping.showContact || false,
+    statusCode: errorMapping.statusCode,
   };
 }
