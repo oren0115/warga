@@ -1,7 +1,7 @@
 // src/hooks/useRealtimeDashboard.ts
-import { useEffect, useCallback, useState } from "react";
-import { websocketService } from "../services/websocket.service";
-import type { DashboardStats } from "../types";
+import { useCallback, useEffect, useState } from 'react';
+import { websocketService } from '../services/websocket.service';
+import type { DashboardStats } from '../types';
 
 interface UseRealtimeDashboardProps {
   userId: string | null;
@@ -51,6 +51,7 @@ export const useRealtimeDashboard = ({
   // Handle incoming dashboard updates
   useEffect(() => {
     const handleDashboardUpdate = (data: any) => {
+      console.log('🔄 Dashboard update received:', data);
       setLastUpdate(new Date());
       onDashboardUpdate?.(data);
     };

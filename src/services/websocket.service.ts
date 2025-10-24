@@ -1,5 +1,5 @@
 // src/services/websocket.service.ts
-import type { Notification } from "../types";
+import type { Notification } from '../types';
 
 export interface WebSocketMessage {
   type: string;
@@ -35,13 +35,13 @@ class WebSocketServiceImpl implements WebSocketService {
     this.token = token;
 
     // Get API base URL from environment variable
-    const apiBaseUrl = import.meta.env.VITE_API_URL || "";
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 
     // Convert HTTP/HTTPS to WS/WSS
     const wsUrl =
       apiBaseUrl
-        .replace(/^http/, "ws") // http -> ws, https -> wss
-        .replace(/\/$/, "") + // Remove trailing slash
+        .replace(/^http/, 'ws') // http -> ws, https -> wss
+        .replace(/\/$/, '') + // Remove trailing slash
       `/ws/${userId}?token=${encodeURIComponent(token)}`;
 
     try {
@@ -52,21 +52,21 @@ class WebSocketServiceImpl implements WebSocketService {
         this.notifyConnectionChange(true);
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = event => {
         try {
           const message: WebSocketMessage = JSON.parse(event.data);
 
-          if (message.type === "notification") {
+          if (message.type === 'notification') {
             this.notifyNotificationCallbacks(message.data);
-          } else if (message.type === "dashboard_update") {
+          } else if (message.type === 'dashboard_update') {
             this.notifyDashboardUpdateCallbacks(message.data);
           }
         } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
+          console.error('Error parsing WebSocket message:', error);
         }
       };
 
-      this.ws.onclose = (event) => {
+      this.ws.onclose = event => {
         this.notifyConnectionChange(false);
 
         // Attempt to reconnect if not a manual close
@@ -78,12 +78,12 @@ class WebSocketServiceImpl implements WebSocketService {
         }
       };
 
-      this.ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+      this.ws.onerror = error => {
+        console.error('WebSocket error:', error);
         this.notifyConnectionChange(false);
       };
     } catch (error) {
-      console.error("Error creating WebSocket connection:", error);
+      console.error('Error creating WebSocket connection:', error);
       this.notifyConnectionChange(false);
     }
   }
@@ -100,7 +100,7 @@ class WebSocketServiceImpl implements WebSocketService {
 
   disconnect() {
     if (this.ws) {
-      this.ws.close(1000, "Manual disconnect");
+      this.ws.close(1000, 'Manual disconnect');
       this.ws = null;
     }
     this.userId = null;
@@ -126,31 +126,31 @@ class WebSocketServiceImpl implements WebSocketService {
   }
 
   private notifyNotificationCallbacks(notification: Notification) {
-    this.notificationCallbacks.forEach((callback) => {
+    this.notificationCallbacks.forEach(callback => {
       try {
         callback(notification);
       } catch (error) {
-        console.error("Error in notification callback:", error);
+        console.error('Error in notification callback:', error);
       }
     });
   }
 
   private notifyConnectionChange(connected: boolean) {
-    this.connectionCallbacks.forEach((callback) => {
+    this.connectionCallbacks.forEach(callback => {
       try {
         callback(connected);
       } catch (error) {
-        console.error("Error in connection callback:", error);
+        console.error('Error in connection callback:', error);
       }
     });
   }
 
   private notifyDashboardUpdateCallbacks(data: any) {
-    this.dashboardUpdateCallbacks.forEach((callback) => {
+    this.dashboardUpdateCallbacks.forEach(callback => {
       try {
         callback(data);
       } catch (error) {
-        console.error("Error in dashboard update callback:", error);
+        console.error('Error in dashboard update callback:', error);
       }
     });
   }
