@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configurable payment expiry time (PAYMENT_EXPIRY_MINUTES environment variable)
 - Dedicated expired payment page with specific messaging
 - Enhanced payment status handling for expired payments
+- User-friendly error handling system without exposing backend URLs/IPs
+- Comprehensive error message mapping and sanitization
+- Enhanced error display components with contextual guidance
+- Environment configuration system with production safety checks
+- Automated environment setup scripts and validation
+- Production deployment documentation and security guidelines
 
 ### Changed
 
@@ -28,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Payment expiry time reduced from 24 hours to 30 minutes (configurable)
 - PaymentStatusPage component now supports expired status
 - Payment processing logic improved to handle expired payments separately
+- API interceptor now sanitizes error messages and provides user-friendly feedback
+- ErrorState component enhanced with better error categorization and guidance
+- API configuration now includes development warnings and production validation
+- Environment setup scripts with automated validation and safety checks
 
 ### Fixed
 

@@ -13,3 +13,4 @@ export { default as PageLayout } from "./PageLayout";
 export { default as FilterTabs } from "./FilterTabs";
 export { default as PaymentStatusPage } from "./PaymentStatusPage";
 export { default as BottomNavigation } from "./BottomNavigation";
+export { default as ErrorDisplay } from "./ErrorDisplay";
