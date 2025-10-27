@@ -5,8 +5,8 @@ import {
   RefreshCw,
   Search,
   Shield,
+  ShieldCheck,
   User2,
-  UserCheck,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -368,31 +368,43 @@ const UserManagement: React.FC = () => {
         <div className='container mx-auto px-4 md:px-6 space-y-6'>
           {/* Enhanced Stats Cards - Only for Admin */}
           {isAdmin && (
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:gap-5 md:gap-6'>
+              {/* Total Pengguna */}
               <AdminStatsCard
                 title='Total Pengguna'
-                value={users.length}
+                value={users?.length || 0}
                 description='Terdaftar di sistem'
-                icon={<Users className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-blue-100 to-blue-50'
-                iconTextColor='text-green-600'
+                icon={<Users className='w-6 h-6 sm:w-7 sm:h-7' />}
+                iconBgColor='bg-gradient-to-br from-blue-50 to-blue-100'
+                iconTextColor='text-blue-700'
+                valueColor='text-blue-600'
+                className='p-3 sm:p-4 md:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all'
               />
-              <AdminStatsCard
-                title='Administrator'
-                value={adminCount}
-                description='Akses penuh sistem'
-                icon={<UserCheck className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-purple-100 to-purple-50'
-                iconTextColor='text-purple-700'
-              />
-              <AdminStatsCard
-                title='Warga Biasa'
-                value={wargaCount}
-                description='Pengguna aktif'
-                icon={<Users className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-green-100 to-green-50'
-                iconTextColor='text-green-700'
-              />
+
+              {/* Grid 2 kolom di bawah */}
+              <div className='grid grid-cols-2 gap-4 sm:gap-5 md:gap-6'>
+                <AdminStatsCard
+                  title='Administrator'
+                  value={adminCount || 0}
+                  description='Akses penuh sistem'
+                  icon={<ShieldCheck className='w-6 h-6 sm:w-7 sm:h-7' />}
+                  iconBgColor='bg-gradient-to-br from-purple-50 to-purple-100'
+                  iconTextColor='text-purple-700'
+                  valueColor='text-purple-600'
+                  className='p-3 sm:p-4 md:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all'
+                />
+
+                <AdminStatsCard
+                  title='Warga Biasa'
+                  value={wargaCount || 0}
+                  description='Pengguna aktif'
+                  icon={<User2 className='w-6 h-6 sm:w-7 sm:h-7' />}
+                  iconBgColor='bg-gradient-to-br from-green-50 to-green-100'
+                  iconTextColor='text-green-700'
+                  valueColor='text-green-600'
+                  className='p-3 sm:p-4 md:p-5 rounded-2xl shadow-sm hover:shadow-md transition-all'
+                />
+              </div>
             </div>
           )}
 

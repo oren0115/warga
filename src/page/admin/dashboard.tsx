@@ -7,6 +7,7 @@ import type { DashboardStats } from '../../types';
 
 import {
   AlertCircle,
+  BarChart3,
   CheckCircle2,
   FileText,
   LogOut,
@@ -27,6 +28,12 @@ import {
   CardTitle,
 } from '../../components/ui/card';
 import { Progress } from '../../components/ui/progress';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../components/ui/tabs';
 
 import {
   Bar,
@@ -47,8 +54,7 @@ import {
   AdminLoading,
   AdminPageHeader,
   AdminStatsCard,
-  PaidUsersCard,
-  UnpaidUsersCard,
+  UserPaymentStatusCard,
 } from '../../components/admin';
 
 const Dashboard: React.FC = () => {
@@ -192,274 +198,283 @@ const Dashboard: React.FC = () => {
       {stats && (
         <>
           <div className='container mx-auto px-4 md:px-6 space-y-6'>
-            {/* Stats Grid - Top Row (3 cards) */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-6'>
-              <AdminStatsCard
-                title='Total Warga'
-                value={stats.totalUsers}
-                description='Terdaftar di sistem'
-                icon={<Users className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-blue-100 to-blue-50'
-                iconTextColor='text-blue-700'
-              />
-              <AdminStatsCard
-                title='Total Iuran'
-                value={stats.totalFees}
-                description='Iuran bulanan'
-                icon={<FileText className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-green-100 to-green-50'
-                iconTextColor='text-green-700'
-              />
-            </div>
+            {/* Tab-based Stats Navigation */}
+            <Tabs defaultValue='overview' className='w-full'>
+              <TabsList className='grid w-full grid-cols-3 mb-6 bg-white/80 backdrop-blur-sm '>
+                <TabsTrigger
+                  value='overview'
+                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                >
+                  <User2 className='w-4 h-4' />
+                  <span className='hidden sm:inline'>Overview</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value='payments'
+                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                >
+                  <Receipt className='w-4 h-4' />
+                  <span className='hidden sm:inline'>Payments</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value='analytics'
+                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                >
+                  <BarChart3 className='w-4 h-4' />
+                  <span className='hidden sm:inline'>Analytics</span>
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Stats Grid - Bottom Row (2 cards) */}
-            <div className='grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6'>
-              <AdminStatsCard
-                title='Pembayaran Berhasil'
-                value={stats.approvedPayments}
-                description='Transaksi selesai'
-                icon={<Receipt className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-purple-100 to-purple-50'
-                iconTextColor='text-purple-700'
-                valueColor='text-green-600'
-              />
-              <AdminStatsCard
-                title='Menunggu Verifikasi'
-                value={stats.pendingPayments}
-                description='Perlu tindak lanjut'
-                icon={<CheckCircle2 className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-yellow-100 to-yellow-50'
-                iconTextColor='text-yellow-700'
-                valueColor='text-yellow-600'
-              />
-              <AdminStatsCard
-                title='Belum Membayar'
-                value={stats.unpaidFees || 0}
-                description='Perlu tindak lanjut'
-                icon={<AlertCircle className='w-7 h-7' />}
-                iconBgColor='bg-gradient-to-br from-red-100 to-red-50'
-                iconTextColor='text-red-700'
-                valueColor='text-red-600'
-              />
-            </div>
-
-            {/* Status Pengumpulan */}
-            <Card className='rounded-2xl shadow-md hover:shadow-xl transition mb-6'>
-              <CardHeader>
-                <CardTitle>Status Pengumpulan Bulan Ini</CardTitle>
-                <CardDescription>
-                  Progress iuran warga bulan berjalan
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className='flex justify-between items-center mb-3'>
-                  <span className='text-gray-600'>
-                    {`Rp ${
-                      stats.currentMonthCollection?.toLocaleString() || 0
-                    }`}{' '}
-                    terkumpul
-                  </span>
-                  <span className='text-sm font-semibold text-gray-700'>
-                    {stats.collectionRate}%
-                  </span>
+              {/* Overview Tab */}
+              <TabsContent value='overview' className='space-y-6'>
+                <div className='grid grid-cols-2 gap-6'>
+                  <AdminStatsCard
+                    title='Total Warga'
+                    value={stats.totalUsers}
+                    description='Terdaftar di sistem'
+                    icon={<Users className='w-7 h-7' />}
+                    iconBgColor='bg-gradient-to-br from-blue-100 to-blue-50'
+                    iconTextColor='text-blue-700'
+                  />
+                  <AdminStatsCard
+                    title='Total Iuran'
+                    value={stats.totalFees}
+                    description='Iuran bulanan'
+                    icon={<FileText className='w-7 h-7' />}
+                    iconBgColor='bg-gradient-to-br from-green-100 to-green-50'
+                    iconTextColor='text-green-700'
+                  />
                 </div>
-                <Progress
-                  value={stats.collectionRate}
-                  className='h-4 rounded-full'
-                />
-                <p className='text-xs text-gray-500 mt-2'>
-                  Target pengumpulan iuran bulan ini
-                </p>
-              </CardContent>
-            </Card>
 
-            {/* Charts */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6'>
-              {/* Bar Chart */}
-              <Card className='rounded-2xl shadow-md hover:shadow-xl transition'>
-                <CardHeader>
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <CardTitle>Grafik Iuran Bulanan</CardTitle>
-                      <CardDescription>
-                        Ringkasan total iuran tiap bulan - Scroll horizontal
-                        untuk melihat data lebih detail
-                      </CardDescription>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        onClick={handleZoomOut}
-                        disabled={chartZoom <= 0.5}
-                        className='h-8 w-8 p-0'
-                      >
-                        <ZoomOut className='w-4 h-4' />
-                      </Button>
-                      <span className='text-xs text-gray-500 min-w-[3rem] text-center'>
-                        {Math.round(chartZoom * 100)}%
-                      </span>
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        onClick={handleZoomIn}
-                        disabled={chartZoom >= 2}
-                        className='h-8 w-8 p-0'
-                      >
-                        <ZoomIn className='w-4 h-4' />
-                      </Button>
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        onClick={handleResetZoom}
-                        className='h-8 w-8 p-0'
-                      >
-                        <RotateCcw className='w-4 h-4' />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className='h-72'>
-                  <div className='w-full h-full overflow-x-auto overflow-y-hidden'>
-                    <div
-                      className='h-full'
-                      style={{
-                        minWidth: `${600 * chartZoom}px`,
-                        transform: `scale(${chartZoom})`,
-                        transformOrigin: 'top left',
-                      }}
-                    >
-                      <ResponsiveContainer width='100%' height='100%'>
-                        <BarChart
-                          data={monthlyFees}
-                          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                        >
-                          <CartesianGrid strokeDasharray='3 3' />
-                          <XAxis
-                            dataKey='month'
-                            tick={{ fontSize: 12 }}
-                            interval={0}
-                            angle={-45}
-                            textAnchor='end'
-                            height={60}
-                          />
-                          <YAxis
-                            tick={{ fontSize: 12 }}
-                            tickFormatter={value =>
-                              `Rp ${(value / 1000000).toFixed(1)}M`
-                            }
-                          />
-                          <Tooltip
-                            formatter={(val: any) => [
-                              `Rp ${Number(val)?.toLocaleString()}`,
-                              'Total Iuran',
-                            ]}
-                            labelFormatter={label => `Bulan: ${label}`}
-                            contentStyle={{
-                              backgroundColor: 'white',
-                              border: '1px solid #e5e7eb',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                            }}
-                          />
-                          <Bar
-                            dataKey='total'
-                            fill='#3b82f6'
-                            radius={[6, 6, 0, 0]}
-                          >
-                            <LabelList
-                              dataKey='total'
-                              position='top'
-                              content={({ value }) =>
-                                value != null ? (
-                                  <tspan fontSize='10'>{`Rp ${(
-                                    Number(value) / 1000000
-                                  ).toFixed(1)}M`}</tspan>
-                                ) : null
-                              }
-                            />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Pie Chart */}
-              <Card className='rounded-2xl shadow-md hover:shadow-xl transition'>
-                <CardHeader>
-                  <CardTitle>Status Pembayaran</CardTitle>
-                  <CardDescription>
-                    Distribusi status pembayaran
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className='h-72'>
-                  <ResponsiveContainer width='100%' height='100%'>
-                    <PieChart>
-                      <Pie
-                        data={paymentStatus}
-                        dataKey='value'
-                        nameKey='name'
-                        cx='50%'
-                        cy='50%'
-                        innerRadius={50}
-                        outerRadius={90}
-                        label
-                      >
-                        {paymentStatus.map((_entry, index) => (
-                          <Cell
-                            key={index}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Users Payment Status - Two Column Layout */}
-            <div className='space-y-4 mb-6 '>
-              <Card className='text-center hover:shadow-xl transition'>
-                <CardHeader>
-                  <h2 className='text-2xl font-bold text-gray-800 mb-2'>
-                    Status Pembayaran Warga
-                  </h2>
-                  <p className='text-gray-600'>
-                    Pantau warga yang sudah dan belum membayar iuran
-                  </p>
-                </CardHeader>
-              </Card>
-
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                {/* Unpaid Users Section */}
-                <UnpaidUsersCard className='h-fit' />
-
-                {/* Paid Users Section */}
-                <PaidUsersCard className='h-fit' />
-              </div>
-            </div>
-
-            {/* Error Statistics - Development/Admin Only */}
-            {/* {process.env.NODE_ENV === "development" && (
-              <div className="space-y-4 mb-6">
-                <Card className="text-center hover:shadow-xl transition">
+                {/* Status Pengumpulan */}
+                <Card className='rounded-2xl shadow-md hover:shadow-xl transition mb-4'>
                   <CardHeader>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                      Error Monitoring
-                    </h2>
-                    <p className="text-gray-600">
-                      Pantau error dan performa aplikasi (Development Mode)
-                    </p>
+                    <CardTitle>Status Pengumpulan Bulan Ini</CardTitle>
+                    <CardDescription>
+                      Progress iuran warga bulan berjalan
+                    </CardDescription>
                   </CardHeader>
+                  <CardContent>
+                    <div className='flex justify-between items-center mb-3'>
+                      <span className='text-gray-600'>
+                        {`Rp ${
+                          stats.currentMonthCollection?.toLocaleString() || 0
+                        }`}{' '}
+                        terkumpul
+                      </span>
+                      <span className='text-sm font-semibold text-gray-700'>
+                        {stats.collectionRate}%
+                      </span>
+                    </div>
+                    <Progress
+                      value={stats.collectionRate}
+                      className='h-4 rounded-full'
+                    />
+                    <p className='text-xs text-gray-500 mt-2'>
+                      Target pengumpulan iuran bulan ini
+                    </p>
+                  </CardContent>
                 </Card>
-                <ErrorStats />
-              </div>
-            )} */}
+              </TabsContent>
+
+              {/* Payments Tab */}
+              <TabsContent value='payments' className='space-y-6'>
+                {/* Baris pertama: Pembayaran Berhasil */}
+                <div className='grid grid-cols-1'>
+                  <AdminStatsCard
+                    title='Pembayaran Berhasil'
+                    value={stats.approvedPayments}
+                    description='Transaksi selesai'
+                    icon={<Receipt className='w-6 h-6 sm:w-7 sm:h-7' />}
+                    iconBgColor='bg-gradient-to-br from-purple-100 to-purple-50'
+                    iconTextColor='text-purple-700'
+                    valueColor='text-green-600'
+                  />
+                </div>
+
+                {/* Baris kedua: Menunggu + Belum Membayar */}
+                <div className='grid grid-cols-2 gap-4'>
+                  <AdminStatsCard
+                    title='Menunggu Verifikasi'
+                    value={stats.pendingPayments}
+                    description='Perlu tindak lanjut'
+                    icon={<CheckCircle2 className='w-6 h-6 sm:w-7 sm:h-7' />}
+                    iconBgColor='bg-gradient-to-br from-yellow-100 to-yellow-50'
+                    iconTextColor='text-yellow-700'
+                    valueColor='text-yellow-600'
+                  />
+                  <AdminStatsCard
+                    title='Belum Membayar'
+                    value={stats.unpaidFees || 0}
+                    description='Perlu tindak lanjut'
+                    icon={<AlertCircle className='w-6 h-6 sm:w-7 sm:h-7' />}
+                    iconBgColor='bg-gradient-to-brA from-red-100 to-red-50'
+                    iconTextColor='text-red-700'
+                    valueColor='text-red-600'
+                  />
+                </div>
+
+                {/* Users Payment Status */}
+                <UserPaymentStatusCard />
+              </TabsContent>
+
+              {/* Analytics Tab */}
+              <TabsContent value='analytics' className='space-y-6'>
+                {/* Charts */}
+                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                  {/* Bar Chart */}
+                  <Card className='rounded-2xl shadow-md hover:shadow-xl transition'>
+                    <CardHeader>
+                      <div className='flex items-center justify-between'>
+                        <div>
+                          <CardTitle>Grafik Iuran Bulanan</CardTitle>
+                          <CardDescription>
+                            Ringkasan total iuran tiap bulan - Scroll horizontal
+                            untuk melihat data lebih detail
+                          </CardDescription>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            onClick={handleZoomOut}
+                            disabled={chartZoom <= 0.5}
+                            className='h-8 w-8 p-0'
+                          >
+                            <ZoomOut className='w-4 h-4' />
+                          </Button>
+                          <span className='text-xs text-gray-500 min-w-[3rem] text-center'>
+                            {Math.round(chartZoom * 100)}%
+                          </span>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            onClick={handleZoomIn}
+                            disabled={chartZoom >= 2}
+                            className='h-8 w-8 p-0'
+                          >
+                            <ZoomIn className='w-4 h-4' />
+                          </Button>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            onClick={handleResetZoom}
+                            className='h-8 w-8 p-0'
+                          >
+                            <RotateCcw className='w-4 h-4' />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className='h-72'>
+                      <div className='w-full h-full overflow-x-auto overflow-y-hidden'>
+                        <div
+                          className='h-full'
+                          style={{
+                            minWidth: `${600 * chartZoom}px`,
+                            transform: `scale(${chartZoom})`,
+                            transformOrigin: 'top left',
+                          }}
+                        >
+                          <ResponsiveContainer width='100%' height='100%'>
+                            <BarChart
+                              data={monthlyFees}
+                              margin={{
+                                top: 20,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                              }}
+                            >
+                              <CartesianGrid strokeDasharray='3 3' />
+                              <XAxis
+                                dataKey='month'
+                                tick={{ fontSize: 12 }}
+                                interval={0}
+                                angle={-45}
+                                textAnchor='end'
+                                height={60}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 12 }}
+                                tickFormatter={value =>
+                                  `Rp ${(value / 1000000).toFixed(1)}M`
+                                }
+                              />
+                              <Tooltip
+                                formatter={(val: any) => [
+                                  `Rp ${Number(val)?.toLocaleString()}`,
+                                  'Total Iuran',
+                                ]}
+                                labelFormatter={label => `Bulan: ${label}`}
+                                contentStyle={{
+                                  backgroundColor: 'white',
+                                  border: '1px solid #e5e7eb',
+                                  borderRadius: '8px',
+                                  boxShadow:
+                                    '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                }}
+                              />
+                              <Bar
+                                dataKey='total'
+                                fill='#3b82f6'
+                                radius={[6, 6, 0, 0]}
+                              >
+                                <LabelList
+                                  dataKey='total'
+                                  position='top'
+                                  content={({ value }) =>
+                                    value != null ? (
+                                      <tspan fontSize='10'>{`Rp ${(
+                                        Number(value) / 1000000
+                                      ).toFixed(1)}M`}</tspan>
+                                    ) : null
+                                  }
+                                />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Pie Chart */}
+                  <Card className='rounded-2xl shadow-md hover:shadow-xl transition'>
+                    <CardHeader>
+                      <CardTitle>Status Pembayaran</CardTitle>
+                      <CardDescription>
+                        Distribusi status pembayaran
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className='h-72'>
+                      <ResponsiveContainer width='100%' height='100%'>
+                        <PieChart>
+                          <Pie
+                            data={paymentStatus}
+                            dataKey='value'
+                            nameKey='name'
+                            cx='50%'
+                            cy='50%'
+                            innerRadius={50}
+                            outerRadius={90}
+                            label
+                          >
+                            {paymentStatus.map((_entry, index) => (
+                              <Cell
+                                key={index}
+                                fill={COLORS[index % COLORS.length]}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </>
       )}

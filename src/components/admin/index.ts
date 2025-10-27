@@ -9,3 +9,4 @@ export { default as UnpaidUsersCard } from "./UnpaidUsersCard";
 export { default as PaidUsersCard } from "./PaidUsersCard";
 export { default as RegenerationHistory } from "./RegenerationHistory";
 export { default as ErrorStats } from "./ErrorStats";
+export { default as UserPaymentStatusCard } from "./UserPaymentStatusCard";
