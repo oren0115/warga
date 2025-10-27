@@ -51,7 +51,7 @@ interface PaymentStats {
   todayTotal: number;
   thisMonthTotal: number;
   successRate: number;
-  totalRevenue: number;
+  totalRevenue: string;
 }
 
 // Skeleton Components - Removed, now using AdminLoading
@@ -155,12 +155,20 @@ const PaymentReview: React.FC = () => {
     startIndex + itemsPerPage
   );
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(amount);
+  const formatCurrencyShort = (amount: number): string => {
+    if (amount >= 1_000_000_000) {
+      return (
+        'Rp ' + (amount / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + ' M'
+      );
+    } else if (amount >= 1_000_000) {
+      return (
+        'Rp ' + (amount / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' Jt'
+      );
+    } else if (amount >= 1_000) {
+      return 'Rp ' + (amount / 1_000).toFixed(1).replace(/\.0$/, '') + ' Rb';
+    } else {
+      return 'Rp ' + amount.toString();
+    }
   };
 
   const getDetailedStats = (): PaymentStats => {
@@ -195,7 +203,9 @@ const PaymentReview: React.FC = () => {
         payments.length > 0
           ? Math.round((successPayments.length / payments.length) * 100)
           : 0,
-      totalRevenue: successPayments.reduce((sum, p) => sum + p.amount, 0),
+      totalRevenue: formatCurrencyShort(
+        successPayments.reduce((sum, p) => sum + p.amount, 0)
+      ),
     };
   };
 
@@ -537,7 +547,7 @@ const PaymentReview: React.FC = () => {
                     Total Pendapatan
                   </p>
                   <p className='text-xl sm:text-2xl font-bold text-gray-900 leading-tight'>
-                    {formatCurrency(stats.totalRevenue)}
+                    {stats.totalRevenue}
                   </p>
                   <div className='flex items-center gap-1.5 text-xs text-gray-600'>
                     <Banknote className='w-3.5 h-3.5 text-green-500' />
