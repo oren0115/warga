@@ -234,20 +234,21 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             {(payment.status.toLowerCase() === 'failed' ||
               payment.status.toLowerCase() === 'deny' ||
               payment.status.toLowerCase() === 'cancel' ||
-              payment.status.toLowerCase() === 'expire') && (
-              <Button
-                asChild
-                className='w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl'
-              >
-                <a
-                  href={`/iuran/${payment.fee_id}`}
-                  className='flex items-center justify-center space-x-2'
+              payment.status.toLowerCase() === 'expire') &&
+              !isAdmin && (
+                <Button
+                  asChild
+                  className='w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl'
                 >
-                  <CreditCard className='w-5 h-5' />
-                  <span>Bayar Lagi</span>
-                </a>
-              </Button>
-            )}
+                  <a
+                    href={`/iuran/${payment.fee_id}`}
+                    className='flex items-center justify-center space-x-2'
+                  >
+                    <CreditCard className='w-5 h-5' />
+                    <span>Bayar Lagi</span>
+                  </a>
+                </Button>
+              )}
             {onForceCheck && (
               <Button
                 disabled={isForceChecking}
