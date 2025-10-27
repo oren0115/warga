@@ -126,7 +126,7 @@ const Home: React.FC = () => {
         )}
 
         {/* Enhanced Quick Stats */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-2 gap-4'>
           <StatsCard
             title='Lunas'
             value={fees.filter(f => f.status.toLowerCase() === 'lunas').length}
@@ -135,7 +135,7 @@ const Home: React.FC = () => {
                 ? 'Belum ada data'
                 : 'Pembayaran selesai'
             }
-            icon={<CheckCircle className='w-6 h-6 text-white' />}
+            icon={<CheckCircle className='w-6 h-6 sm:w-7 sm:h-7 text-white' />}
             variant='success'
           />
 
@@ -150,7 +150,7 @@ const Home: React.FC = () => {
                 ? 'Semua lunas'
                 : 'Perlu dibayar'
             }
-            icon={<AlertCircle className='w-6 h-6 text-white' />}
+            icon={<AlertCircle className='w-6 h-6 sm:w-7 sm:h-7 text-white' />}
             variant='error'
           />
         </div>

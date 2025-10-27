@@ -384,7 +384,7 @@ const UserManagement: React.FC = () => {
               {/* Grid 2 kolom di bawah */}
               <div className='grid grid-cols-2 gap-4 sm:gap-5 md:gap-6'>
                 <AdminStatsCard
-                  title='Administrator'
+                  title='Admin'
                   value={adminCount || 0}
                   description='Akses penuh sistem'
                   icon={<ShieldCheck className='w-6 h-6 sm:w-7 sm:h-7' />}
