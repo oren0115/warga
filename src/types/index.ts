@@ -19,7 +19,7 @@ export interface Fee {
   kategori: string;
   nominal: number;
   bulan: string;
-  status: 'Belum Bayar' | 'Pending' | 'Lunas';
+  status: 'Belum Bayar' | 'Pending' | 'Lunas' | 'Failed';
   due_date: string;
   created_at: string;
 }

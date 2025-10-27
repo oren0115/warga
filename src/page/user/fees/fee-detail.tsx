@@ -475,7 +475,9 @@ const IuranDetail: React.FC = () => {
         </Card>
 
         {/* Payment Section */}
-        {fee.status === 'Belum Bayar' && (
+        {(fee.status === 'Belum Bayar' ||
+          fee.status === 'Failed' ||
+          fee.status === 'Pending') && (
           <Card className='shadow-xl border-0 bg-gradient-to-br from-white to-gray-50'>
             <CardHeader>
               <CardTitle>Bayar Iuran</CardTitle>
@@ -494,8 +496,8 @@ const IuranDetail: React.FC = () => {
           </Card>
         )}
 
-        {/* Payment Status */}
-        {fee.status !== 'Belum Bayar' && (
+        {/* Payment Status - Pending */}
+        {fee.status === 'Pending' && (
           <Card className='shadow-xl border-0 bg-gradient-to-br from-white to-gray-50'>
             <CardHeader>
               <CardTitle className='flex items-center gap-2'>
@@ -510,20 +512,12 @@ const IuranDetail: React.FC = () => {
                 variant={getStatusVariant(fee.status)}
                 className='px-4 py-2 text-base'
               >
-                {fee.status === 'Lunas'
-                  ? '✓ Sudah Lunas'
-                  : fee.status === 'Pending'
-                  ? '⏳ Sedang Diproses'
-                  : '❌ Gagal'}
+                ⏳ Sedang Diproses
               </Badge>
               <p className='text-gray-600 mt-2'>
-                {fee.status === 'Lunas'
-                  ? 'Pembayaran telah berhasil diverifikasi'
-                  : fee.status === 'Pending'
-                  ? 'Pembayaran sedang dalam proses verifikasi'
-                  : 'Pembayaran gagal, silakan coba lagi'}
+                Pembayaran sedang dalam proses verifikasi
               </p>
-              {lastPaymentId && fee.status === 'Pending' && (
+              {lastPaymentId && (
                 <div className='mt-4 space-y-2'>
                   <p className='text-sm text-blue-600'>
                     🔄 Memeriksa status pembayaran secara otomatis...
@@ -541,6 +535,31 @@ const IuranDetail: React.FC = () => {
                   </Button>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Payment Status - Success */}
+        {fee.status === 'Lunas' && (
+          <Card className='shadow-xl border-0 bg-gradient-to-br from-white to-gray-50'>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2'>
+                Status Pembayaran
+                {isCheckingPayment && (
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-green-600'></div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className='text-center'>
+              <Badge
+                variant={getStatusVariant(fee.status)}
+                className='px-4 py-2 text-base'
+              >
+                ✓ Sudah Lunas
+              </Badge>
+              <p className='text-gray-600 mt-2'>
+                Pembayaran telah berhasil diverifikasi
+              </p>
             </CardContent>
           </Card>
         )}
