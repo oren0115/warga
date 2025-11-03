@@ -8,7 +8,7 @@ import { ErrorProvider } from './context/error.context';
 import Layout from './layout/Layout';
 
 // admin pages
-import Dashboard from './page/admin/dashboard';
+import Dashboard from './page/admin/dashboard/dashboard';
 import GenerateFees from './page/admin/manajemen-fees/generate-fees';
 import UserManagement from './page/admin/manajemen-users/user-management';
 import BroadcastNotification from './page/admin/notifications/broadcast-notifications';

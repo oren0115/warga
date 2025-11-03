@@ -1,67 +1,59 @@
 import { AlertCircle, CheckCircle, User } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   EmptyState,
   ErrorState,
   FeeCard,
-  LoadingSpinner,
   PageHeader,
   PageLayout,
   StatsCard,
 } from '../../../components/common';
 import NotificationPopup from '../../../components/common/notification/NotificationPopup';
-import { useAuth } from '../../../context/auth.context';
-import { useError } from '../../../context/error.context';
-import { userService } from '../../../services/user.service';
-import type { Fee, Notification } from '../../../types';
+import { useUserHome } from '../../../hooks/useUserHome';
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { authState } = useAuth();
-  const { logUserAction } = useError();
-  const [fees, setFees] = useState<Fee[]>([]);
-  const [, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      logUserAction('home_data_fetch_start', { page: 'home' });
-      const [feesData, notificationsData] = await Promise.all([
-        userService.getFees(),
-        userService.getNotifications(),
-      ]);
-      setFees(feesData);
-      setNotifications(notificationsData);
-      logUserAction('home_data_fetch_success', {
-        feesCount: feesData.length,
-        notificationsCount: notificationsData.length,
-      });
-    } catch (error) {
-      console.error('Error fetching home data:', error);
-      setError('Gagal memuat data. Silakan coba lagi.');
-      logUserAction(
-        'home_data_fetch_error',
-        {
-          error: error instanceof Error ? error.message : String(error),
-        },
-        'high'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    authState,
+    fees,
+    isLoading,
+    error,
+    showNotificationPopup,
+    setShowNotificationPopup,
+    notificationRefreshKey,
+    setNotificationRefreshKey,
+    fetchData,
+  } = useUserHome();
 
   if (isLoading) {
-    return <LoadingSpinner message='Memuat data...' />;
+    return (
+      <div className='min-h-screen bg-gray-50 p-4 space-y-4'>
+        <div className='bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white'>
+          <div className='flex items-center gap-3'>
+            <div className='w-8 h-8 bg-white/30 rounded-lg' />
+            <div className='space-y-2'>
+              <div className='h-4 bg-white/30 rounded w-40' />
+              <div className='h-3 bg-white/20 rounded w-56' />
+            </div>
+          </div>
+        </div>
+        <div className='bg-white border border-gray-200 rounded-xl p-4'>
+          <div className='h-5 bg-gray-200 rounded w-32 mb-3' />
+          <div className='h-24 bg-gray-100 rounded' />
+        </div>
+        <div className='grid grid-cols-2 gap-3'>
+          {[1, 2].map(i => (
+            <div
+              key={i}
+              className='bg-white border border-gray-200 rounded-xl p-4'
+            >
+              <div className='h-4 bg-gray-200 rounded w-24 mb-2' />
+              <div className='h-6 bg-gray-100 rounded w-16' />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -69,15 +61,9 @@ const Home: React.FC = () => {
   }
 
   const currentFee = fees.find(fee => {
-    // Handle format "YYYY-MM" or just month number
     let feeMonth: number;
-    if (fee.bulan.includes('-')) {
-      // Format: "2025-09" -> extract month part
-      feeMonth = parseInt(fee.bulan.split('-')[1]);
-    } else {
-      // Format: "9" -> direct parse
-      feeMonth = parseInt(fee.bulan);
-    }
+    if (fee.bulan.includes('-')) feeMonth = parseInt(fee.bulan.split('-')[1]);
+    else feeMonth = parseInt(fee.bulan);
     const currentMonth =
       new Date(
         new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })

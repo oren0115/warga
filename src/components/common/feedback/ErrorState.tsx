@@ -1,6 +1,10 @@
 import { AlertCircle } from 'lucide-react';
 import React from 'react';
 import { getErrorInfo } from '../../../utils/error-messages';
+import {
+  isBackendUnavailable,
+  stripUrls,
+} from '../../../utils/network-error.utils';
 import { Button } from '../../ui/button';
 import { Card, CardContent } from '../../ui/card';
 
@@ -26,7 +30,8 @@ const ErrorState: React.FC<ErrorStateProps> = ({
   // Jika ada error object, gunakan sistem error handling yang baru
   if (error) {
     const errorInfo = getErrorInfo(error);
-    const displayMessage = message || errorInfo.userMessage;
+    const backendDown = isBackendUnavailable(error);
+    const displayMessage = stripUrls(message || errorInfo.userMessage);
     const shouldShowRetry = errorInfo.showRetry && onRetry;
 
     return (
@@ -44,6 +49,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
 
               {/* Technical details (development only) */}
               {showTechnicalDetails &&
+                !backendDown &&
                 process.env.NODE_ENV === 'development' && (
                   <details className='text-left bg-gray-100 p-3 rounded mb-4'>
                     <summary className='cursor-pointer text-sm font-medium text-gray-700'>

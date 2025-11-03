@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminService } from '../services/admin.service';
 import { websocketService } from '../services/websocket.service';
 import type { PaidUser, UnpaidUser } from '../types';
+import { getServiceDownMessage } from '../utils/network-error.utils';
 
 export type FilterType = 'all' | 'normal' | 'orphaned';
 
@@ -74,9 +75,7 @@ export function useUserPaymentStatus() {
       } catch (err: any) {
         console.error('Error fetching users:', err);
         setError(
-          err?.response?.data?.detail ||
-            err?.message ||
-            'Gagal memuat data pembayaran warga'
+          getServiceDownMessage(err, 'Gagal memuat data pembayaran warga')
         );
       } finally {
         setIsLoading(false);

@@ -1,147 +1,60 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { userService } from '../../../services/user.service';
-import type { Payment } from '../../../types';
 
-import {
-  AlertTriangle,
-  BarChart2,
-  CheckCircle,
-  Clipboard,
-  Clock,
-  XCircle,
-} from 'lucide-react';
+import { BarChart2, Clipboard } from 'lucide-react';
 import {
   EmptyState,
   ErrorState,
   FilterTabs,
-  LoadingSpinner,
   PageHeader,
   PageLayout,
   PaymentCard,
 } from '../../../components/common';
 import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+import { usePaymentHistory } from '../../../hooks/usePaymentHistory';
 
 // Mapping status pembayaran
 
 const PaymentHistory: React.FC = () => {
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-  const [selectedFilter, setSelectedFilter] = useState('all');
-  const [sort, setSort] = useState<{
-    key: 'date' | 'amount' | 'name';
-    dir: 'asc' | 'desc';
-  }>({ key: 'date', dir: 'desc' });
+  const {
+    isLoading,
+    error,
+    showNotificationPopup,
+    setShowNotificationPopup,
+    notificationRefreshKey,
+    handleNotificationRead,
+    selectedFilter,
+    setSelectedFilter,
+    sort,
+    setSort,
+    visiblePayments,
+    tabData,
+    tabCounts,
+    fetchPayments,
+  } = usePaymentHistory();
 
-  const fetchPayments = useCallback(async () => {
-    try {
-      const paymentsData = await userService.getPayments();
-      setPayments(paymentsData);
-      setError(null);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Gagal memuat data');
-    }
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      try {
-        await fetchPayments();
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    // Reduce auto-refresh frequency to prevent timezone drift
-    const interval = setInterval(() => {
-      fetchPayments();
-    }, 30000); // Changed from 15s to 30s
-    return () => clearInterval(interval);
-  }, [fetchPayments]);
-
-  const handleNotificationRead = () => {
-    setNotificationRefreshKey(prev => prev + 1);
-  };
-
-  const filterPayments = (status: string) => {
-    switch (status) {
-      case 'all':
-        return payments;
-      case 'success':
-        return payments.filter(p =>
-          ['success', 'settlement'].includes(p.status.toLowerCase())
-        );
-      case 'pending':
-        return payments.filter(p =>
-          ['pending'].includes(p.status.toLowerCase())
-        );
-      case 'failed':
-        return payments.filter(p =>
-          ['failed', 'deny', 'cancel'].includes(p.status.toLowerCase())
-        );
-      case 'expired':
-        return payments.filter(p =>
-          ['expire'].includes(p.status.toLowerCase())
-        );
-      default:
-        return [];
-    }
-  };
-
-  const visiblePayments = useMemo(() => {
-    const base = filterPayments(selectedFilter);
-    const sorted = [...base].sort((a, b) => {
-      if (sort.key === 'date') {
-        const av = new Date(a.created_at).getTime();
-        const bv = new Date(b.created_at).getTime();
-        return sort.dir === 'asc' ? av - bv : bv - av;
-      }
-      if (sort.key === 'amount') {
-        const av = a.amount || 0;
-        const bv = b.amount || 0;
-        return sort.dir === 'asc' ? av - bv : bv - av;
-      }
-      // name
-      const an = (a.user?.nama || '').localeCompare(b.user?.nama || '');
-      return sort.dir === 'asc' ? an : -an;
-    });
-    return sorted;
-  }, [selectedFilter, payments, sort]);
-
-  const tabData = [
-    { value: 'all', label: 'Semua', icon: <Clipboard className='w-4 h-4' /> },
-    {
-      value: 'pending',
-      label: 'Menunggu',
-      icon: <Clock className='w-4 h-4' />,
-    },
-    {
-      value: 'success',
-      label: 'Lunas',
-      icon: <CheckCircle className='w-4 h-4' />,
-    },
-    { value: 'failed', label: 'Gagal', icon: <XCircle className='w-4 h-4' /> },
-    {
-      value: 'expired',
-      label: 'Kadaluarsa',
-      icon: <AlertTriangle className='w-4 h-4' />,
-    },
-  ];
-
-  const tabCounts = tabData.reduce((acc, tab) => {
-    acc[tab.value] = filterPayments(tab.value).length;
-    return acc;
-  }, {} as Record<string, number>);
-
-  // --- Loading State ---
   if (isLoading) {
-    return <LoadingSpinner message='Memuat data...' />;
+    return (
+      <div className='min-h-screen bg-gray-50 p-4 space-y-4'>
+        <div className='bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white'>
+          <div className='h-6 bg-white/30 rounded w-52' />
+          <div className='h-3 bg-white/20 rounded w-72 mt-2' />
+        </div>
+        <div className='h-9 bg-gray-200 rounded w-full' />
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className='bg-white border border-gray-200 rounded-xl p-4 space-y-3'
+            >
+              <div className='h-5 bg-gray-200 rounded w-32' />
+              <div className='h-4 bg-gray-100 rounded w-24' />
+              <div className='h-16 bg-gray-50 rounded' />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // --- Error State ---

@@ -1,62 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import NotificationPopup from '../../../components/common/notification/NotificationPopup';
-import { userService } from '../../../services/user.service';
-import type { Notification } from '../../../types';
-// shadcn + lucide
 import { Bell, Info } from 'lucide-react';
+import React from 'react';
 import {
   EmptyState,
   ErrorState,
-  LoadingSpinner,
   NotificationCard,
   PageHeader,
   PageLayout,
 } from '../../../components/common';
+import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+
+import { useUserNotifications } from '../../../hooks/useUserNotifications';
 
 const Notifications: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [, setNotificationRefreshKey] = useState(0);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const notificationsData = await userService.getNotifications();
-      setNotifications(notificationsData);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-      setError('Gagal memuat notifikasi');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const markAsRead = async (notificationId: string) => {
-    try {
-      await userService.markNotificationAsRead(notificationId);
-      setNotifications(prev =>
-        prev.map(notif =>
-          notif.id === notificationId ? { ...notif, is_read: true } : notif
-        )
-      );
-      // Refresh badge count in header
-      setNotificationRefreshKey(prev => prev + 1);
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  };
+  const {
+    notifications,
+    isLoading,
+    error,
+    showNotificationPopup,
+    setShowNotificationPopup,
+    notificationRefreshKey,
+    setNotificationRefreshKey,
+    fetchNotifications,
+    markAsRead,
+  } = useUserNotifications();
 
   // const unreadCount = notifications.filter((notif) => !notif.is_read).length;
 
   if (isLoading) {
-    return <LoadingSpinner message='Memuat notifikasi...' />;
+    return (
+      <div className='min-h-screen bg-gray-50 p-4 space-y-4'>
+        <div className='bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white'>
+          <div className='h-6 bg-white/30 rounded w-52' />
+          <div className='h-3 bg-white/20 rounded w-72 mt-2' />
+        </div>
+        <div className='space-y-3'>
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className='bg-white border border-gray-200 rounded-xl p-4'
+            >
+              <div className='h-4 bg-gray-200 rounded w-40 mb-2' />
+              <div className='h-3 bg-gray-100 rounded w-56' />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -70,6 +59,7 @@ const Notifications: React.FC = () => {
         title='Notifikasi'
         subtitle='Informasi terbaru untuk Anda'
         icon={<Bell className='w-6 h-6 text-white' />}
+        notificationRefreshKey={notificationRefreshKey}
       />
 
       {/* List Notifikasi */}

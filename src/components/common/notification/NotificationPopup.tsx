@@ -1,5 +1,6 @@
 import { userService } from '@/services/user.service';
 import type { Notification } from '@/types';
+import { getServiceDownMessage } from '@/utils/network-error.utils';
 import {
   // formatRelativeTime,
   formatTelegramStyleTime,
@@ -41,7 +42,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       setNotifications(notificationsData);
     } catch (error) {
       console.error('Error fetching notifications:', error);
-      setError('Gagal memuat notifikasi');
+      setError(getServiceDownMessage(error, 'Gagal memuat notifikasi'));
     } finally {
       setIsLoading(false);
     }
