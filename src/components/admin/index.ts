@@ -1,12 +1,12 @@
 // Export all admin components
-export { default as AdminPageHeader } from "./AdminPageHeader";
-export { default as AdminStatsCard } from "./AdminStatsCard";
-export { default as AdminTable } from "./AdminTable";
-export { default as AdminFilters } from "./AdminFilters";
-export { default as AdminPagination } from "./AdminPagination";
-export { default as AdminLoading } from "./AdminLoading";
-export { default as UnpaidUsersCard } from "./UnpaidUsersCard";
-export { default as PaidUsersCard } from "./PaidUsersCard";
-export { default as RegenerationHistory } from "./RegenerationHistory";
-export { default as ErrorStats } from "./ErrorStats";
-export { default as UserPaymentStatusCard } from "./UserPaymentStatusCard";
+export { default as PaidUsersCard } from './cards/PaidUsersCard';
+export { default as UnpaidUsersCard } from './cards/UnpaidUsersCard';
+export { default as AdminFilters } from './dashboard/AdminFilters';
+export { default as AdminLoading } from './dashboard/AdminLoading';
+export { default as AdminPageHeader } from './dashboard/AdminPageHeader';
+export { default as AdminPagination } from './dashboard/AdminPagination';
+export { default as AdminStatsCard } from './dashboard/AdminStatsCard';
+export { default as AdminTable } from './dashboard/AdminTable';
+export { default as ErrorStats } from './ErrorStats';
+export { default as RegenerationHistory } from './regeneration/RegenerationHistory';
+export { default as UserPaymentStatusCard } from './user-payment-status/UserPaymentStatusCard';

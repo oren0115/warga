@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { userService } from '../../../services/user.service';
 import type { Payment } from '../../../types';
 
@@ -10,7 +10,6 @@ import {
   Clock,
   XCircle,
 } from 'lucide-react';
-import NotificationPopup from '../../../components/NotificationPopup';
 import {
   EmptyState,
   ErrorState,
@@ -20,6 +19,7 @@ import {
   PageLayout,
   PaymentCard,
 } from '../../../components/common';
+import NotificationPopup from '../../../components/common/notification/NotificationPopup';
 
 // Mapping status pembayaran
 
@@ -30,6 +30,10 @@ const PaymentHistory: React.FC = () => {
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [sort, setSort] = useState<{
+    key: 'date' | 'amount' | 'name';
+    dir: 'asc' | 'desc';
+  }>({ key: 'date', dir: 'desc' });
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -89,6 +93,26 @@ const PaymentHistory: React.FC = () => {
         return [];
     }
   };
+
+  const visiblePayments = useMemo(() => {
+    const base = filterPayments(selectedFilter);
+    const sorted = [...base].sort((a, b) => {
+      if (sort.key === 'date') {
+        const av = new Date(a.created_at).getTime();
+        const bv = new Date(b.created_at).getTime();
+        return sort.dir === 'asc' ? av - bv : bv - av;
+      }
+      if (sort.key === 'amount') {
+        const av = a.amount || 0;
+        const bv = b.amount || 0;
+        return sort.dir === 'asc' ? av - bv : bv - av;
+      }
+      // name
+      const an = (a.user?.nama || '').localeCompare(b.user?.nama || '');
+      return sort.dir === 'asc' ? an : -an;
+    });
+    return sorted;
+  }, [selectedFilter, payments, sort]);
 
   const tabData = [
     { value: 'all', label: 'Semua', icon: <Clipboard className='w-4 h-4' /> },
@@ -152,10 +176,38 @@ const PaymentHistory: React.FC = () => {
           showCounts={true}
         />
 
+        {/* Toolbar Sort */}
+        <div className='flex flex-wrap items-center justify-between gap-3'>
+          <div className='text-sm text-gray-600'>
+            {visiblePayments.length.toLocaleString()} transaksi
+          </div>
+          <div className='flex items-center gap-2'>
+            <select
+              className='text-sm rounded-md ring-1 ring-gray-300 px-2 py-1 bg-white'
+              value={sort.key}
+              onChange={e =>
+                setSort(s => ({ ...s, key: e.target.value as any }))
+              }
+            >
+              <option value='date'>Tanggal</option>
+              <option value='amount'>Nominal</option>
+              <option value='name'>Nama</option>
+            </select>
+            <button
+              className='text-sm px-2 py-1 rounded-md ring-1 ring-gray-300'
+              onClick={() =>
+                setSort(s => ({ ...s, dir: s.dir === 'asc' ? 'desc' : 'asc' }))
+              }
+            >
+              {sort.dir === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+        </div>
+
         {/* Content */}
-        <div className='space-y-4'>
-          {filterPayments(selectedFilter).length > 0 ? (
-            filterPayments(selectedFilter).map(payment => (
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {visiblePayments.length > 0 ? (
+            visiblePayments.map(payment => (
               <PaymentCard
                 key={payment.id}
                 payment={payment}

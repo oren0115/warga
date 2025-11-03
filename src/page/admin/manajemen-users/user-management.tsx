@@ -19,7 +19,7 @@ import {
   AdminStatsCard,
   AdminTable,
 } from '../../../components/admin';
-import UserManagementModal from '../../../components/admin/UserManagementModal';
+import UserManagementModal from '../../../components/admin/user-management/UserManagementModal';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import {

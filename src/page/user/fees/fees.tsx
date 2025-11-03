@@ -5,7 +5,6 @@ import { userService } from '../../../services/user.service';
 import type { Fee } from '../../../types';
 
 // shadcn/ui
-import NotificationPopup from '../../../components/NotificationPopup';
 import {
   EmptyState,
   ErrorState,
@@ -14,6 +13,7 @@ import {
   PageHeader,
   PageLayout,
 } from '../../../components/common';
+import NotificationPopup from '../../../components/common/notification/NotificationPopup';
 
 const IuranList: React.FC = () => {
   const navigate = useNavigate();

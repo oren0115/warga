@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import NotificationPopup from '../../../components/NotificationPopup';
+import NotificationPopup from '../../../components/common/notification/NotificationPopup';
 import { userService } from '../../../services/user.service';
 import type { Notification } from '../../../types';
 // shadcn + lucide

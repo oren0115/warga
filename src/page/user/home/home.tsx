@@ -1,7 +1,6 @@
 import { AlertCircle, CheckCircle, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NotificationPopup from '../../../components/NotificationPopup';
 import {
   EmptyState,
   ErrorState,
@@ -11,6 +10,7 @@ import {
   PageLayout,
   StatsCard,
 } from '../../../components/common';
+import NotificationPopup from '../../../components/common/notification/NotificationPopup';
 import { useAuth } from '../../../context/auth.context';
 import { useError } from '../../../context/error.context';
 import { userService } from '../../../services/user.service';
