@@ -67,16 +67,22 @@ const StatsCard: React.FC<StatsCardProps> = ({
 
   return (
     <Card className={`shadow-lg border-0 ${styles.card} ${className}`}>
-      <CardContent className='p-6'>
-        <div className='flex items-center gap-4'>
-          <div className={`p-3 ${styles.icon} rounded-full shadow-md`}>
+      <CardContent className='p-4 sm:p-6'>
+        <div className='flex items-center gap-3 sm:gap-4'>
+          <div className={`p-2 sm:p-3 ${styles.icon} rounded-full shadow-md`}>
             {icon}
           </div>
           <div>
-            <p className={`text-sm ${styles.text} font-medium`}>{title}</p>
-            <p className={`font-bold text-2xl ${styles.value}`}>{value}</p>
+            <p className={`text-xs sm:text-sm ${styles.text} font-medium`}>
+              {title}
+            </p>
+            <p className={`font-bold text-xl sm:text-2xl ${styles.value}`}>
+              {value}
+            </p>
             {description && (
-              <p className={`text-xs ${styles.description}`}>{description}</p>
+              <p className={`text-[11px] sm:text-xs ${styles.description}`}>
+                {description}
+              </p>
             )}
           </div>
         </div>

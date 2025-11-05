@@ -126,9 +126,7 @@ const GenerateFees: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={id => setActiveTab(id as any)}
         />
-        <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6'>
-          {renderTabContent()}
-        </div>
+        {renderTabContent()}
       </div>
 
       <ConfirmationDialog
