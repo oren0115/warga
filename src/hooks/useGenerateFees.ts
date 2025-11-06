@@ -1,6 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { adminService } from '../services/admin.service';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
 
 export type ActiveTab = 'generate' | 'history regenerate iuran';
 
@@ -24,6 +27,8 @@ export function useGenerateFees() {
   const [error, setError] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const { showError, showSuccess } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const currentYear = useMemo(() => {
     return new Date(
@@ -81,7 +86,13 @@ export function useGenerateFees() {
       setMessage('✅ Iuran berhasil dibuat untuk semua warga');
       setFormData({ bulan: '', tarif_60m2: 0, tarif_72m2: 0, tarif_hook: 0 });
     } catch (err: any) {
-      setError(getServiceDownMessage(err, 'Gagal membuat iuran'));
+      const message = getServiceDownMessage(err, 'Gagal membuat iuran');
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
       setShowConfirm(false);
@@ -98,7 +109,13 @@ export function useGenerateFees() {
       setMessage('✅ Iuran berhasil dibuat ulang berdasarkan tipe rumah warga');
       setFormData({ bulan: '', tarif_60m2: 0, tarif_72m2: 0, tarif_hook: 0 });
     } catch (err: any) {
-      setError(getServiceDownMessage(err, 'Gagal membuat ulang iuran'));
+      const message = getServiceDownMessage(err, 'Gagal membuat ulang iuran');
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
       setShowRegenerateConfirm(false);

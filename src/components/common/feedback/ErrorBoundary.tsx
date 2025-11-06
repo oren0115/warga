@@ -1,5 +1,6 @@
 import { AlertCircle, Home, RefreshCw } from 'lucide-react';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { logger } from '../../../utils/logger.utils';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 
@@ -48,8 +49,9 @@ class ErrorBoundary extends Component<Props, State> {
     }
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (import.meta.env.DEV) {
+      logger.error('ErrorBoundary caught an error:', error);
+      logger.log('Error Info:', errorInfo);
     }
 
     // Send to error tracking service

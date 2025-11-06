@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/auth.context';
 import { adminService } from '../services/admin.service';
 import type { User } from '../types';
+import { logger } from '../utils/logger.utils';
 import { getServiceDownMessage } from '../utils/network-error.utils';
 
 export type RoleFilter = 'all' | 'admin' | 'warga';
@@ -14,6 +15,13 @@ export function useUserManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  // debounce search term
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearchTerm(searchTerm), 350);
+    return () => clearTimeout(id);
+  }, [searchTerm]);
+
   const [filterRole, setFilterRole] = useState<RoleFilter>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -36,8 +44,11 @@ export function useUserManagement() {
       const usersData = await adminService.getUsers();
       setUsers(usersData);
     } catch (err: any) {
-      console.error('Error fetching users:', err);
-      setError(getServiceDownMessage(err, 'Gagal memuat data pengguna'));
+      logger.error('Error fetching users:', err);
+      const errorMessage =
+        err?.errorMapping?.userMessage ||
+        getServiceDownMessage(err, 'Gagal memuat data pengguna');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -58,17 +69,17 @@ export function useUserManagement() {
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const matchesSearch =
-        user.nama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.nomor_hp?.includes(searchTerm) ||
-        user.alamat?.toLowerCase().includes(searchTerm.toLowerCase());
+        user.nama?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        user.username?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        user.nomor_hp?.includes(debouncedSearchTerm) ||
+        user.alamat?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
       const matchesRole =
         filterRole === 'all' ||
         (filterRole === 'admin' && user.is_admin) ||
         (filterRole === 'warga' && !user.is_admin);
       return matchesSearch && matchesRole;
     });
-  }, [users, searchTerm, filterRole]);
+  }, [users, debouncedSearchTerm, filterRole]);
 
   const totalPages = useMemo(
     () => Math.ceil(filteredUsers.length / itemsPerPage) || 1,
@@ -82,7 +93,7 @@ export function useUserManagement() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterRole, itemsPerPage]);
+  }, [debouncedSearchTerm, filterRole, itemsPerPage]);
 
   const adminCount = useMemo(
     () => users.filter(u => u.is_admin).length,

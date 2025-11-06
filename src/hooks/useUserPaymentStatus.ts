@@ -3,6 +3,10 @@ import { adminService } from '../services/admin.service';
 import { websocketService } from '../services/websocket.service';
 import type { PaidUser, UnpaidUser } from '../types';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
+import { logger } from '../utils/logger.utils';
 
 export type FilterType = 'all' | 'normal' | 'orphaned';
 
@@ -50,6 +54,8 @@ export function useUserPaymentStatus() {
   const [error, setError] = useState('');
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [filter, setFilter] = useState<FilterType>('all');
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const months = useAvailableMonths(12);
 
@@ -73,10 +79,17 @@ export function useUserPaymentStatus() {
         setPaidUsers(paidResponse);
         setUnpaidUsers(unpaidResponse);
       } catch (err: any) {
-        console.error('Error fetching users:', err);
-        setError(
-          getServiceDownMessage(err, 'Gagal memuat data pembayaran warga')
+        logger.error('Error fetching users:', err);
+        const message = getServiceDownMessage(
+          err,
+          'Gagal memuat data pembayaran warga'
         );
+        setError(message);
+        if (isLightweightError(err)) {
+          showError(message, getToastDuration(err));
+        } else {
+          setGlobalError(err);
+        }
       } finally {
         setIsLoading(false);
       }

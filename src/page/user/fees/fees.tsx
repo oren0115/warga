@@ -1,8 +1,14 @@
 import { User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGlobalError } from '../../../context/global-error.context';
+import { useToast } from '../../../context/toast.context';
 import { userService } from '../../../services/user.service';
 import type { Fee } from '../../../types';
+import {
+  getToastDuration,
+  isLightweightError,
+} from '../../../utils/error-handling.utils';
 
 // shadcn/ui
 import {
@@ -21,7 +27,9 @@ const IuranList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
-  const [error] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
   useEffect(() => {
     fetchData();
   }, []);
@@ -31,8 +39,17 @@ const IuranList: React.FC = () => {
     try {
       const feesData = await userService.getFees();
       setFees(feesData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+      setError(null);
+    } catch (err: any) {
+      const message =
+        err?.errorMapping?.userMessage || err?.message || 'Gagal memuat data';
+      setError(message);
+      // Gunakan toast untuk error ringan, banner untuk error kritis
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }

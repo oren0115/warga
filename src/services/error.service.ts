@@ -1,5 +1,6 @@
 // src/services/error.service.ts
 import type { User } from "../types";
+import { logger } from "../utils/logger.utils";
 
 export interface ErrorContext {
   componentStack?: string;
@@ -129,12 +130,10 @@ class ErrorService {
       this.addToQueue(errorLog);
 
       // Log to console in development
-      if (process.env.NODE_ENV === "development") {
-        console.group(`🚨 Error Logged (${severity.toUpperCase()})`);
-        console.error("Error:", error);
-        console.log("Context:", context);
-        console.log("Error Log:", errorLog);
-        console.groupEnd();
+      if (import.meta.env.DEV) {
+        logger.error(`🚨 Error Logged (${severity.toUpperCase()})`, error);
+        logger.log("Context:", context);
+        logger.log("Error Log:", errorLog);
       }
 
       // Try to send immediately if online
@@ -142,7 +141,7 @@ class ErrorService {
         this.sendErrorToServer(errorLog);
       }
     } catch (loggingError) {
-      console.error("Failed to log error:", loggingError);
+      logger.error("Failed to log error:", loggingError);
     }
   }
 
@@ -289,14 +288,14 @@ class ErrorService {
       // });
 
       // For development, just log to console
-      if (process.env.NODE_ENV === "development") {
-        console.log("📤 Sending error to server:", errorLog);
+      if (import.meta.env.DEV) {
+        logger.log("📤 Sending error to server:", errorLog);
       }
 
       // Remove from queue after successful send
       this.removeFromQueue(errorLog.id);
     } catch (error) {
-      console.error("Failed to send error to server:", error);
+      logger.error("Failed to send error to server:", error);
       // Will retry later when online
     }
   }
@@ -316,7 +315,7 @@ class ErrorService {
         await this.sendErrorToServer(errorLog);
         await this.delay(this.retryDelay);
       } catch (error) {
-        console.error("Failed to process error from queue:", error);
+        logger.error("Failed to process error from queue:", error);
       }
     }
   }

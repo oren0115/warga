@@ -6,6 +6,10 @@ import type {
   TelegramTestResponse,
   UserWithPhone,
 } from '../types';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
+import { logger } from '../utils/logger.utils';
 
 export function useBroadcastNotifications() {
   const [formData, setFormData] = useState<BroadcastNotificationRequest>({
@@ -25,33 +29,51 @@ export function useBroadcastNotifications() {
   const [broadcastResult, setBroadcastResult] =
     useState<BroadcastResponse | null>(null);
 
+  const { showError, showSuccess, showInfo } = useToast();
+  const { setGlobalError } = useGlobalError();
+
   const loadUsersWithPhone = useCallback(async () => {
     setIsLoadingUsers(true);
     try {
       const response = await adminService.getUsersWithPhone();
       setUsersWithPhone(response.users);
-    } catch (e) {
-      console.error('Error loading users with phone:', e);
+    } catch (err: any) {
+      logger.error('Error loading users with phone:', err);
+      const message = 'Gagal memuat daftar pengguna';
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoadingUsers(false);
     }
-  }, []);
+  }, [showError, setGlobalError]);
 
   const testTelegramConnection = useCallback(async () => {
     setIsTestingTelegram(true);
     try {
       const response = await adminService.testTelegramConnection();
       setTelegramStatus(response);
-    } catch (e) {
-      console.error('Error testing Telegram connection:', e);
+    } catch (err: any) {
+      logger.error('Error testing Telegram connection:', err);
+      const message =
+        err?.errorMapping?.userMessage ||
+        err?.message ||
+        'Gagal menguji koneksi Telegram';
       setTelegramStatus({
         success: false,
-        message: 'Gagal menguji koneksi Telegram',
+        message,
       });
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsTestingTelegram(false);
     }
-  }, []);
+  }, [showError, setGlobalError]);
 
   useEffect(() => {
     loadUsersWithPhone();
@@ -69,20 +91,30 @@ export function useBroadcastNotifications() {
         const response = await adminService.broadcastNotification(formData);
         setBroadcastResult(response);
         setMessage(response.message);
+        showSuccess(response.message || 'Notifikasi berhasil dikirim');
         await loadUsersWithPhone();
         setFormData({
           title: '',
           message: '',
           notification_type: 'pengumuman',
         });
-      } catch (e) {
-        console.error('Error broadcasting notification:', e);
-        setError('Gagal mengirim notifikasi');
+      } catch (err: any) {
+        logger.error('Error broadcasting notification:', err);
+        const message =
+          err?.errorMapping?.userMessage ||
+          err?.message ||
+          'Gagal mengirim notifikasi';
+        setError(message);
+        if (isLightweightError(err)) {
+          showError(message, getToastDuration(err));
+        } else {
+          setGlobalError(err);
+        }
       } finally {
         setIsLoading(false);
       }
     },
-    [formData, loadUsersWithPhone]
+    [formData, loadUsersWithPhone, showError, showSuccess, setGlobalError]
   );
 
   return {

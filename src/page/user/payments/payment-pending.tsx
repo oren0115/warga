@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PaymentStatusPage } from '../../../components/common';
+import { useToast } from '../../../context/toast.context';
+import { useGlobalError } from '../../../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../../../utils/error-handling.utils';
+import { logger } from '../../../utils/logger.utils';
 import { userService } from '../../../services/user.service';
 import type { PaymentStatusResponse } from '../../../types';
 
@@ -11,6 +15,8 @@ const PaymentPending: React.FC = () => {
     useState<PaymentStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const paymentId = searchParams.get('payment_id');
   const feeId = searchParams.get('fee_id');
@@ -32,8 +38,15 @@ const PaymentPending: React.FC = () => {
 
       // Refresh fees to get updated status
       await userService.getFees();
-    } catch (error) {
-      console.error('Error fetching payment details:', error);
+    } catch (err: any) {
+      logger.error('Error fetching payment details:', err);
+      const message =
+        err?.errorMapping?.userMessage || err?.message || 'Gagal memuat detail pembayaran';
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -69,8 +82,15 @@ const PaymentPending: React.FC = () => {
       ) {
         navigate(`/payment/failed?payment_id=${paymentId}&fee_id=${feeId}`);
       }
-    } catch (error) {
-      console.error('Error checking payment status:', error);
+    } catch (err: any) {
+      logger.error('Error checking payment status:', err);
+      const message =
+        err?.errorMapping?.userMessage || err?.message || 'Gagal memeriksa status pembayaran';
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsCheckingStatus(false);
     }

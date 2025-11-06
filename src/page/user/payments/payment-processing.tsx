@@ -2,6 +2,10 @@ import { Clock, RefreshCw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorState, PageHeader, PageLayout } from '../../../components/common';
+import { useToast } from '../../../context/toast.context';
+import { useGlobalError } from '../../../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../../../utils/error-handling.utils';
+import { logger } from '../../../utils/logger.utils';
 import { userService } from '../../../services/user.service';
 import type { PaymentStatusResponse } from '../../../types';
 
@@ -11,6 +15,8 @@ const PaymentProcessing: React.FC = () => {
   const [, setPaymentStatus] = useState<PaymentStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const paymentId = searchParams.get('payment_id');
   const feeId = searchParams.get('fee_id');
@@ -54,9 +60,18 @@ const PaymentProcessing: React.FC = () => {
       } else if (paymentData.status.toLowerCase() === 'pending') {
         navigate(`/payment/pending?payment_id=${paymentId}&fee_id=${feeId}`);
       }
-    } catch (error) {
-      console.error('Error checking payment status:', error);
-      setError('Gagal memeriksa status pembayaran');
+    } catch (err: any) {
+      logger.error('Error checking payment status:', err);
+      const message =
+        err?.errorMapping?.userMessage ||
+        err?.message ||
+        'Gagal memeriksa status pembayaran';
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }

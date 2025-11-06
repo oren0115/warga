@@ -10,8 +10,14 @@ import { badgeVariants } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent } from '../../../components/ui/card';
 import { useAuth } from '../../../context/auth.context';
+import { useGlobalError } from '../../../context/global-error.context';
+import { useToast } from '../../../context/toast.context';
 import { userService } from '../../../services/user.service';
 import type { Fee, PaymentCreateRequest } from '../../../types';
+import {
+  getToastDuration,
+  isLightweightError,
+} from '../../../utils/error-handling.utils';
 
 type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
 
@@ -28,7 +34,9 @@ const IuranDetail: React.FC = () => {
 
   const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { showError, showSuccess, showInfo } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const fetchFee = useCallback(async () => {
     setIsLoading(true);
@@ -36,8 +44,16 @@ const IuranDetail: React.FC = () => {
       const fees = await userService.getFees();
       const currentFee = fees.find(f => f.id === id);
       setFee(currentFee || null);
-    } catch (error) {
-      console.error('Error fetching fee:', error);
+    } catch (err: any) {
+      const message =
+        err?.errorMapping?.userMessage || err?.message || 'Gagal memuat data';
+      setError(message);
+      // Gunakan toast untuk error ringan, banner untuk error kritis
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +83,17 @@ const IuranDetail: React.FC = () => {
           `/payment/processing?payment_id=${paymentResponse.payment_id}&fee_id=${fee.id}`
         );
       }
-    } catch (error) {
-      console.error('Error creating payment:', error);
-      alert('Gagal membuat pembayaran. Silakan coba lagi.');
+    } catch (err: any) {
+      const message =
+        err?.errorMapping?.userMessage ||
+        err?.message ||
+        'Gagal membuat pembayaran. Silakan coba lagi.';
+      // Gunakan toast untuk error ringan, banner untuk error kritis
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsProcessingPayment(false);
     }
@@ -87,13 +111,23 @@ const IuranDetail: React.FC = () => {
       if (statusResponse.updated) {
         setLastPaymentId(null);
         await fetchFee();
-        alert('Status pembayaran berhasil diperbarui!');
+        showSuccess('Status pembayaran berhasil diperbarui!');
       } else {
-        alert(statusResponse.message || 'Status pembayaran sudah up to date');
+        showInfo(
+          statusResponse.message || 'Status pembayaran sudah up to date'
+        );
       }
-    } catch (error) {
-      console.error('Error force checking payment status:', error);
-      alert('Gagal memeriksa status pembayaran. Silakan coba lagi.');
+    } catch (err: any) {
+      const message =
+        err?.errorMapping?.userMessage ||
+        err?.message ||
+        'Gagal memeriksa status pembayaran. Silakan coba lagi.';
+      // Gunakan toast untuk error ringan, banner untuk error kritis
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsCheckingPayment(false);
     }

@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { userService } from '../services/user.service';
 import type { Notification } from '../types';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
 
 export function useUserNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -9,6 +12,8 @@ export function useUserNotifications() {
   const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const fetchNotifications = useCallback(async () => {
     setIsLoading(true);
@@ -17,7 +22,13 @@ export function useUserNotifications() {
       const notificationsData = await userService.getNotifications();
       setNotifications(notificationsData);
     } catch (err: any) {
-      setError(getServiceDownMessage(err, 'Gagal memuat notifikasi'));
+      const message = getServiceDownMessage(err, 'Gagal memuat notifikasi');
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -34,8 +45,13 @@ export function useUserNotifications() {
         prev.map(n => (n.id === notificationId ? { ...n, is_read: true } : n))
       );
       setNotificationRefreshKey(prev => prev + 1);
-    } catch (e) {
-      console.error('Error marking notification as read:', e);
+    } catch (err: any) {
+      const message = getServiceDownMessage(err, 'Gagal menandai notifikasi');
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     }
   }, []);
 

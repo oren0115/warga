@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminService } from '../services/admin.service';
 import type { Payment } from '../types';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
 
 export type DateRange = 'today' | 'week' | 'month' | 'all';
 export type StatusFilter = 'all' | 'pending' | 'success' | 'failed';
@@ -29,6 +32,8 @@ export function usePaymentsReview() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const fetchPayments = useCallback(async () => {
     setIsLoading(true);
@@ -37,8 +42,13 @@ export function usePaymentsReview() {
       const paymentsData = await adminService.getAdminPaymentsWithDetails();
       setPayments(paymentsData);
     } catch (err: any) {
-      console.error('Error fetching payments:', err);
-      setError(getServiceDownMessage(err, 'Gagal memuat data pembayaran'));
+      const message = getServiceDownMessage(err, 'Gagal memuat data pembayaran');
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     } finally {
       setIsLoading(false);
     }

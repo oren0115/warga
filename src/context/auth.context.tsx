@@ -140,7 +140,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         payload: { token: response.access_token, user: response.user },
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || 'Login failed';
+      const errorMessage =
+        (error?.errorMapping?.userMessage as string | undefined) ||
+        (error?.message as string | undefined) ||
+        'Login gagal. Periksa koneksi dan coba lagi.';
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error;
     }
@@ -154,7 +157,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       await login(userData.username, userData.password);
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.detail || 'Registration failed';
+        (error?.errorMapping?.userMessage as string | undefined) ||
+        (error?.message as string | undefined) ||
+        'Pendaftaran gagal. Periksa koneksi dan coba lagi.';
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error;
     }

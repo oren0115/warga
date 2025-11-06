@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { BarChart3, LogOut, Receipt, User2 } from 'lucide-react';
-import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { Button } from '../../../components/ui/button';
 import {
   Card,
@@ -31,11 +30,9 @@ const Dashboard: React.FC = () => {
   const {
     stats,
     isLoading,
-    error,
     monthlyFees,
     paymentStatus,
     chartZoom,
-    fetchDashboardData,
     handleLogout,
     handleZoomIn,
     handleZoomOut,
@@ -144,25 +141,6 @@ const Dashboard: React.FC = () => {
         rightAction={<MobileLogoutButton />}
       />
 
-      {/* Error */}
-      {error && (
-        <div className='container mx-auto px-4 md:px-6'>
-          <Alert variant='destructive' className='mb-6'>
-            <AlertDescription>
-              <div className='space-y-2'>
-                <p className='font-semibold'>Error: {error}</p>
-                <p className='text-sm'>
-                  Menggunakan data demo untuk testing. Pastikan backend berjalan
-                  di port 8000.
-                </p>
-              </div>
-            </AlertDescription>
-            <Button size='sm' className='mt-3' onClick={fetchDashboardData}>
-              Coba Lagi
-            </Button>
-          </Alert>
-        </div>
-      )}
 
       {stats && (
         <>

@@ -2,13 +2,14 @@
 import axios, { AxiosError } from 'axios';
 import { errorService } from '../services/error.service';
 import { getUserFriendlyError } from '../utils/error-messages';
+import { logger } from '../utils/logger.utils';
 
 // Get API URL from environment with proper fallback
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Validate API URL in development
 if (import.meta.env.DEV) {
-  console.log('🔧 API Configuration:', {
+  logger.log('🔧 API Configuration:', {
     VITE_API_URL: import.meta.env.VITE_API_URL,
     API_BASE_URL,
     NODE_ENV: import.meta.env.MODE,
@@ -16,7 +17,7 @@ if (import.meta.env.DEV) {
 
   // Warn if using default localhost
   if (API_BASE_URL === '' && !import.meta.env.VITE_API_URL) {
-    console.warn(
+    logger.warn(
       '⚠️  Using default localhost:8000. Set VITE_API_URL in .env for production!'
     );
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth.context';
 // import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
@@ -36,6 +36,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -63,6 +75,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className='min-h-screen bg-main-background'>
+      {/* Offline Indicator */}
+      {!isOnline && (
+        <div className='fixed top-2 right-2 z-[60]'>
+          <div
+            className='px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm'
+            role='status'
+            aria-live='polite'
+          >
+            Offline: Periksa koneksi internet Anda
+          </div>
+        </div>
+      )}
       {/* Desktop Sidebar */}
       <div
         className={`hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:bg-white lg:border-r lg:border-gray-200 lg:shadow-sm transition-all duration-300 ease-in-out ${

@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { userService } from '../services/user.service';
 import type { Payment } from '../types';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
 
 export function usePaymentHistory() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -14,6 +17,8 @@ export function usePaymentHistory() {
   }>({ key: 'date', dir: 'desc' });
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -21,7 +26,13 @@ export function usePaymentHistory() {
       setPayments(paymentsData);
       setError(null);
     } catch (err: any) {
-      setError(getServiceDownMessage(err, 'Gagal memuat data'));
+      const message = getServiceDownMessage(err, 'Gagal memuat data');
+      setError(message);
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
     }
   }, []);
 

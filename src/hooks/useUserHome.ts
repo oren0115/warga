@@ -4,6 +4,9 @@ import { useError } from '../context/error.context';
 import { userService } from '../services/user.service';
 import type { Fee, Notification } from '../types';
 import { getServiceDownMessage } from '../utils/network-error.utils';
+import { useToast } from '../context/toast.context';
+import { useGlobalError } from '../context/global-error.context';
+import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
 
 export function useUserHome() {
   const { authState } = useAuth();
@@ -14,6 +17,8 @@ export function useUserHome() {
   const [error, setError] = useState<string | null>(null);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -31,9 +36,15 @@ export function useUserHome() {
         notificationsCount: notificationsData.length,
       });
     } catch (err: any) {
-      setError(
-        getServiceDownMessage(err, 'Gagal memuat data. Silakan coba lagi.')
-      );
+      const errorMessage =
+        err?.errorMapping?.userMessage ||
+        getServiceDownMessage(err, 'Gagal memuat data. Silakan coba lagi.');
+      setError(errorMessage);
+      if (isLightweightError(err)) {
+        showError(errorMessage, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
       logUserAction(
         'home_data_fetch_error',
         { error: err instanceof Error ? err.message : String(err) },

@@ -5,6 +5,7 @@ export { default as EmptyState } from './feedback/EmptyState';
 export { default as ErrorBoundary } from './feedback/ErrorBoundary';
 export { default as ErrorDisplay } from './feedback/ErrorDisplay';
 export { default as ErrorState } from './feedback/ErrorState';
+export { GlobalErrorBanner } from './feedback/GlobalErrorBanner';
 export { default as FilterTabs } from './filter/FilterTabs';
 export { default as PageHeader } from './header/PageHeader';
 export { default as PageLayout } from './layout/PageLayout';

@@ -52,10 +52,11 @@ const Login: React.FC = () => {
         navigate('/');
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.detail ||
-          'Login gagal. Periksa kembali username dan password.'
-      );
+      const userMessage =
+        (err?.errorMapping?.userMessage as string | undefined) ||
+        (err?.message as string | undefined) ||
+        'Login gagal. Periksa koneksi atau coba lagi nanti.';
+      setError(userMessage);
     }
   };
 
@@ -82,7 +83,12 @@ const Login: React.FC = () => {
         <CardContent>
           <form className='space-y-6' onSubmit={handleSubmit}>
             {error && (
-              <Alert variant='destructive' className='text-sm'>
+              <Alert
+                variant='destructive'
+                className='text-sm'
+                role='alert'
+                aria-live='assertive'
+              >
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -104,6 +110,8 @@ const Login: React.FC = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className='rounded-xl pl-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition'
+                aria-required='true'
+                aria-label='Username'
               />
               <User className='absolute left-3 top-9 w-4 h-4 text-gray-400' />
             </div>
@@ -125,14 +133,24 @@ const Login: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className='rounded-xl pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition'
+                aria-required='true'
+                aria-label='Password'
               />
               <Lock className='absolute left-3 top-9 w-4 h-4 text-gray-400' />
               <button
                 type='button'
                 onClick={() => setShowPassword(prev => !prev)}
                 className='absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition'
+                aria-label={
+                  showPassword ? 'Sembunyikan password' : 'Tampilkan password'
+                }
+                aria-pressed={showPassword}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? (
+                  <EyeOff size={18} aria-hidden='true' />
+                ) : (
+                  <Eye size={18} aria-hidden='true' />
+                )}
               </button>
             </div>
 

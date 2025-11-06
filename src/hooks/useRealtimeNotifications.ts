@@ -1,5 +1,8 @@
 // src/hooks/useRealtimeNotifications.ts
 import { useEffect, useCallback, useState } from "react";
+import { useToast } from "../context/toast.context";
+import { useGlobalError } from "../context/global-error.context";
+import { getToastDuration, isLightweightError } from "../utils/error-handling.utils";
 import { websocketService } from "../services/websocket.service";
 import { browserNotificationService } from "../services/browser-notification.service";
 import type { Notification } from "../types";
@@ -17,6 +20,8 @@ export const useRealtimeNotifications = ({
 }: UseRealtimeNotificationsProps) => {
   const [isConnected, setIsConnected] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const { showError } = useToast();
+  const { setGlobalError } = useGlobalError();
 
   // Request notification permission on mount
   useEffect(() => {
@@ -77,8 +82,13 @@ export const useRealtimeNotifications = ({
             detail: notification,
           })
         );
-      } catch (error) {
-        console.error("Error dispatching notification event:", error);
+      } catch (err: any) {
+        const message = "Gagal memproses notifikasi realtime";
+        if (isLightweightError(err)) {
+          showError(message, getToastDuration(err));
+        } else {
+          setGlobalError(err);
+        }
       }
     };
 
