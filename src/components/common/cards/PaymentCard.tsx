@@ -85,7 +85,10 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
     icon: <Clipboard className='w-5 h-5' />,
   };
 
-  const method = getPaymentMethodMeta(payment.payment_method);
+  const method = getPaymentMethodMeta(
+    payment.payment_type || payment.payment_method,
+    payment.bank
+  );
 
   const statusBg = (() => {
     const s = payment.status.toLowerCase();
@@ -126,6 +129,11 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               <p className='text-xs text-gray-600 font-medium'>
                 {formatDateTimeWithPukul(payment.created_at)}
               </p>
+              {payment.va_number && (
+                <p className='text-[11px] text-gray-500 font-medium'>
+                  No. VA: {payment.va_number}
+                </p>
+              )}
             </div>
           </div>
           <div className='flex items-center gap-2'>

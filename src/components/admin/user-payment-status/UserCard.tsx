@@ -39,6 +39,17 @@ const safeFormatDate = (dateString: string): string => {
 
 export const UserCard: React.FC<UserCardProps> = ({ user, isPaid }) => {
   const isOrphaned = user.is_orphaned;
+  const paymentMethodValue =
+    isPaid && 'payment_method' in user
+      ? 'payment_type' in user && user.payment_type
+        ? user.payment_type
+        : user.payment_method
+      : null;
+  const paymentBank =
+    isPaid && 'bank' in user ? (user.bank as string | undefined) : undefined;
+  const paymentMethodMeta = paymentMethodValue
+    ? getPaymentMethodMeta(paymentMethodValue, paymentBank)
+    : null;
   return (
     <Card
       key={user.user_id}
@@ -112,11 +123,11 @@ export const UserCard: React.FC<UserCardProps> = ({ user, isPaid }) => {
                   </span>
                 </div>
               )}
-              {isPaid && 'payment_method' in user && user.payment_method && (
+              {paymentMethodMeta && (
                 <div className='flex items-center gap-2'>
-                  {getPaymentMethodMeta(user.payment_method).icon}
+                  {paymentMethodMeta.icon}
                   <span className='text-sm text-gray-600'>
-                    {getPaymentMethodMeta(user.payment_method).text}
+                    {paymentMethodMeta.text}
                   </span>
                 </div>
               )}

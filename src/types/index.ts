@@ -1,5 +1,20 @@
 // Types for the web application - matching backend schemas
 
+export type PaymentMethodRequest =
+  | 'bank_transfer'
+  | 'credit_card'
+  | 'gopay'
+  | 'qris'
+  | 'shopeepay';
+
+export type PaymentMethod =
+  | PaymentMethodRequest
+  | 'bca_va'
+  | 'bni_va'
+  | 'permata_va'
+  | 'other_va'
+  | 'echannel';
+
 export interface User {
   id: string;
   username: string;
@@ -13,7 +28,7 @@ export interface User {
 }
 
 export interface Fee {
-  payment_method: string;
+  payment_method: PaymentMethod;
   id: string;
   user_id: string;
   kategori: string;
@@ -29,7 +44,7 @@ export interface Payment {
   fee_id: string;
   user_id: string;
   amount: number;
-  payment_method: string;
+  payment_method: PaymentMethod;
   status:
     | 'Pending'
     | 'Settlement'
@@ -43,13 +58,17 @@ export interface Payment {
   payment_token?: string;
   payment_url?: string;
   midtrans_status?: string;
-  payment_type?: string;
+  payment_type?: PaymentMethod;
   bank?: string;
   va_number?: string;
   expiry_time?: string;
   settled_at?: string;
   user?: User;
   fee?: Fee;
+  qr_string?: string;
+  qr_url?: string;
+  deeplink_url?: string;
+  mobile_deeplink_url?: string;
 }
 
 export interface Notification {
@@ -87,18 +106,23 @@ export interface RegisterRequest {
 export interface PaymentCreateRequest {
   fee_id: string;
   amount: number;
-  payment_method: string;
+  payment_method: PaymentMethodRequest;
 }
 
 export interface PaymentCreateResponse {
   payment_id: string;
   transaction_id: string;
-  payment_token: string;
-  payment_url: string;
-  expiry_time: string;
+  payment_token?: string;
+  payment_url?: string;
+  expiry_time?: string;
   payment_type: string;
   bank?: string;
   va_number?: string;
+  order_id: string;
+  qr_url?: string;
+  qr_string?: string;
+  deeplink_url?: string;
+  mobile_deeplink_url?: string;
 }
 
 export interface PaymentStatusResponse {
@@ -199,6 +223,9 @@ export interface PaidUser {
   created_at: string;
   payment_date: string;
   payment_method: string;
+  payment_type?: PaymentMethod;
+  bank?: string;
+  va_number?: string;
   is_orphaned?: boolean;
 }
 

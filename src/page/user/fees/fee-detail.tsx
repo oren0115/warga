@@ -1,10 +1,20 @@
 import type { VariantProps } from 'class-variance-authority';
-import { AlertCircle } from 'lucide-react';
+import {
+  AlertCircle,
+  CreditCard,
+  Landmark,
+  QrCode,
+  ShoppingBag,
+  Smartphone,
+} from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import FeeInfoCard from '../../../components/common/cards/FeeInfoCard';
 import PaymentStatusCard from '../../../components/common/cards/PaymentStatusCard';
+import type { PaymentMethodOption } from '../../../components/common/cards/PayNowCard';
 import PayNowCard from '../../../components/common/cards/PayNowCard';
+import type { QrisPaymentInfo } from '../../../components/common/dialogs/QrisPaymentDialog';
+import QrisPaymentDialog from '../../../components/common/dialogs/QrisPaymentDialog';
 import FeeDetailHeader from '../../../components/common/header/FeeDetailHeader';
 import { badgeVariants } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
@@ -13,13 +23,51 @@ import { useAuth } from '../../../context/auth.context';
 import { useGlobalError } from '../../../context/global-error.context';
 import { useToast } from '../../../context/toast.context';
 import { userService } from '../../../services/user.service';
-import type { Fee, PaymentCreateRequest } from '../../../types';
+import type {
+  Fee,
+  PaymentCreateRequest,
+  PaymentMethodRequest,
+} from '../../../types';
 import {
   getToastDuration,
   isLightweightError,
 } from '../../../utils/error-handling.utils';
 
 type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
+
+const PAYMENT_METHOD_OPTIONS: PaymentMethodOption[] = [
+  {
+    value: 'qris',
+    label: 'QRIS',
+    description: 'Scan QR semua bank & e-wallet',
+    icon: <QrCode className='h-4 w-4' />,
+    badge: 'Terpopuler',
+  },
+  {
+    value: 'bank_transfer',
+    label: 'Transfer Bank (Virtual Account)',
+    description: 'Virtual Account BCA, BNI, Mandiri, Permata',
+    icon: <Landmark className='h-4 w-4' />,
+  },
+  {
+    value: 'gopay',
+    label: 'GoPay',
+    description: 'Bayar lewat aplikasi GoPay',
+    icon: <Smartphone className='h-4 w-4' />,
+  },
+  {
+    value: 'shopeepay',
+    label: 'ShopeePay',
+    description: 'Bayar lewat aplikasi ShopeePay',
+    icon: <ShoppingBag className='h-4 w-4' />,
+  },
+  {
+    value: 'credit_card',
+    label: 'Kartu Kredit',
+    description: 'Dukungan kartu kredit/debit',
+    icon: <CreditCard className='h-4 w-4' />,
+  },
+];
 
 const IuranDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +78,10 @@ const IuranDetail: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Default metode pembayaran (ubah sesuai kebutuhan)
-  const [selectedPaymentMethod] = useState('bank_transfer');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<PaymentMethodRequest>('bank_transfer');
+  const [qrisPaymentInfo, setQrisPaymentInfo] =
+    useState<QrisPaymentInfo | null>(null);
 
   const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
@@ -66,6 +117,7 @@ const IuranDetail: React.FC = () => {
   const handlePayment = async () => {
     if (!fee || !selectedPaymentMethod) return;
     setIsProcessingPayment(true);
+    setQrisPaymentInfo(null);
     try {
       const paymentData: PaymentCreateRequest = {
         fee_id: fee.id,
@@ -74,8 +126,26 @@ const IuranDetail: React.FC = () => {
       };
       const paymentResponse = await userService.createPayment(paymentData);
 
+      setLastPaymentId(paymentResponse.payment_id);
+
+      if (
+        paymentResponse.payment_type?.toLowerCase() === 'qris' &&
+        (paymentResponse.qr_url || paymentResponse.qr_string)
+      ) {
+        setQrisPaymentInfo({
+          orderId: paymentResponse.order_id,
+          amount: fee.nominal,
+          qrUrl: paymentResponse.qr_url || paymentResponse.payment_url,
+          qrString: paymentResponse.qr_string,
+          expiryTime: paymentResponse.expiry_time,
+          deeplinkUrl: paymentResponse.deeplink_url,
+          mobileDeeplinkUrl: paymentResponse.mobile_deeplink_url,
+        });
+        showInfo('Silakan scan QRIS untuk menyelesaikan pembayaran.');
+        return;
+      }
+
       if (paymentResponse.payment_url) {
-        setLastPaymentId(paymentResponse.payment_id);
         window.open(paymentResponse.payment_url, '_blank');
 
         // Redirect to processing page instead of polling
@@ -289,7 +359,15 @@ const IuranDetail: React.FC = () => {
         {(fee.status === 'Belum Bayar' ||
           fee.status === 'Failed' ||
           fee.status === 'Pending') && (
-          <PayNowCard onPay={handlePayment} disabled={isProcessingPayment} />
+          <PayNowCard
+            onPay={handlePayment}
+            disabled={isProcessingPayment}
+            isProcessing={isProcessingPayment}
+            amount={fee.nominal}
+            selectedMethod={selectedPaymentMethod}
+            onMethodChange={setSelectedPaymentMethod}
+            methods={PAYMENT_METHOD_OPTIONS}
+          />
         )}
 
         {/* Payment Status - Pending */}
@@ -314,6 +392,14 @@ const IuranDetail: React.FC = () => {
           />
         )}
       </div>
+
+      <QrisPaymentDialog
+        open={Boolean(qrisPaymentInfo)}
+        data={qrisPaymentInfo}
+        onClose={() => setQrisPaymentInfo(null)}
+        onForceCheck={forceCheckPaymentStatus}
+        isChecking={isCheckingPayment}
+      />
     </div>
   );
 };
