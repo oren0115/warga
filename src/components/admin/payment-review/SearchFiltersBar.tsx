@@ -49,7 +49,7 @@ const SearchFiltersBar: React.FC<Props> = ({
           onClick={onRefresh}
           disabled={isRefreshing}
           size='sm'
-          className='font-medium bg-white hover:bg-green-600 border-green-20 cursor-pointer'
+          className='font-medium text-white bg-green-600 hover:bg-green-700 border-green-20 cursor-pointer'
         >
           <RefreshCw
             className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -128,7 +128,7 @@ const SearchFiltersBar: React.FC<Props> = ({
             variant={filter === (s.key as StatusFilter) ? 'default' : 'outline'}
             onClick={() => setFilter(s.key as StatusFilter)}
             size='sm'
-            className='text-sm font-medium cursor-pointer'
+            className='text-sm font-medium cursor-pointer mb-5'
           >
             {s.key === 'all' && <TrendingUp className='w-4 h-4 mr-2 ' />}
             {s.key === 'pending' && <Filter className='w-4 h-4 mr-2 ' />}

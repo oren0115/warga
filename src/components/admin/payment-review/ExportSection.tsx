@@ -45,7 +45,7 @@ const ExportSection: React.FC<Props> = ({ onExport }) => {
   return (
     <div className='p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100'>
       <div className='flex items-center gap-2 mb-3'>
-        <CalendarIcon className='w-5 h-5 text-blue-600' />
+        <CalendarIcon className='w-5 h-5 text-green-600' />
         <h3 className='font-semibold text-gray-700'>Export Laporan</h3>
       </div>
 
@@ -80,7 +80,7 @@ const ExportSection: React.FC<Props> = ({ onExport }) => {
           size='sm'
           onClick={() => handle('excel')}
           disabled={isExporting}
-          className='font-medium bg-white hover:bg-green-50 border-green-200 text-green-700'
+          className='font-medium bg-white hover:bg-green-50 border-green-200 text-green-700 cursor-pointer'
         >
           <FileText className='w-4 h-4 mr-2' />
           <span className='hidden sm:inline'>Export </span>Excel

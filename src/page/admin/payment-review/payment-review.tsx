@@ -144,6 +144,7 @@ const PaymentReview: React.FC = () => {
               onRefresh={handleRefresh}
               isRefreshing={isRefreshing}
             />
+            <ExportSection onExport={handleExport} />
           </div>
           <div className='p-6'>
             <PaymentsGridSection
@@ -165,8 +166,6 @@ const PaymentReview: React.FC = () => {
             />
           </div>
         </Card>
-
-        <ExportSection onExport={handleExport} />
       </div>
     </div>
   );
