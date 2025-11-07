@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useGlobalError } from '../context/global-error.context';
+import { useToast } from '../context/toast.context';
 import { adminService } from '../services/admin.service';
 import type {
   BroadcastNotificationRequest,
@@ -6,9 +8,10 @@ import type {
   TelegramTestResponse,
   UserWithPhone,
 } from '../types';
-import { useToast } from '../context/toast.context';
-import { useGlobalError } from '../context/global-error.context';
-import { getToastDuration, isLightweightError } from '../utils/error-handling.utils';
+import {
+  getToastDuration,
+  isLightweightError,
+} from '../utils/error-handling.utils';
 import { logger } from '../utils/logger.utils';
 
 export function useBroadcastNotifications() {
@@ -29,7 +32,7 @@ export function useBroadcastNotifications() {
   const [broadcastResult, setBroadcastResult] =
     useState<BroadcastResponse | null>(null);
 
-  const { showError, showSuccess, showInfo } = useToast();
+  const { showError, showSuccess } = useToast();
   const { setGlobalError } = useGlobalError();
 
   const loadUsersWithPhone = useCallback(async () => {
