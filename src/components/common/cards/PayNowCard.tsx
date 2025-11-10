@@ -1,13 +1,6 @@
-import {
-  BadgeCheck,
-  CreditCard,
-  Loader2,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react';
+import { CreditCard, Loader2, ShieldCheck } from 'lucide-react';
 import React, { useMemo } from 'react';
 import type { PaymentMethodRequest } from '../../../types';
-import { formatCurrency } from '../../../utils/format.utils';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import {
@@ -40,7 +33,6 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
   onPay,
   disabled,
   isProcessing,
-  amount,
   selectedMethod,
   onMethodChange,
   methods,
@@ -51,38 +43,21 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
   );
 
   return (
-    <Card className='shadow-xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/30'>
+    <Card className='shadow-xl border border-green-100 bg-gradient-to-br from-white to-green-50/30'>
       <CardHeader className='space-y-2'>
         <div className='flex items-center justify-between gap-3'>
           <div>
             <CardTitle className='text-xl font-semibold text-gray-900 flex items-center gap-2'>
-              <Sparkles className='h-5 w-5 text-emerald-500' /> Bayar Iuran
+              Bayar Iuran
             </CardTitle>
-            <p className='text-sm text-gray-600 mt-1'>
-              Pilih metode favoritmu dan selesaikan pembayaran dalam hitungan
-              detik.
-            </p>
           </div>
-          <span className='inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 shadow-sm'>
-            <ShieldCheck className='h-4 w-4' /> Terlindungi Midtrans
+          <span className='inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-gray-700 shadow-sm'>
+            <ShieldCheck className='h-4 w-4 text-green-500' /> Terlindungi
+            Midtrans
           </span>
         </div>
       </CardHeader>
       <CardContent className='space-y-5'>
-        <div className='rounded-xl border border-emerald-100 bg-white p-4 shadow-sm'>
-          <p className='text-xs uppercase tracking-wide text-gray-500'>
-            Jumlah yang harus dibayar
-          </p>
-          <p className='mt-2 text-3xl font-bold text-emerald-700'>
-            {formatCurrency(amount)}
-          </p>
-          {selectedOption && (
-            <p className='mt-1 text-xs text-gray-500'>
-              Metode dipilih: {selectedOption.label}
-            </p>
-          )}
-        </div>
-
         <div className='space-y-2'>
           <p className='text-sm font-semibold text-gray-800'>
             Pilih Metode Pembayaran
@@ -93,7 +68,7 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
               onMethodChange(value as PaymentMethodRequest)
             }
           >
-            <SelectTrigger className='w-full h-12 justify-between border-gray-200 bg-white shadow-sm hover:border-emerald-200 focus:ring-2 focus:ring-emerald-200'>
+            <SelectTrigger className='w-full h-12 justify-between border-gray-200 bg-white shadow-sm hover:border-emerald-200 focus:ring-2 focus:ring-green-200'>
               <SelectValue placeholder='Pilih metode pembayaran'>
                 {selectedOption ? (
                   <span className='flex items-center gap-2'>
@@ -109,16 +84,14 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
               {methods.map(method => (
                 <SelectItem key={method.value} value={method.value}>
                   <span className='flex items-start gap-3'>
-                    <span className='mt-0.5 text-emerald-500'>
-                      {method.icon}
-                    </span>
+                    <span className='mt-0.5 text-green-500'>{method.icon}</span>
                     <span className='flex flex-col flex-1 gap-0.5'>
                       <span className='flex items-center gap-2'>
                         <span className='text-sm font-medium text-gray-800'>
                           {method.label}
                         </span>
                         {method.badge && (
-                          <span className='rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700'>
+                          <span className='rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-green-700'>
                             {method.badge}
                           </span>
                         )}
@@ -145,7 +118,7 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
           <Button
             onClick={onPay}
             disabled={disabled || isProcessing}
-            className='w-full h-12 bg-emerald-600 hover:bg-emerald-700 shadow-lg text-white font-semibold text-lg transition-all duration-150'
+            className='w-full h-12 bg-green-600 hover:bg-green-700 shadow-lg text-white font-semibold text-lg transition-all duration-150 cursor-pointer'
           >
             {isProcessing ? (
               <>
@@ -161,21 +134,6 @@ const PayNowCard: React.FC<PayNowCardProps> = ({
             Setelah pembayaran sukses, status akan diperbarui otomatis tanpa
             perlu upload bukti.
           </p>
-        </div>
-
-        <div className='grid gap-2 rounded-xl border border-gray-200 bg-white/70 p-3 text-xs text-gray-600 sm:grid-cols-3'>
-          <div className='flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-emerald-700'>
-            <BadgeCheck className='h-4 w-4' />
-            Instant update
-          </div>
-          <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2'>
-            <ShieldCheck className='h-4 w-4 text-emerald-500' />
-            Enkripsi penuh
-          </div>
-          <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2'>
-            <Sparkles className='h-4 w-4 text-emerald-500' />
-            Banyak pilihan
-          </div>
         </div>
       </CardContent>
     </Card>

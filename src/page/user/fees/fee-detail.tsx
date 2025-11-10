@@ -203,20 +203,6 @@ const IuranDetail: React.FC = () => {
     }
   };
 
-  // const startPaymentStatusPolling = (paymentId: string) => {
-  //   const pollInterval = setInterval(async () => {
-  //     const shouldStop = await checkPaymentStatus(paymentId);
-  //     if (shouldStop) {
-  //       clearInterval(pollInterval);
-  //     }
-  //   }, 5000);
-
-  //   setTimeout(() => {
-  //     clearInterval(pollInterval);
-  //     setLastPaymentId(null);
-  //   }, 600000);
-  // };
-
   const getStatusVariant = (status: string): BadgeVariant => {
     switch (status.toLowerCase()) {
       case 'lunas':

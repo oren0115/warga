@@ -180,7 +180,7 @@ const FeeCard: React.FC<FeeCardProps> = ({
           <Button
             className={`w-full ${
               canPay
-                ? 'bg-green-600 hover:bg-green-700 text-white font-semibold'
+                ? 'bg-green-600 hover:bg-green-700 text-white font-semibold cursor-pointer'
                 : isPaid
                 ? 'bg-green-100 hover:bg-green-200 text-green-700'
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
