@@ -1,6 +1,6 @@
 // src/services/error.service.ts
-import type { User } from "../types";
-import { logger } from "../utils/logger.utils";
+import type { User } from '../types';
+import { logger } from '../utils/logger.utils';
 
 export interface ErrorContext {
   componentStack?: string;
@@ -21,8 +21,8 @@ export interface ErrorLog {
   message: string;
   stack?: string;
   context: ErrorContext;
-  severity: "low" | "medium" | "high" | "critical";
-  category: "network" | "validation" | "server" | "client" | "unknown";
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: 'network' | 'validation' | 'server' | 'client' | 'unknown';
   timestamp: string;
   user?: {
     id: string;
@@ -39,17 +39,17 @@ class ErrorService {
 
   constructor() {
     // Listen for online/offline events
-    window.addEventListener("online", () => {
+    window.addEventListener('online', () => {
       this.isOnline = true;
       this.processErrorQueue();
     });
 
-    window.addEventListener("offline", () => {
+    window.addEventListener('offline', () => {
       this.isOnline = false;
     });
 
     // Listen for unhandled errors
-    window.addEventListener("error", (event) => {
+    window.addEventListener('error', event => {
       this.logError(
         new Error(event.message),
         {
@@ -60,23 +60,23 @@ class ErrorService {
           url: window.location.href,
           userAgent: navigator.userAgent,
         },
-        "critical",
-        "client"
+        'critical',
+        'client'
       );
     });
 
     // Listen for unhandled promise rejections
-    window.addEventListener("unhandledrejection", (event) => {
+    window.addEventListener('unhandledrejection', event => {
       this.logError(
-        new Error(event.reason?.message || "Unhandled Promise Rejection"),
+        new Error(event.reason?.message || 'Unhandled Promise Rejection'),
         {
           reason: event.reason,
           timestamp: new Date().toISOString(),
           url: window.location.href,
           userAgent: navigator.userAgent,
         },
-        "high",
-        "client"
+        'high',
+        'client'
       );
     });
   }
@@ -87,13 +87,13 @@ class ErrorService {
   logError(
     error: Error,
     context: ErrorContext = {},
-    severity: "low" | "medium" | "high" | "critical" = "medium",
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium',
     category:
-      | "network"
-      | "validation"
-      | "server"
-      | "client"
-      | "unknown" = "unknown"
+      | 'network'
+      | 'validation'
+      | 'server'
+      | 'client'
+      | 'unknown' = 'unknown'
   ): void {
     try {
       // Get current user info if available
@@ -106,7 +106,7 @@ class ErrorService {
       // Create error log
       const errorLog: ErrorLog = {
         id: this.generateErrorId(),
-        message: error.message || "Unknown error",
+        message: error.message || 'Unknown error',
         stack: error.stack,
         context: {
           ...context,
@@ -121,7 +121,7 @@ class ErrorService {
           ? {
               id: user.id,
               username: user.username,
-              role: user.is_admin ? "admin" : "user",
+              role: user.is_admin ? 'admin' : 'user',
             }
           : undefined,
       };
@@ -131,9 +131,9 @@ class ErrorService {
 
       // Log to console in development
       if (import.meta.env.DEV) {
-        logger.error(`🚨 Error Logged (${severity.toUpperCase()})`, error);
-        logger.log("Context:", context);
-        logger.log("Error Log:", errorLog);
+        logger.error(` Error Logged (${severity.toUpperCase()})`, error);
+        logger.log('Context:', context);
+        logger.log('Error Log:', errorLog);
       }
 
       // Try to send immediately if online
@@ -141,7 +141,7 @@ class ErrorService {
         this.sendErrorToServer(errorLog);
       }
     } catch (loggingError) {
-      logger.error("Failed to log error:", loggingError);
+      logger.error('Failed to log error:', loggingError);
     }
   }
 
@@ -151,32 +151,32 @@ class ErrorService {
   logApiError(
     error: any,
     endpoint: string,
-    method: string = "GET",
+    method: string = 'GET',
     requestData?: any
   ): void {
     const context: ErrorContext = {
       apiEndpoint: endpoint,
       method,
       requestData: requestData ? JSON.stringify(requestData) : undefined,
-      action: "api_call",
+      action: 'api_call',
     };
 
-    let severity: "low" | "medium" | "high" | "critical" = "medium";
-    let category: "network" | "validation" | "server" | "client" | "unknown" =
-      "network";
+    let severity: 'low' | 'medium' | 'high' | 'critical' = 'medium';
+    let category: 'network' | 'validation' | 'server' | 'client' | 'unknown' =
+      'network';
 
     // Determine severity based on status code
     if (error.response?.status) {
       const status = error.response.status;
       if (status >= 500) {
-        severity = "high";
-        category = "server";
+        severity = 'high';
+        category = 'server';
       } else if (status >= 400) {
-        severity = "medium";
-        category = "client";
+        severity = 'medium';
+        category = 'client';
       } else {
-        severity = "low";
-        category = "network";
+        severity = 'low';
+        category = 'network';
       }
     }
 
@@ -195,12 +195,12 @@ class ErrorService {
     const error = new Error(`Validation failed for ${field}: ${message}`);
     const context: ErrorContext = {
       field,
-      value: typeof value === "object" ? JSON.stringify(value) : String(value),
+      value: typeof value === 'object' ? JSON.stringify(value) : String(value),
       rule,
-      action: "validation",
+      action: 'validation',
     };
 
-    this.logError(error, context, "low", "validation");
+    this.logError(error, context, 'low', 'validation');
   }
 
   /**
@@ -209,15 +209,22 @@ class ErrorService {
   logUserAction(
     action: string,
     details?: any,
-    severity: "low" | "medium" | "high" | "critical" = "low"
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'low'
   ): void {
-    const error = new Error(`User action: ${action}`);
     const context: ErrorContext = {
       action,
       details: details ? JSON.stringify(details) : undefined,
     };
 
-    this.logError(error, context, severity, "client");
+    if (severity === 'low') {
+      if (import.meta.env.DEV) {
+        logger.log(' User action:', { action, details });
+      }
+      return;
+    }
+
+    const error = new Error(`User action: ${action}`);
+    this.logError(error, context, severity, 'client');
   }
 
   /**
@@ -225,7 +232,7 @@ class ErrorService {
    */
   private getCurrentUser(): User | null {
     try {
-      const userInfo = localStorage.getItem("userInfo");
+      const userInfo = localStorage.getItem('userInfo');
       return userInfo ? JSON.parse(userInfo) : null;
     } catch {
       return null;
@@ -236,10 +243,10 @@ class ErrorService {
    * Get or create session ID
    */
   private getSessionId(): string {
-    let sessionId = sessionStorage.getItem("errorSessionId");
+    let sessionId = sessionStorage.getItem('errorSessionId');
     if (!sessionId) {
       sessionId = this.generateErrorId();
-      sessionStorage.setItem("errorSessionId", sessionId);
+      sessionStorage.setItem('errorSessionId', sessionId);
     }
     return sessionId;
   }
@@ -264,7 +271,7 @@ class ErrorService {
 
     // Store in localStorage as backup
     try {
-      localStorage.setItem("errorQueue", JSON.stringify(this.errorQueue));
+      localStorage.setItem('errorQueue', JSON.stringify(this.errorQueue));
     } catch {
       // Ignore localStorage errors
     }
@@ -289,13 +296,13 @@ class ErrorService {
 
       // For development, just log to console
       if (import.meta.env.DEV) {
-        logger.log("📤 Sending error to server:", errorLog);
+        logger.log(' Sending error to server:', errorLog);
       }
 
       // Remove from queue after successful send
       this.removeFromQueue(errorLog.id);
     } catch (error) {
-      logger.error("Failed to send error to server:", error);
+      logger.error('Failed to send error to server:', error);
       // Will retry later when online
     }
   }
@@ -315,7 +322,7 @@ class ErrorService {
         await this.sendErrorToServer(errorLog);
         await this.delay(this.retryDelay);
       } catch (error) {
-        logger.error("Failed to process error from queue:", error);
+        logger.error('Failed to process error from queue:', error);
       }
     }
   }
@@ -324,11 +331,11 @@ class ErrorService {
    * Remove error from queue
    */
   private removeFromQueue(errorId: string): void {
-    this.errorQueue = this.errorQueue.filter((log) => log.id !== errorId);
+    this.errorQueue = this.errorQueue.filter(log => log.id !== errorId);
 
     // Update localStorage
     try {
-      localStorage.setItem("errorQueue", JSON.stringify(this.errorQueue));
+      localStorage.setItem('errorQueue', JSON.stringify(this.errorQueue));
     } catch {
       // Ignore localStorage errors
     }
@@ -369,7 +376,7 @@ class ErrorService {
   clearErrorQueue(): void {
     this.errorQueue = [];
     try {
-      localStorage.removeItem("errorQueue");
+      localStorage.removeItem('errorQueue');
     } catch {
       // Ignore localStorage errors
     }
@@ -379,7 +386,7 @@ class ErrorService {
    * Utility function for delay
    */
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
