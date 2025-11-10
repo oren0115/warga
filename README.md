@@ -19,7 +19,7 @@ React + Vite application for managing community finance operations.
 
 ```bash
 git clone <repository-url>
-cd warga
+cd fe-iplcannary
 npm install
 npm run dev
 ```
