@@ -1,6 +1,5 @@
 import React from 'react';
 import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 
 interface PaymentStatusCardProps {
@@ -17,8 +16,6 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
   badgeVariant,
   badgeText,
   isChecking,
-  lastPaymentId,
-  onForceCheck,
 }) => {
   return (
     <Card className='shadow-xl border-0 bg-gradient-to-br from-white to-gray-50'>
@@ -34,7 +31,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
         <Badge variant={badgeVariant} className='px-4 py-2 text-base'>
           {badgeText}
         </Badge>
-        {lastPaymentId && onForceCheck && (
+        {/* {lastPaymentId && onForceCheck && (
           <div className='mt-4 space-y-2'>
             <p className='text-sm text-blue-600'>
               🔄 Memeriksa status pembayaran secara otomatis...
@@ -49,7 +46,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({
               {isChecking ? 'Memeriksa...' : 'Paksa Periksa Status'}
             </Button>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   );

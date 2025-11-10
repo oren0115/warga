@@ -34,7 +34,7 @@ export interface Fee {
   kategori: string;
   nominal: number;
   bulan: string;
-  status: 'Belum Bayar' | 'Pending' | 'Lunas' | 'Failed';
+  status: 'Belum Bayar' | 'Pending' | 'Lunas' | 'Failed' | 'Kadaluarsa';
   due_date: string;
   created_at: string;
 }
@@ -52,7 +52,8 @@ export interface Payment {
     | 'Deny'
     | 'Cancel'
     | 'Expire'
-    | 'Failed';
+    | 'Failed'
+    | 'Kadaluarsa';
   created_at: string;
   transaction_id?: string;
   payment_token?: string;
@@ -63,6 +64,9 @@ export interface Payment {
   va_number?: string;
   expiry_time?: string;
   settled_at?: string;
+   expired_at?: string;
+  retry_of?: string | null;
+  retry_replaced_by?: string | null;
   user?: User;
   fee?: Fee;
   qr_string?: string;

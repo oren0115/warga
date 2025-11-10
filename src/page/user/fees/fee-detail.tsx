@@ -7,7 +7,13 @@ import {
   ShoppingBag,
   Smartphone,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import FeeInfoCard from '../../../components/common/cards/FeeInfoCard';
 import PaymentStatusCard from '../../../components/common/cards/PaymentStatusCard';
@@ -25,6 +31,7 @@ import { useToast } from '../../../context/toast.context';
 import { userService } from '../../../services/user.service';
 import type {
   Fee,
+  Payment,
   PaymentCreateRequest,
   PaymentMethodRequest,
 } from '../../../types';
@@ -84,10 +91,108 @@ const IuranDetail: React.FC = () => {
     useState<QrisPaymentInfo | null>(null);
 
   const [lastPaymentId, setLastPaymentId] = useState<string | null>(null);
+  const [lastPayment, setLastPayment] = useState<Payment | null>(null);
+  const lastPaymentStatusRef = useRef<string | null>(null);
+  const hasAppliedDefaultMethodRef = useRef(false);
+  const [expiryCountdown, setExpiryCountdown] = useState<number | null>(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showError, showSuccess, showInfo } = useToast();
   const { setGlobalError } = useGlobalError();
+  const normalizedFeeStatus = (fee?.status || '').toLowerCase();
+
+  const syncLatestPaymentStatus = useCallback(
+    async (feeToSync: Fee) => {
+      try {
+        const payments = await userService.getPayments();
+        const relatedPayments = payments
+          .filter(payment => payment.fee_id === feeToSync.id)
+          .sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          );
+
+        if (relatedPayments.length === 0) {
+          setLastPayment(null);
+          lastPaymentStatusRef.current = null;
+          setLastPaymentId(null);
+          return;
+        }
+
+        const latestPayment = relatedPayments[0];
+        setLastPaymentId(latestPayment.id);
+
+        let normalizedStatus = latestPayment.status?.toLowerCase() || '';
+
+        if (normalizedStatus === 'pending') {
+          try {
+            const forcedStatus = await userService.forceCheckPaymentStatus(
+              latestPayment.id
+            );
+            if (forcedStatus?.status) {
+              normalizedStatus = forcedStatus.status.toLowerCase();
+            }
+          } catch (error) {
+            console.error('Failed to force check payment status', error);
+          }
+        }
+
+        let derivedFeeStatus: Fee['status'] | null = null;
+
+        if (['success', 'settlement'].includes(normalizedStatus)) {
+          derivedFeeStatus = 'Lunas';
+        } else if (normalizedStatus === 'pending') {
+          derivedFeeStatus = 'Pending';
+        } else if (
+          ['expire', 'expired', 'kadaluarsa'].includes(normalizedStatus)
+        ) {
+          derivedFeeStatus = 'Kadaluarsa';
+        } else if (
+          ['failed', 'fail', 'gagal', 'cancel', 'deny'].includes(
+            normalizedStatus
+          )
+        ) {
+          derivedFeeStatus = 'Failed';
+        }
+
+        const previousStatus = lastPaymentStatusRef.current;
+        const normalizedPaymentStatus =
+          (derivedFeeStatus as Payment['status']) ||
+          ((latestPayment.status as Payment['status']) ?? 'Pending');
+
+        const paymentForState: Payment = {
+          ...latestPayment,
+          status: normalizedPaymentStatus,
+        };
+        setLastPayment(paymentForState);
+        lastPaymentStatusRef.current = normalizedPaymentStatus;
+
+        if (
+          normalizedPaymentStatus === 'Kadaluarsa' &&
+          previousStatus !== 'Kadaluarsa'
+        ) {
+          showInfo(
+            'Waktu pembayaran telah habis. Silakan lakukan pembayaran ulang.'
+          );
+        }
+
+        if (
+          derivedFeeStatus &&
+          derivedFeeStatus.toLowerCase() !== feeToSync.status.toLowerCase()
+        ) {
+          setFee(prev =>
+            prev && prev.id === feeToSync.id
+              ? { ...prev, status: derivedFeeStatus }
+              : prev
+          );
+        }
+      } catch (error) {
+        console.error('Failed to sync latest payment status', error);
+      }
+    },
+    [showInfo]
+  );
 
   const fetchFee = useCallback(async () => {
     setIsLoading(true);
@@ -95,6 +200,9 @@ const IuranDetail: React.FC = () => {
       const fees = await userService.getFees();
       const currentFee = fees.find(f => f.id === id);
       setFee(currentFee || null);
+      if (currentFee && currentFee.status.toLowerCase() !== 'lunas') {
+        await syncLatestPaymentStatus(currentFee);
+      }
     } catch (err: any) {
       const message =
         err?.errorMapping?.userMessage || err?.message || 'Gagal memuat data';
@@ -108,11 +216,54 @@ const IuranDetail: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, showError, setGlobalError, syncLatestPaymentStatus]);
 
   useEffect(() => {
     if (id) fetchFee();
   }, [id, fetchFee]);
+
+  useEffect(() => {
+    if (!lastPayment?.expiry_time || normalizedFeeStatus !== 'pending') {
+      setExpiryCountdown(null);
+      return;
+    }
+    const expiryTimestamp = new Date(lastPayment.expiry_time).getTime();
+    const updateCountdown = () => {
+      setExpiryCountdown(expiryTimestamp - Date.now());
+    };
+    updateCountdown();
+    const intervalId = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [lastPayment?.expiry_time, normalizedFeeStatus]);
+
+  useEffect(() => {
+    if (expiryCountdown !== null && expiryCountdown <= 0) {
+      setExpiryCountdown(null);
+      fetchFee();
+    }
+  }, [expiryCountdown, fetchFee]);
+
+  useEffect(() => {
+    if (!lastPayment) {
+      hasAppliedDefaultMethodRef.current = false;
+      return;
+    }
+
+    if (!['kadaluarsa', 'failed'].includes(normalizedFeeStatus)) {
+      hasAppliedDefaultMethodRef.current = false;
+      return;
+    }
+
+    const methodValue = (lastPayment.payment_method ||
+      lastPayment.payment_type) as PaymentMethodRequest | undefined;
+
+    if (!methodValue) return;
+
+    if (!hasAppliedDefaultMethodRef.current) {
+      setSelectedPaymentMethod(methodValue);
+      hasAppliedDefaultMethodRef.current = true;
+    }
+  }, [lastPayment?.id, normalizedFeeStatus]);
 
   const handlePayment = async () => {
     if (!fee || !selectedPaymentMethod) return;
@@ -169,6 +320,64 @@ const IuranDetail: React.FC = () => {
     }
   };
 
+  const handleRetryPayment = async () => {
+    if (!lastPayment || !fee) return;
+    setIsProcessingPayment(true);
+    setQrisPaymentInfo(null);
+    try {
+      const response = await userService.retryPayment(lastPayment.id);
+      setLastPaymentId(response.payment_id);
+
+      const methodValue = (response.payment_type ||
+        lastPayment.payment_method ||
+        lastPayment.payment_type) as PaymentMethodRequest | undefined;
+      if (methodValue) {
+        setSelectedPaymentMethod(methodValue);
+      }
+
+      if (
+        response.payment_type?.toLowerCase() === 'qris' &&
+        (response.qr_url || response.qr_string)
+      ) {
+        setQrisPaymentInfo({
+          orderId: response.order_id,
+          amount: fee.nominal,
+          qrUrl: response.qr_url || response.payment_url,
+          qrString: response.qr_string,
+          expiryTime: response.expiry_time,
+          deeplinkUrl: response.deeplink_url,
+          mobileDeeplinkUrl: response.mobile_deeplink_url,
+        });
+        showInfo('Silakan scan QRIS untuk menyelesaikan pembayaran.');
+        return;
+      }
+
+      if (response.payment_url) {
+        window.open(response.payment_url, '_blank');
+        navigate(
+          `/payment/processing?payment_id=${response.payment_id}&fee_id=${fee.id}`
+        );
+      }
+
+      await fetchFee();
+      showInfo(
+        'Tagihan baru berhasil dibuat menggunakan metode pembayaran sebelumnya.'
+      );
+    } catch (err: any) {
+      const message =
+        err?.errorMapping?.userMessage ||
+        err?.message ||
+        'Gagal membuat pembayaran ulang. Silakan coba lagi.';
+      if (isLightweightError(err)) {
+        showError(message, getToastDuration(err));
+      } else {
+        setGlobalError(err);
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
   const forceCheckPaymentStatus = async () => {
     if (!lastPaymentId) return;
 
@@ -210,8 +419,11 @@ const IuranDetail: React.FC = () => {
       case 'pending':
         return 'outline';
       case 'belum bayar':
-        return 'destructive';
+      case 'failed':
       case 'gagal':
+      case 'kadaluarsa':
+      case 'expired':
+      case 'expire':
         return 'destructive';
       default:
         return 'secondary';
@@ -279,6 +491,45 @@ const IuranDetail: React.FC = () => {
     }
   };
 
+  const countdownLabel = useMemo(() => {
+    if (expiryCountdown === null) return null;
+    const remaining = Math.max(0, Math.floor(expiryCountdown / 1000));
+    const hours = Math.floor(remaining / 3600)
+      .toString()
+      .padStart(2, '0');
+    const minutes = Math.floor((remaining % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
+    const seconds = Math.floor(remaining % 60)
+      .toString()
+      .padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }, [expiryCountdown]);
+
+  const lastPaymentMethodLabel = useMemo(() => {
+    if (!lastPayment) return null;
+    const methodValue = (lastPayment.payment_method ||
+      lastPayment.payment_type) as PaymentMethodRequest | undefined;
+    if (!methodValue) return null;
+    const option = PAYMENT_METHOD_OPTIONS.find(
+      opt => opt.value === methodValue
+    );
+    return option?.label || methodValue.toUpperCase();
+  }, [lastPayment]);
+
+  const lastPaymentExpiryLabel = useMemo(() => {
+    if (!lastPayment?.expiry_time) return null;
+    return new Date(lastPayment.expiry_time).toLocaleString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'Asia/Jakarta',
+    });
+  }, [lastPayment?.expiry_time]);
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
@@ -342,9 +593,12 @@ const IuranDetail: React.FC = () => {
         />
 
         {/* Payment Section */}
-        {(fee.status === 'Belum Bayar' ||
-          fee.status === 'Failed' ||
-          fee.status === 'Pending') && (
+        {(normalizedFeeStatus === 'belum bayar' ||
+          normalizedFeeStatus === 'failed' ||
+          normalizedFeeStatus === 'pending' ||
+          normalizedFeeStatus === 'kadaluarsa' ||
+          normalizedFeeStatus === 'expired' ||
+          normalizedFeeStatus === 'expire') && (
           <PayNowCard
             onPay={handlePayment}
             disabled={isProcessingPayment}
@@ -356,8 +610,57 @@ const IuranDetail: React.FC = () => {
           />
         )}
 
+        {normalizedFeeStatus === 'pending' && lastPayment && (
+          <div className='p-4 border border-amber-200 bg-amber-50 rounded-lg space-y-1'>
+            <p className='text-sm text-amber-800 font-semibold'>
+              Pembayaran sedang menunggu. Jangan tutup halaman Midtrans sampai
+              selesai.
+            </p>
+            {lastPaymentExpiryLabel && (
+              <p className='text-xs text-amber-700'>
+                Batas pembayaran: {lastPaymentExpiryLabel}
+              </p>
+            )}
+            {countdownLabel && (
+              <p className='text-xs text-amber-700'>
+                Sisa waktu sebelum kadaluarsa: {countdownLabel}
+              </p>
+            )}
+          </div>
+        )}
+
+        {normalizedFeeStatus === 'kadaluarsa' && lastPayment && (
+          <div className='p-4 border border-red-200 bg-red-50 rounded-lg space-y-3'>
+            <div className='flex items-start gap-3'>
+              <AlertCircle className='w-5 h-5 text-red-500 mt-0.5' />
+              <div>
+                <p className='text-sm text-red-700 font-semibold'>
+                  Waktu pembayaran telah habis. Silakan lakukan pembayaran
+                  ulang.
+                </p>
+                {lastPaymentMethodLabel && (
+                  <p className='text-xs text-red-600'>
+                    Metode sebelumnya: {lastPaymentMethodLabel}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className='flex flex-col sm:flex-row gap-2'>
+              <Button
+                onClick={handleRetryPayment}
+                disabled={isProcessingPayment}
+                className='w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200'
+              >
+                {isProcessingPayment
+                  ? 'Memproses...'
+                  : 'Gunakan Metode Sebelumnya'}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Payment Status - Pending */}
-        {fee.status === 'Pending' && (
+        {normalizedFeeStatus === 'pending' && (
           <PaymentStatusCard
             title='Status Pembayaran'
             badgeVariant={getStatusVariant(fee.status)}
@@ -369,7 +672,7 @@ const IuranDetail: React.FC = () => {
         )}
 
         {/* Payment Status - Success */}
-        {fee.status === 'Lunas' && (
+        {normalizedFeeStatus === 'lunas' && (
           <PaymentStatusCard
             title='Status Pembayaran'
             badgeVariant={getStatusVariant(fee.status)}

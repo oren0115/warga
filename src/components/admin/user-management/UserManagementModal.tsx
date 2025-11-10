@@ -117,7 +117,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       newErrors.password = 'Password minimal 6 karakter';
     }
 
-    if (!formData.tipe_rumah.trim()) {
+    const hasPersistedHouseType = !!user?.tipe_rumah;
+
+    if (
+      !formData.tipe_rumah.trim() &&
+      !(mode === 'edit' && hasPersistedHouseType)
+    ) {
       newErrors.tipe_rumah = 'Tipe rumah wajib dipilih';
     }
 
@@ -156,6 +161,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         // Only include password if it's not empty
         if (!updateData.password || updateData.password.trim() === '') {
           delete (updateData as any).password;
+        }
+        if (!updateData.tipe_rumah || updateData.tipe_rumah.trim() === '') {
+          delete (updateData as any).tipe_rumah;
         }
         await adminService.updateUser(user.id, updateData);
         errorService.logUserAction('user_updated', {

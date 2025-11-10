@@ -42,11 +42,19 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
           icon: <AlertCircle className='w-4 h-4' />,
           className: 'bg-red-100 text-red-700 border-red-200',
         };
+      case 'kadaluarsa':
+      case 'expired':
+      case 'expire':
+        return {
+          text: 'Kadaluarsa',
+          variant: variant || 'destructive',
+          icon: <AlertCircle className='w-4 h-4' />,
+          className: 'bg-red-100 text-red-700 border-red-200',
+        };
       case 'gagal':
       case 'failed':
       case 'deny':
       case 'cancel':
-      case 'expire':
         return {
           text: status,
           variant: variant || 'destructive',

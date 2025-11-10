@@ -87,12 +87,17 @@ const FeeCard: React.FC<FeeCardProps> = ({
   };
 
   const daysUntilDue = getDaysUntilDueDate(fee.due_date);
-  const canPay =
-    fee.status.toLowerCase() === 'belum bayar' ||
-    fee.status.toLowerCase() === 'pending' ||
-    fee.status.toLowerCase() === 'failed';
+  const normalizedStatus = fee.status.toLowerCase();
+  const canPay = [
+    'belum bayar',
+    'pending',
+    'failed',
+    'kadaluarsa',
+    'expired',
+    'expire',
+  ].includes(normalizedStatus);
 
-  const isPaid = fee.status.toLowerCase() === 'lunas';
+  const isPaid = normalizedStatus === 'lunas';
 
   return (
     <Card

@@ -77,6 +77,11 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
       variant: 'destructive',
       icon: <AlertCircle className='text-red-600 w-5 h-5' />,
     },
+    kadaluarsa: {
+      text: 'Kadaluarsa',
+      variant: 'destructive',
+      icon: <AlertCircle className='text-red-600 w-5 h-5' />,
+    },
   };
 
   const status = STATUS_MAP[payment.status.toLowerCase()] || {
@@ -208,7 +213,8 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           payment.status.toLowerCase() === 'failed' ||
           payment.status.toLowerCase() === 'deny' ||
           payment.status.toLowerCase() === 'cancel' ||
-          payment.status.toLowerCase() === 'expire') && (
+          payment.status.toLowerCase() === 'expire' ||
+          payment.status.toLowerCase() === 'kadaluarsa') && (
           <div className='pt-4 flex flex-col sm:flex-row gap-2'>
             {payment.status.toLowerCase() === 'pending' &&
               !isAdmin &&

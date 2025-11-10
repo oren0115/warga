@@ -41,6 +41,20 @@ export const userService = {
     return response.data;
   },
 
+  retryPayment: async (
+    paymentId: string
+  ): Promise<PaymentCreateResponse> => {
+    try {
+      const response: AxiosResponse<PaymentCreateResponse> = await api.post(
+        `/payments/${paymentId}/retry`
+      );
+      return response.data;
+    } catch (error) {
+      errorService.logApiError(error, `/payments/${paymentId}/retry`, "POST");
+      throw error;
+    }
+  },
+
   // Ambil notifikasi user
   getNotifications: async (): Promise<Notification[]> => {
     try {

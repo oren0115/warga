@@ -77,7 +77,7 @@ export function usePaymentHistory() {
           );
         case 'expired':
           return payments.filter(p =>
-            ['expire'].includes(p.status.toLowerCase())
+            ['expire', 'kadaluarsa'].includes(p.status.toLowerCase())
           );
         default:
           return [];
