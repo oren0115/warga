@@ -9,8 +9,8 @@ import {
   PageHeader,
   PageLayout,
   PaymentCard,
-} from '../../../components/common';
-import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+} from '../../../components/user';
+import NotificationPopup from '../../../components/user/notification/NotificationPopup';
 import { usePaymentHistory } from '../../../hooks/usePaymentHistory';
 
 // Mapping status pembayaran

@@ -8,8 +8,8 @@ import {
   PageHeader,
   PageLayout,
   StatsCard,
-} from '../../../components/common';
-import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+} from '../../../components/user';
+import NotificationPopup from '../../../components/user/notification/NotificationPopup';
 import { useUserHome } from '../../../hooks/useUserHome';
 const Home: React.FC = () => {
   const navigate = useNavigate();

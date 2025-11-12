@@ -4,10 +4,10 @@ import { errorService } from '../services/error.service';
 import { getUserFriendlyError } from '../utils/error-messages';
 import { logger } from '../utils/logger.utils';
 
-// Get API URL from environment with proper fallback
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// Get API URL from environment
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Validate API URL in development
+// Validate API URL configuration
 if (import.meta.env.DEV) {
   logger.log('🔧 API Configuration:', {
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -15,12 +15,21 @@ if (import.meta.env.DEV) {
     NODE_ENV: import.meta.env.MODE,
   });
 
-  // Warn if using default localhost
-  if (API_BASE_URL === '' && !import.meta.env.VITE_API_URL) {
+  if (!API_BASE_URL) {
     logger.warn(
-      '⚠️  Using default localhost:8000. Set VITE_API_URL in .env for production!'
+      '⚠️  VITE_API_URL not set! Create .env file with VITE_API_URL=http://localhost:8000'
     );
   }
+}
+
+// Production check
+if (import.meta.env.PROD && !API_BASE_URL) {
+  console.error(
+    '❌ PRODUCTION BUILD ERROR: VITE_API_URL is not set! ' +
+    'Create .env.production file with production backend URL. ' +
+    'See ENV-PRODUCTION-TEMPLATE.md for instructions.'
+  );
+  throw new Error('VITE_API_URL must be set for production builds');
 }
 
 const api = axios.create({

@@ -1,8 +1,8 @@
 import { AlertTriangle, ArrowLeft, Home, Shield } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import PageHeader from '../components/common/header/PageHeader';
-import PageLayout from '../components/common/layout/PageLayout';
+import PageHeader from '../components/user/header/PageHeader';
+import PageLayout from '../components/user/layout/PageLayout';
 import { Button } from '../components/ui/button';
 import {
   Card,

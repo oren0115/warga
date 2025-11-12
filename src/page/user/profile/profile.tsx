@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader, PageLayout } from '../../../components/common';
+import { PageHeader, PageLayout } from '../../../components/user';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import {

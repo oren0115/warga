@@ -6,8 +6,8 @@ import {
   NotificationCard,
   PageHeader,
   PageLayout,
-} from '../../../components/common';
-import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+} from '../../../components/user';
+import NotificationPopup from '../../../components/user/notification/NotificationPopup';
 import { useUserNotifications } from '../../../hooks/useUserNotifications';
 
 // Helper function to group notifications by time

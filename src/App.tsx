@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import './css/main.css';
 import Login from './page/auth/login/login';
 // import Register from "./page/auth/register/register";
-import { ErrorBoundary } from './components/common';
+import { ErrorBoundary } from './components/user';
 import Layout from './layout/Layout';
 
 // Lazy load admin pages untuk optimasi bundle

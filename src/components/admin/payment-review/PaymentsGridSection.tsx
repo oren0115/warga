@@ -2,7 +2,7 @@ import { Receipt, RefreshCw, Search, TrendingUp } from 'lucide-react';
 import React from 'react';
 import { AdminPagination } from '..';
 import type { Payment } from '../../../types';
-import { PaymentCard } from '../../common';
+import { PaymentCard } from '../../user';
 import { Button } from '../../ui/button';
 
 interface Props {

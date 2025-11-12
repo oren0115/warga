@@ -18,8 +18,8 @@ import {
   LoadingSpinner,
   PageHeader,
   PageLayout,
-} from '../../../components/common';
-import NotificationPopup from '../../../components/common/notification/NotificationPopup';
+} from '../../../components/user';
+import NotificationPopup from '../../../components/user/notification/NotificationPopup';
 
 const IuranList: React.FC = () => {
   const navigate = useNavigate();

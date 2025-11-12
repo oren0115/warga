@@ -15,7 +15,7 @@ import {
   Users,
 } from 'lucide-react';
 
-import { BottomNavigation } from '../components/common';
+import { BottomNavigation } from '../components/user';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Button } from '../components/ui/button';
 // import AdvancedSubmenu from "../components/layout/AdvancedSubmenu";

@@ -1,7 +1,7 @@
 import { Clock, RefreshCw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ErrorState, PageHeader, PageLayout } from '../../../components/common';
+import { ErrorState, PageHeader, PageLayout } from '../../../components/user';
 import { useToast } from '../../../context/toast.context';
 import { useGlobalError } from '../../../context/global-error.context';
 import { getToastDuration, isLightweightError } from '../../../utils/error-handling.utils';

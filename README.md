@@ -30,10 +30,12 @@ Requirements: Node.js 18+ and npm (or yarn/pnpm).
 
 Create `.env` (see `env.example`):
 
-```
+```env
 VITE_API_URL=http://localhost:8000
-VITE_APP_NAME=PKM Community
+VITE_APP_NAME=IPL Canary
 ```
+
+**⚠️ For Production:** See [DEPLOYMENT.md](./DEPLOYMENT.md) and [ENV-PRODUCTION-TEMPLATE.md](./ENV-PRODUCTION-TEMPLATE.md)
 
 ## Project Layout
 
