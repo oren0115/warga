@@ -93,45 +93,45 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       case 'pengumuman':
         return {
           icon: <Volume2 className='w-4 h-4' />,
-          bgColor: 'bg-blue-50',
-          iconBgColor: 'bg-blue-100',
+          bgColor: 'bg-blue-50/80',
+          iconBgColor: 'bg-blue-100/70',
           iconColor: 'text-blue-600',
-          badgeBgColor: 'bg-blue-100',
+          badgeBgColor: 'bg-blue-50/90',
           badgeTextColor: 'text-blue-700',
-          borderColor: 'border-blue-300',
+          borderColor: 'border-blue-200',
           label: 'Pengumuman',
         };
       case 'pembayaran':
         return {
           icon: <CreditCard className='w-4 h-4' />,
-          bgColor: 'bg-green-50',
-          iconBgColor: 'bg-green-100',
-          iconColor: 'text-green-600',
-          badgeBgColor: 'bg-green-100',
-          badgeTextColor: 'text-green-700',
-          borderColor: 'border-green-300',
+          bgColor: 'bg-emerald-50/80',
+          iconBgColor: 'bg-emerald-100/70',
+          iconColor: 'text-emerald-600',
+          badgeBgColor: 'bg-emerald-50/90',
+          badgeTextColor: 'text-emerald-700',
+          borderColor: 'border-emerald-200',
           label: 'Pembayaran',
         };
       case 'reminder':
         return {
           icon: <Clock className='w-4 h-4' />,
-          bgColor: 'bg-red-50',
-          iconBgColor: 'bg-red-100',
-          iconColor: 'text-red-600',
-          badgeBgColor: 'bg-red-100',
-          badgeTextColor: 'text-red-700',
-          borderColor: 'border-red-300',
+          bgColor: 'bg-rose-50/80',
+          iconBgColor: 'bg-rose-100/70',
+          iconColor: 'text-rose-600',
+          badgeBgColor: 'bg-rose-50/90',
+          badgeTextColor: 'text-rose-700',
+          borderColor: 'border-rose-200',
           label: 'Pengingat',
         };
       default:
         return {
           icon: <Info className='w-4 h-4' />,
-          bgColor: 'bg-gray-50',
-          iconBgColor: 'bg-gray-100',
-          iconColor: 'text-gray-600',
-          badgeBgColor: 'bg-gray-100',
-          badgeTextColor: 'text-gray-700',
-          borderColor: 'border-gray-300',
+          bgColor: 'bg-slate-50/80',
+          iconBgColor: 'bg-slate-100/70',
+          iconColor: 'text-slate-600',
+          badgeBgColor: 'bg-slate-50/90',
+          badgeTextColor: 'text-slate-700',
+          borderColor: 'border-slate-200',
           label: 'Info',
         };
     }
@@ -220,7 +220,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
               </Button>
             </div>
           ) : notifications.length > 0 ? (
-            <div className='p-4 space-y-4'>
+            <div className='p-5 space-y-3'>
               {notifications.map(notification => {
                 const config = getTypeConfig(notification.type);
                 const paymentInfo = extractPaymentInfo(notification.message);
@@ -228,7 +228,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                 return (
                   <div
                     key={notification.id}
-                    className={`group relative rounded-2xl overflow-hidden border transition-all duration-200  hover:shadow-lg ${
+                    className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 hover:shadow-md ${
                       !notification.is_read
                         ? `${config.borderColor} ${config.bgColor}`
                         : 'border-gray-200 bg-white'
@@ -237,47 +237,55 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                     <Link
                       to={notification.url || '/notifications'}
                       onClick={() => markAsRead(notification.id)}
-                      className='block p-4 sm:p-5'
+                      className='block p-4'
                     >
                       <div className='flex items-start gap-3'>
+                        {/* Icon with improved styling */}
                         <div
-                          className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl shadow-inner ${config.iconBgColor}`}
+                          className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl shadow-sm ${config.iconBgColor} ${config.iconColor}`}
                         >
                           {config.icon}
                         </div>
-                        <div className='flex-1'>
-                          <div className='flex items-center gap-2 mb-1'>
+                        
+                        <div className='flex-1 min-w-0'>
+                          {/* Category badge and time */}
+                          <div className='flex items-center gap-2 mb-2'>
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${config.badgeBgColor} ${config.badgeTextColor}`}
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold ${config.badgeBgColor} ${config.badgeTextColor} border ${config.borderColor}`}
                             >
                               {config.label}
                             </span>
-                            <span className='text-[11px] text-gray-500'>
+                            <span className='text-[10px] text-gray-400 font-medium'>
                               {formatTelegramStyleTime(notification.created_at)}
                             </span>
                           </div>
+                          
+                          {/* Title - larger and bold */}
                           <h4
-                            className={`text-sm sm:text-base font-semibold leading-snug ${
+                            className={`text-base font-bold leading-snug mb-1.5 ${
                               !notification.is_read
                                 ? 'text-slate-900'
-                                : 'text-slate-700'
+                                : 'text-slate-600'
                             }`}
                           >
                             {notification.title}
                           </h4>
-                          <p className='mt-1.5 text-sm text-slate-600 leading-relaxed line-clamp-3'>
+                          
+                          {/* Message - smaller gray text */}
+                          <p className='text-xs text-gray-500 leading-relaxed line-clamp-2'>
                             {notification.message}
                           </p>
 
+                          {/* Payment info */}
                           {(paymentInfo.amount || paymentInfo.dueDate) && (
-                            <div className='mt-3 flex flex-wrap gap-2 rounded-xl border border-white/80 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 shadow-sm'>
+                            <div className='mt-2.5 flex flex-wrap gap-2 rounded-lg border border-gray-200/80 bg-white/90 px-2.5 py-2 text-xs'>
                               {paymentInfo.amount && (
-                                <span className='flex items-center gap-1 text-emerald-600 font-semibold'>
+                                <span className='flex items-center gap-1 text-emerald-600 font-bold'>
                                   {paymentInfo.amount}
                                 </span>
                               )}
                               {paymentInfo.dueDate && (
-                                <span className='flex items-center gap-1 text-rose-500'>
+                                <span className='flex items-center gap-1 text-rose-600 font-medium'>
                                   <Clock className='w-3 h-3' />
                                   {paymentInfo.dueDate}
                                 </span>
@@ -285,22 +293,21 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                             </div>
                           )}
                         </div>
+                        
+                        {/* Unread indicator */}
+                        {!notification.is_read && (
+                          <span className='flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2 animate-pulse'></span>
+                        )}
                       </div>
 
-                      <div className='mt-3 flex items-center justify-between text-[11px] text-slate-400'>
-                        <span>
-                          {notification.is_read
-                            ? 'Sudah dibaca'
-                            : 'Belum dibaca'}
-                        </span>
-                        <span className='transition-opacity group-hover:opacity-100 opacity-0 font-semibold text-green-500'>
-                          Lihat detail ›
+                      {/* Footer with hover indicator */}
+                      <div className='mt-3 flex items-center justify-end text-[10px]'>
+                        <span className='transition-all duration-200 group-hover:opacity-100 opacity-50 font-semibold text-emerald-600 flex items-center gap-1'>
+                          Lihat detail
+                          <span className='group-hover:translate-x-0.5 transition-transform duration-200'>›</span>
                         </span>
                       </div>
                     </Link>
-                    {!notification.is_read && (
-                      <span className='absolute inset-x-0 top-0 h-1 bg-blue-500'></span>
-                    )}
                   </div>
                 );
               })}

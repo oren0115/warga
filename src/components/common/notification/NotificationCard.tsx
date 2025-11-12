@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   Calendar,
   CheckCheck,
   Clock,
@@ -43,49 +44,53 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
       case 'pengumuman':
         return {
           icon: <Volume2 className='w-5 h-5' />,
-          bgColor: 'bg-blue-50',
-          iconBgColor: 'bg-blue-100',
+          bgColor: 'bg-blue-50/80',
+          iconBgColor: 'bg-blue-100/70',
           iconColor: 'text-blue-600',
-          badgeBgColor: 'bg-blue-100',
+          badgeBgColor: 'bg-blue-50/90',
           badgeTextColor: 'text-blue-700',
-          borderColor: 'border-blue-200',
-          accentColor: 'border-l-blue-500',
+          borderColor: 'border-blue-100',
+          accentColor: 'border-l-blue-400',
+          hoverShadow: 'hover:shadow-blue-100/50',
           label: 'Pengumuman',
         };
       case 'pembayaran':
         return {
           icon: <CreditCard className='w-5 h-5' />,
-          bgColor: 'bg-green-50',
-          iconBgColor: 'bg-green-100',
-          iconColor: 'text-green-600',
-          badgeBgColor: 'bg-green-100',
-          badgeTextColor: 'text-green-700',
-          borderColor: 'border-green-200',
-          accentColor: 'border-l-green-500',
+          bgColor: 'bg-emerald-50/80',
+          iconBgColor: 'bg-emerald-100/70',
+          iconColor: 'text-emerald-600',
+          badgeBgColor: 'bg-emerald-50/90',
+          badgeTextColor: 'text-emerald-700',
+          borderColor: 'border-emerald-100',
+          accentColor: 'border-l-emerald-400',
+          hoverShadow: 'hover:shadow-emerald-100/50',
           label: 'Pembayaran',
         };
       case 'reminder':
         return {
           icon: <Clock className='w-5 h-5' />,
-          bgColor: 'bg-red-50',
-          iconBgColor: 'bg-red-100',
-          iconColor: 'text-red-600',
-          badgeBgColor: 'bg-red-100',
-          badgeTextColor: 'text-red-700',
-          borderColor: 'border-red-200',
-          accentColor: 'border-l-red-500',
+          bgColor: 'bg-rose-50/80',
+          iconBgColor: 'bg-rose-100/70',
+          iconColor: 'text-rose-600',
+          badgeBgColor: 'bg-rose-50/90',
+          badgeTextColor: 'text-rose-700',
+          borderColor: 'border-rose-100',
+          accentColor: 'border-l-rose-400',
+          hoverShadow: 'hover:shadow-rose-100/50',
           label: 'Pengingat',
         };
       default:
         return {
           icon: <Info className='w-5 h-5' />,
-          bgColor: 'bg-gray-50',
-          iconBgColor: 'bg-gray-100',
-          iconColor: 'text-gray-600',
-          badgeBgColor: 'bg-gray-100',
-          badgeTextColor: 'text-gray-700',
-          borderColor: 'border-gray-200',
-          accentColor: 'border-l-gray-500',
+          bgColor: 'bg-slate-50/80',
+          iconBgColor: 'bg-slate-100/70',
+          iconColor: 'text-slate-600',
+          badgeBgColor: 'bg-slate-50/90',
+          badgeTextColor: 'text-slate-700',
+          borderColor: 'border-slate-100',
+          accentColor: 'border-l-slate-400',
+          hoverShadow: 'hover:shadow-slate-100/50',
           label: 'Info',
         };
     }
@@ -118,82 +123,105 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     }
   };
 
+  const handleCardClick = () => {
+    if (url) {
+      navigate(url);
+    }
+    if (onMarkAsRead && !isRead) {
+      onMarkAsRead(id);
+    }
+  };
+
   return (
     <div
-      className={`bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 ${
+      onClick={handleCardClick}
+      className={`group relative bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border ${
         !isRead ? `${config.accentColor} border-l-4` : config.borderColor
-      } overflow-hidden ${className}`}
+      } overflow-hidden cursor-pointer transform hover:-translate-y-0.5 ${
+        config.hoverShadow
+      } ${className}`}
     >
       {/* Card Content */}
-      <div className='p-5'>
-        {/* Header: Category + Icon + Time */}
-        <div className='flex items-center justify-between mb-3'>
-          <div className='flex items-center gap-2'>
+      <div className='p-4 sm:p-6'>
+        {/* Header: Category Badge + Time + Unread Indicator */}
+        <div className='flex items-start justify-between mb-3 sm:mb-4 gap-2'>
+          <div className='flex items-center gap-2 sm:gap-3 min-w-0'>
+            {/* Icon with subtle background */}
             <div
-              className={`${config.iconBgColor} ${config.iconColor} p-2 rounded-full`}
+              className={`${config.iconBgColor} ${config.iconColor} p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-sm flex-shrink-0`}
             >
               {config.icon}
             </div>
-            <div className='flex items-center gap-2 text-xs text-gray-500'>
+
+            {/* Category badge with icon */}
+            <div className='flex flex-col gap-1 sm:gap-1.5 min-w-0'>
               <span
-                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${config.badgeBgColor} ${config.badgeTextColor}`}
+                className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-semibold ${config.badgeBgColor} ${config.badgeTextColor} border ${config.borderColor} truncate`}
               >
                 {config.label}
               </span>
-              <span>•</span>
-              <span className='font-medium'>
+
+              {/* Time with softer color */}
+              <span className='text-[10px] sm:text-xs text-gray-400 font-medium truncate'>
                 {formatTelegramStyleTime(createdAt)}
               </span>
             </div>
           </div>
+
+          {/* Unread indicator - only show for unread */}
           {!isRead && (
-            <span className='w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse'></span>
+            <span className='flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-red-50 rounded-full border border-red-100 flex-shrink-0'>
+              <span className='w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse'></span>
+              <span className='text-[10px] sm:text-xs font-semibold text-red-600'>
+                Baru
+              </span>
+            </span>
           )}
         </div>
 
-        {/* Title: Bold & Larger */}
-        <h3 className='text-lg font-bold text-gray-900 mb-2 leading-tight'>
+        {/* Title: Larger & Bold for clear hierarchy */}
+        <h3 className='text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-snug'>
           {title}
         </h3>
 
-        {/* Brief Content: Max 2 lines */}
-        <p className='text-sm text-gray-600 line-clamp-2 mb-3 leading-relaxed'>
+        {/* Message: Smaller gray text with line clamp for mobile */}
+        <p className='text-xs sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 leading-relaxed'>
           {message}
         </p>
 
         {/* Payment Info Highlights (if available) */}
         {(paymentInfo.amount || paymentInfo.dueDate) && (
-          <div className='flex flex-wrap gap-3 mb-4 p-3 bg-gray-50 rounded-xl border border-gray-100'>
+          <div className='flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-lg sm:rounded-xl border border-gray-200/80'>
             {paymentInfo.amount && (
-              <div className='flex items-center gap-2'>
-                <DollarSign className='w-4 h-4 text-green-600' />
-                <span className='text-sm font-bold text-gray-900'>
+              <div className='flex items-center gap-1.5 sm:gap-2'>
+                <div className='p-1 sm:p-1.5 bg-emerald-100 rounded-md sm:rounded-lg'>
+                  <DollarSign className='w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600' />
+                </div>
+                <span className='text-sm sm:text-base font-bold text-gray-900'>
                   {paymentInfo.amount}
                 </span>
               </div>
             )}
             {paymentInfo.dueDate && (
-              <div className='flex items-center gap-2'>
-                <Calendar className='w-4 h-4 text-red-600' />
-                <span className='text-sm font-semibold text-gray-700'>
-                  Jatuh Tempo: {paymentInfo.dueDate}
-                </span>
+              <div className='flex items-center gap-1.5 sm:gap-2'>
+                <div className='p-1 sm:p-1.5 bg-rose-100 rounded-md sm:rounded-lg'>
+                  <Calendar className='w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600' />
+                </div>
+                <div className='flex flex-col'>
+                  <span className='text-[10px] sm:text-xs text-gray-500'>
+                    Jatuh Tempo
+                  </span>
+                  <span className='text-xs sm:text-sm font-semibold text-gray-700'>
+                    {paymentInfo.dueDate}
+                  </span>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className='flex items-center gap-2 pt-2'>
-          {/* <Button
-            onClick={handleViewDetails}
-            size="sm"
-            className={`flex-1 ${config.iconColor} ${config.bgColor} hover:${config.iconBgColor} border ${config.borderColor} font-semibold rounded-xl h-9 transition-all duration-200`}
-            variant="ghost">
-            <Eye className="w-4 h-4 mr-1.5" />
-            Lihat Detail
-          </Button> */}
-
+        {/* Action Buttons with better spacing */}
+        <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100'>
           {!isRead && onMarkAsRead && (
             <Button
               onClick={e => {
@@ -202,9 +230,10 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
               }}
               size='sm'
               variant='ghost'
-              className='px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 rounded-xl h-9 transition-all duration-200'
+              className='flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 rounded-lg sm:rounded-xl h-9 sm:h-10 transition-all duration-200 text-xs sm:text-sm w-full sm:w-auto'
             >
-              <CheckCheck className='w-4 h-4' />
+              <CheckCheck className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
+              <span className='font-medium'>Tandai Dibaca</span>
             </Button>
           )}
 
@@ -212,10 +241,23 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
             <Button
               onClick={handleQuickAction}
               size='sm'
-              className='bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl h-9 px-4 shadow-md hover:shadow-lg transition-all duration-200'
+              className='flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg sm:rounded-xl h-9 sm:h-10 px-4 sm:px-5 shadow-md hover:shadow-lg transition-all duration-200 sm:ml-auto text-xs sm:text-sm w-full sm:w-auto'
             >
-              {type.toLowerCase() === 'pembayaran' ? 'Bayar' : 'Lihat'}
+              <span>
+                {type.toLowerCase() === 'pembayaran'
+                  ? 'Bayar Sekarang'
+                  : 'Lihat Detail'}
+              </span>
+              <ArrowRight className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
             </Button>
+          )}
+
+          {/* Clickable indicator - hide on mobile when there are buttons */}
+          {url && !(isPending && url) && !(!isRead && onMarkAsRead) && (
+            <div className='flex items-center justify-center sm:justify-end gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-gray-400 group-hover:text-emerald-600 transition-colors duration-200 sm:ml-auto'>
+              <span className='font-medium'>Lihat detail</span>
+              <ArrowRight className='w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform duration-200' />
+            </div>
           )}
         </div>
       </div>

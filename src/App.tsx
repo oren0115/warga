@@ -4,10 +4,6 @@ import './css/main.css';
 import Login from './page/auth/login/login';
 // import Register from "./page/auth/register/register";
 import { ErrorBoundary } from './components/common';
-import { AuthProvider } from './context/auth.context';
-import { ErrorProvider } from './context/error.context';
-import { GlobalErrorProvider } from './context/global-error.context';
-import { ToastProvider } from './context/toast.context';
 import Layout from './layout/Layout';
 
 // Lazy load admin pages untuk optimasi bundle
@@ -70,13 +66,9 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <ErrorProvider>
-      <ToastProvider>
-        <GlobalErrorProvider>
-          <ErrorBoundary>
-            <AuthProvider>
-              <Suspense fallback={<LoadingFallback />}>
-                <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
                   {/* Public routes */}
                   <Route path='/login' element={<Login />} />
                   {/* <Route path="/register" element={<Register />} /> */}
@@ -257,16 +249,12 @@ function App() {
                     }
                   />
 
-                  {/* Unauthorized & Not Found */}
-                  <Route path='/unauthorized' element={<UnauthorizedPage />} />
-                  <Route path='*' element={<h1>404 - Not Found</h1>} />
-                </Routes>
-              </Suspense>
-            </AuthProvider>
-          </ErrorBoundary>
-        </GlobalErrorProvider>
-      </ToastProvider>
-    </ErrorProvider>
+          {/* Unauthorized & Not Found */}
+          <Route path='/unauthorized' element={<UnauthorizedPage />} />
+          <Route path='*' element={<h1>404 - Not Found</h1>} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 

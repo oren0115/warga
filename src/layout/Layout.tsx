@@ -3,16 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth.context';
 // import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import {
-  LuBell,
-  LuChevronLeft,
-  LuChevronRight,
-  LuHistory,
-  LuHouse,
-  LuLogOut,
-  LuReceipt,
-  LuStar,
-  LuUser,
-} from 'react-icons/lu';
+  Bell,
+  ChevronLeft,
+  ChevronRight,
+  History,
+  House,
+  LayoutDashboard,
+  LogOut,
+  Receipt,
+  User,
+  Users,
+} from 'lucide-react';
 
 import { BottomNavigation } from '../components/common';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
@@ -57,18 +58,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname === path;
 
   const userNavItems = [
-    { path: '/', label: 'Home', icon: LuHouse },
-    { path: '/iuran', label: 'Iuran', icon: LuReceipt },
-    { path: '/riwayat', label: 'Riwayat', icon: LuHistory },
-    { path: '/profile', label: 'Profil', icon: LuUser },
+    { path: '/', label: 'Home', icon: House },
+    { path: '/iuran', label: 'Iuran', icon: Receipt },
+    { path: '/riwayat', label: 'Riwayat', icon: History },
+    { path: '/profile', label: 'Profil', icon: User },
   ];
 
   const adminNavItems: NavItem[] = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: LuStar },
-    { path: '/admin/users', label: 'Pengguna', icon: LuUser },
-    { path: '/admin/fees', label: 'Generate Iuran', icon: LuReceipt },
-    { path: '/admin/payments', label: 'Review Pembayaran', icon: LuHistory },
-    { path: '/admin/broadcast', label: 'Broadcast', icon: LuBell },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/admin/users', label: 'Pengguna', icon: Users },
+    { path: '/admin/fees', label: 'Generate Iuran', icon: Receipt },
+    { path: '/admin/payments', label: 'Review Pembayaran', icon: History },
+    { path: '/admin/broadcast', label: 'Broadcast', icon: Bell },
   ];
 
   const navItems = authState.user?.is_admin ? adminNavItems : userNavItems;
@@ -107,9 +108,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             {isSidebarOpen ? (
-              <LuChevronLeft className='h-5 w-5' />
+              <ChevronLeft className='h-5 w-5' />
             ) : (
-              <LuChevronRight className='h-5 w-5' />
+              <ChevronRight className='h-5 w-5' />
             )}
           </Button>
         </div>
@@ -174,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 size='icon'
                 className='h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200 flex-shrink-0'
               >
-                <LuLogOut className='h-4 w-4' />
+                <LogOut className='h-4 w-4' />
               </Button>
             </div>
           ) : (
@@ -192,7 +193,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 size='icon'
                 className='h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:ring-0 focus:outline-none transition-all duration-200'
               >
-                <LuLogOut className='h-3 w-3' />
+                <LogOut className='h-3 w-3' />
               </Button>
             </div>
           )}

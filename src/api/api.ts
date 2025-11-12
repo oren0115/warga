@@ -31,6 +31,21 @@ const api = axios.create({
   timeout: 30000, // 30 seconds timeout
 });
 
+// Callback for handling logout on token expiration
+let onUnauthorized: ((showMessage?: boolean) => void) | null = null;
+
+// Function to set logout callback
+export const setUnauthorizedCallback = (
+  callback: (showMessage?: boolean) => void
+) => {
+  onUnauthorized = callback;
+};
+
+// Function to clear logout callback
+export const clearUnauthorizedCallback = () => {
+  onUnauthorized = null;
+};
+
 // Request interceptor
 api.interceptors.request.use(
   config => {
@@ -56,10 +71,18 @@ api.interceptors.response.use(
     const method = error.config?.method?.toUpperCase() || 'GET';
     errorService.logApiError(error, endpoint, method, error.config?.data);
 
-    // Handle authentication errors
+    // Handle authentication errors (Token expired or invalid)
     if (error.response?.status === 401) {
+      // Clear local storage
       localStorage.removeItem('userToken');
       localStorage.removeItem('userInfo');
+
+      // Call logout callback if set (to trigger auth context logout and redirect)
+      if (onUnauthorized) {
+        logger.warn('🔐 Token expired or unauthorized. Logging out user...');
+        // Pass true to show toast message to user
+        onUnauthorized(true);
+      }
     }
 
     // Transform error to user-friendly message

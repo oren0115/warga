@@ -207,4 +207,45 @@
   .text-main-dark {
     color: #111827;
   }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Smooth scroll for filter tabs */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  /* Touch-friendly active states for mobile */
+  @media (max-width: 640px) {
+    button:active {
+      transform: scale(0.97);
+      transition: transform 0.1s;
+    }
+  }
+
+  /* Snap scrolling for better mobile UX */
+  .snap-x {
+    scroll-snap-type: x proximity;
+  }
+  
+  .snap-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* Custom webkit tap highlight */
+  * {
+    -webkit-tap-highlight-color: rgba(16, 185, 129, 0.1);
+  }
 }

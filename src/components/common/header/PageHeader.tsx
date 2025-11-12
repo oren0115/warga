@@ -27,7 +27,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   mobileRightAction,
 }) => {
   return (
-    <div className='sticky top-0 z-10 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-6'>
+    <div className='sticky top-0 z-20 bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden mb-0'>
       <div className='absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-white/10 rounded-full'></div>
       <div className='absolute top-0 right-0 -mt-4 -mr-16 w-32 h-32 bg-white/10 rounded-full'></div>
 

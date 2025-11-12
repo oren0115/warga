@@ -1,10 +1,13 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
   type ReactNode,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { clearUnauthorizedCallback, setUnauthorizedCallback } from '../api/api';
 import { authService } from '../services/auth.service';
 import type {
   AuthContextType,
@@ -12,6 +15,7 @@ import type {
   RegisterRequest,
   User,
 } from '../types';
+import { useToast } from './toast.context';
 
 // Initial state
 const initialState: AuthState = {
@@ -86,6 +90,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const navigate = useNavigate();
+  const { showWarning } = useToast();
+
+  // Logout function with navigation and optional message
+  const logout = useCallback(
+    (showMessage = false): void => {
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userInfo');
+      dispatch({ type: 'LOGOUT' });
+
+      // Show toast message if requested (for auto-logout due to token expiration)
+      if (showMessage) {
+        showWarning('Sesi Anda telah berakhir. Silakan login kembali.', 5000);
+      }
+
+      navigate('/login', { replace: true });
+    },
+    [navigate, showWarning]
+  );
+
+  // Setup auto-logout on token expiration
+  useEffect(() => {
+    // Register callback for API 401 responses
+    setUnauthorizedCallback(showMessage => {
+      logout(showMessage);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      clearUnauthorizedCallback();
+    };
+  }, [logout]);
 
   // Check for existing token on mount
   useEffect(() => {
@@ -102,10 +138,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             const exp =
               typeof payload.exp === 'number' ? payload.exp * 1000 : 0;
             if (exp && Date.now() >= exp) {
-              // Token expired
-              localStorage.removeItem('userToken');
-              localStorage.removeItem('userInfo');
-              dispatch({ type: 'SET_LOADING', payload: false });
+              // Token expired - auto logout with message
+              logout(true);
               return;
             }
           }
@@ -127,7 +161,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     checkAuth();
-  }, []);
+  }, [logout]);
 
   const login = async (username: string, password: string): Promise<void> => {
     dispatch({ type: 'LOGIN_START' });
@@ -163,12 +197,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       throw error;
     }
-  };
-
-  const logout = (): void => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userInfo');
-    dispatch({ type: 'LOGOUT' });
   };
 
   const updateProfile = async (userData: Partial<User>): Promise<void> => {
