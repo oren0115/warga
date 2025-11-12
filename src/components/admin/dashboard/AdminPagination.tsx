@@ -104,7 +104,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === 1}
           variant='outline'
           size='sm'
-          className='hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50'
+          className='hidden cursor-pointer sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50'
         >
           ‹‹
         </Button>
@@ -115,7 +115,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === 1}
           variant='outline'
           size='sm'
-          className='px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm'
+          className='px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm cursor-pointer'
         >
           <span className='hidden sm:inline'>‹ Sebelumnya</span>
           <span className='sm:hidden'>‹ Prev</span>
@@ -129,7 +129,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
               onClick={() => onPageChange(pageNum)}
               variant='outline'
               size='sm'
-              className={`px-3 py-2 min-w-[40px] ${
+              className={`px-3 py-2 min-w-[40px] cursor-pointer ${
                 currentPage === pageNum
                   ? 'bg-green-600 text-white border-green-600 hover:bg-green-700'
                   : 'bg-white hover:bg-green-50 border-gray-300'
@@ -164,7 +164,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === totalPages}
           variant='outline'
           size='sm'
-          className='px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm'
+          className='px-2 sm:px-4 py-2 hover:bg-green-50 disabled:opacity-50 text-xs sm:text-sm cursor-pointer'
         >
           <span className='hidden sm:inline'>Selanjutnya ›</span>
           <span className='sm:hidden'>Next ›</span>
@@ -176,7 +176,7 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
           disabled={currentPage === totalPages}
           variant='outline'
           size='sm'
-          className='hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50'
+          className='hidden sm:flex px-2 sm:px-3 py-2 hover:bg-green-50 disabled:opacity-50 cursor-pointer'
         >
           ››
         </Button>

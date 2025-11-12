@@ -168,12 +168,16 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         <button
           type='button'
           onClick={() => setOpenDetails(v => !v)}
-          className='mt-2 text-sm text-gray-700 hover:underline'
+          className='mt-2 text-sm text-gray-700 hover:underline focus:outline-none cursor-pointer'
         >
           {openDetails ? '▲ Sembunyikan' : '▼ Detail'}
         </button>
 
-        {openDetails && (
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            openDetails ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
           <div className='mt-3 space-y-2 text-sm'>
             {payment.transaction_id && (
               <KeyValueRow
@@ -207,7 +211,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               />
             )}
           </div>
-        )}
+        </div>
 
         {(payment.status.toLowerCase() === 'pending' ||
           payment.status.toLowerCase() === 'failed' ||

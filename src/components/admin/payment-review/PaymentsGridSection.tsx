@@ -33,7 +33,7 @@ const PaymentsGridSection: React.FC<Props> = ({
   if (payments.length > 0) {
     return (
       <>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start'>
           {payments.map(payment => (
             <PaymentCard
               key={payment.id}

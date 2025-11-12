@@ -150,21 +150,21 @@ const Dashboard: React.FC = () => {
               <TabsList className='grid w-full grid-cols-3 mb-6 bg-white/80 backdrop-blur-sm '>
                 <TabsTrigger
                   value='overview'
-                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                  className='flex cursor-pointer items-center gap-2 data-[state=active]:bg-green-200'
                 >
                   <User2 className='w-4 h-4' />
                   <span className='hidden sm:inline'>Overview</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value='payments'
-                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                  className='flex cursor-pointer items-center gap-2 data-[state=active]:bg-green-200'
                 >
                   <Receipt className='w-4 h-4' />
                   <span className='hidden sm:inline'>Payments</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value='analytics'
-                  className='flex items-center gap-2 data-[state=active]:bg-green-200'
+                  className='flex cursor-pointer items-center gap-2 data-[state=active]:bg-green-200'
                 >
                   <BarChart3 className='w-4 h-4' />
                   <span className='hidden sm:inline'>Analytics</span>
