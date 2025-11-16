@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Basic CSP to reduce XSS risk while tetap kompatibel dengan SPA + Tailwind -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://api.sandbox.midtrans.com https://api.midtrans.com; font-src 'self' data:; connect-src 'self' https://backend-apps-iuran-warga.onrender.com https://backend-apps-iuran-warga.vercel.app http://localhost:8000 ws://localhost:8000 wss://backend-apps-iuran-warga.onrender.com wss://backend-apps-iuran-warga.vercel.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    />
     <title>IPL Cluster Cannary</title>
   </head>
   <body>

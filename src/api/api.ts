@@ -58,7 +58,23 @@ export const clearUnauthorizedCallback = () => {
 // Request interceptor
 api.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('userToken');
+    // Ambil token dari sessionStorage agar tidak tersimpan permanen di browser.
+    let token: string | null = null;
+    try {
+      token = sessionStorage.getItem('userToken');
+    } catch {
+      // Abaikan jika sessionStorage tidak tersedia
+    }
+
+    // Backward-compat: fallback sekali ke localStorage jika masih ada sisa lama
+    if (!token) {
+      try {
+        token = localStorage.getItem('userToken');
+      } catch {
+        // ignore
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -82,9 +98,19 @@ api.interceptors.response.use(
 
     // Handle authentication errors (Token expired or invalid)
     if (error.response?.status === 401) {
-      // Clear local storage
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userInfo');
+      // Clear storage
+      try {
+        sessionStorage.removeItem('userToken');
+        sessionStorage.removeItem('userInfo');
+      } catch {
+        // ignore
+      }
+      try {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userInfo');
+      } catch {
+        // ignore
+      }
 
       // Call logout callback if set (to trigger auth context logout and redirect)
       if (onUnauthorized) {

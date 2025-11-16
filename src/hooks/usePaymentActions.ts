@@ -49,10 +49,7 @@ export const usePaymentActions = ({
   const [qrisPaymentInfo, setQrisPaymentInfo] =
     useState<QrisPaymentInfo | null>(null);
 
-  const handleQrisPayment = (
-    paymentResponse: any,
-    amount: number
-  ): boolean => {
+  const handleQrisPayment = (paymentResponse: any, amount: number): boolean => {
     if (
       paymentResponse.payment_type?.toLowerCase() === 'qris' &&
       (paymentResponse.qr_url || paymentResponse.qr_string)
@@ -72,16 +69,32 @@ export const usePaymentActions = ({
     return false;
   };
 
-  const handlePaymentRedirect = (
-    paymentResponse: any,
-    feeId: string
-  ): void => {
-    if (paymentResponse.payment_url) {
-      window.open(paymentResponse.payment_url, '_blank');
-      navigate(
-        `/payment/processing?payment_id=${paymentResponse.payment_id}&fee_id=${feeId}`
+  const handlePaymentRedirect = (paymentResponse: any, feeId: string): void => {
+    const rawUrl: unknown = paymentResponse?.payment_url;
+
+    // Validasi dasar URL untuk mengurangi risiko jika konfigurasi backend/supplier keliru.
+    if (typeof rawUrl !== 'string' || !rawUrl.trim()) {
+      showError(
+        'URL pembayaran tidak valid. Silakan hubungi admin atau coba lagi nanti.'
       );
+      return;
     }
+
+    const url = rawUrl.trim();
+
+    // Hanya izinkan skema HTTP/HTTPS agar tidak bisa diarahkan ke javascript:, data:, dll.
+    if (!/^https?:\/\//i.test(url)) {
+      showError(
+        'Skema URL pembayaran tidak dikenal. Akses dibatalkan demi keamanan.'
+      );
+      return;
+    }
+
+    // Buka di tab baru setelah lolos validasi dasar
+    window.open(url, '_blank', 'noopener,noreferrer');
+    navigate(
+      `/payment/processing?payment_id=${paymentResponse.payment_id}&fee_id=${feeId}`
+    );
   };
 
   const handlePayment = async (): Promise<void> => {
@@ -180,6 +193,16 @@ export const usePaymentActions = ({
         paymentId
       );
 
+      const normalizedStatus = (statusResponse.status || '').toLowerCase();
+      const normalizedMidtransStatus = (
+        statusResponse.midtrans_status || ''
+      ).toLowerCase();
+      const isSuccessStatus =
+        normalizedStatus === 'success' ||
+        normalizedStatus === 'settlement' ||
+        normalizedMidtransStatus === 'success' ||
+        normalizedMidtransStatus === 'settlement';
+
       if (statusResponse.updated) {
         if (onSuccess) {
           await onSuccess();
@@ -189,6 +212,12 @@ export const usePaymentActions = ({
         showInfo(
           statusResponse.message || 'Status pembayaran sudah up to date'
         );
+      }
+
+      // Jika pembayaran sudah berhasil, arahkan ke halaman sukses
+      if (isSuccessStatus && statusResponse.payment_id) {
+        navigate(`/payment/success?payment_id=${statusResponse.payment_id}`);
+        return;
       }
     } catch (err: any) {
       const message =
@@ -216,4 +245,3 @@ export const usePaymentActions = ({
     forceCheckPaymentStatus,
   };
 };
-

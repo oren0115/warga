@@ -157,7 +157,9 @@ class ErrorService {
     const context: ErrorContext = {
       apiEndpoint: endpoint,
       method,
-      requestData: requestData ? JSON.stringify(requestData) : undefined,
+      // Jangan simpan full request body di log untuk menghindari data sensitif
+      // Cukup simpan informasi singkat bahwa ada payload.
+      hasRequestData: !!requestData,
       action: 'api_call',
     };
 

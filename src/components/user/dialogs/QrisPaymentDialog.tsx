@@ -70,7 +70,7 @@ const QrisPaymentDialog: React.FC<QrisPaymentDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={value => !value && onClose()}>
-      <DialogContent className='sm:max-w-lg'>
+      <DialogContent className='w-[88vw] max-w-sm sm:max-w-md max-h-[80vh] overflow-y-auto p-4 sm:p-6'>
         <DialogHeader>
           <DialogTitle>Pembayaran QRIS</DialogTitle>
           <DialogDescription>
@@ -81,12 +81,14 @@ const QrisPaymentDialog: React.FC<QrisPaymentDialogProps> = ({
         {data && (
           <div className='space-y-4'>
             <div className='text-center space-y-1'>
-              <p className='text-sm text-gray-600'>Order ID: {data.orderId}</p>
-              <p className='text-lg font-semibold text-gray-900'>
+              <p className='text-xs sm:text-sm text-gray-600'>
+                Order ID: {data.orderId}
+              </p>
+              <p className='text-base sm:text-lg font-semibold text-gray-900'>
                 {formatCurrency(data.amount)}
               </p>
               {expiryText && (
-                <p className='text-xs text-gray-500'>
+                <p className='text-[11px] sm:text-xs text-gray-500'>
                   Berlaku hingga {expiryText} WIB
                 </p>
               )}
@@ -97,10 +99,10 @@ const QrisPaymentDialog: React.FC<QrisPaymentDialogProps> = ({
                 <img
                   src={data.qrUrl}
                   alt='QRIS Payment'
-                  className='w-64 h-64 rounded-lg border border-gray-200 shadow-sm'
+                  className='w-44 h-44 sm:w-56 sm:h-56 rounded-lg border border-gray-200 shadow-sm'
                 />
               ) : (
-                <div className='w-64 h-64 flex items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-500'>
+                <div className='w-44 h-44 sm:w-56 sm:h-56 flex items-center justify-center rounded-lg border border-dashed border-gray-300 text-xs sm:text-sm text-gray-500'>
                   QR tidak tersedia
                 </div>
               )}
@@ -117,9 +119,9 @@ const QrisPaymentDialog: React.FC<QrisPaymentDialogProps> = ({
               )}
             </div>
 
-            <div className='rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-900'>
+            <div className='rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs sm:text-sm text-emerald-900'>
               <p className='font-semibold'>Cara bayar:</p>
-              <ol className='mt-2 list-decimal list-inside space-y-1 text-emerald-800'>
+              <ol className='mt-1 list-decimal list-inside space-y-1 text-emerald-800'>
                 <li>Buka aplikasi pembayaran yang mendukung QRIS.</li>
                 <li>Gunakan fitur scan QR lalu arahkan ke kode di atas.</li>
                 <li>Pastikan nominal sesuai kemudian selesaikan pembayaran.</li>

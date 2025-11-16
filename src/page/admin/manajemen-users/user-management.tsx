@@ -29,6 +29,7 @@ const UserManagement: React.FC = () => {
     users,
     filteredUsers,
     paginatedUsers,
+    totalItems,
     adminCount,
     wargaCount,
     isLoading,
@@ -332,7 +333,7 @@ const UserManagement: React.FC = () => {
               {/* Total Pengguna */}
               <AdminStatsCard
                 title='Total Pengguna'
-                value={users?.length || 0}
+                value={totalItems || users?.length || 0}
                 description='Terdaftar di sistem'
                 icon={<Users className='w-6 h-6 sm:w-7 sm:h-7' />}
                 iconBgColor='bg-gradient-to-br from-blue-50 to-blue-100'

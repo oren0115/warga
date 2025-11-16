@@ -18,7 +18,7 @@ React + Vite application for managing community finance operations.
 ## Getting Started
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/oren0115/fe-iplcannary
 cd fe-iplcannary
 npm install
 npm run dev
@@ -34,8 +34,6 @@ Create `.env` (see `env.example`):
 VITE_API_URL=http://localhost:8000
 VITE_APP_NAME=IPL Canary
 ```
-
-**⚠️ For Production:** See [DEPLOYMENT.md](./DEPLOYMENT.md) and [ENV-PRODUCTION-TEMPLATE.md](./ENV-PRODUCTION-TEMPLATE.md)
 
 ## Project Layout
 
@@ -59,11 +57,6 @@ npm run preview    # preview build
 npm run lint       # ESLint
 npm run type-check # tsc --noEmit
 ```
-
-## Documentation & Support
-
-- Docs: `docs/API.md`, `docs/COMPONENTS.md`
-- Issues: open a ticket or contact the dev team
 
 ## License
 

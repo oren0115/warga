@@ -96,8 +96,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Logout function with navigation and optional message
   const logout = useCallback(
     (showMessage = false): void => {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userInfo');
+      // Hapus semua jejak token/user dari storage browser.
+      // Prioritas utama: sessionStorage untuk menghindari persistensi lintas tab/close.
+      try {
+        sessionStorage.removeItem('userToken');
+        sessionStorage.removeItem('userInfo');
+      } catch {
+        // Abaikan error (misalnya jika sessionStorage tidak tersedia)
+      }
+
+      // Backward-compat: bersihkan juga localStorage jika masih ada sisa lama
+      try {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userInfo');
+      } catch {
+        // Abaikan error
+      }
       dispatch({ type: 'LOGOUT' });
 
       // Show toast message if requested (for auto-logout due to token expiration)
@@ -126,8 +140,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Check for existing token on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('userToken');
-      const userInfo = localStorage.getItem('userInfo');
+      // Prioritaskan sessionStorage untuk menghindari persistensi jangka panjang.
+      let token: string | null = null;
+      let userInfo: string | null = null;
+
+      try {
+        token = sessionStorage.getItem('userToken');
+        userInfo = sessionStorage.getItem('userInfo');
+      } catch {
+        // Fallback ke localStorage hanya untuk migrasi user lama
+      }
+
+      if (!token || !userInfo) {
+        try {
+          const legacyToken = localStorage.getItem('userToken');
+          const legacyUserInfo = localStorage.getItem('userInfo');
+          if (legacyToken && legacyUserInfo) {
+            token = legacyToken;
+            userInfo = legacyUserInfo;
+
+            // Migrasi ke sessionStorage dan bersihkan localStorage
+            try {
+              sessionStorage.setItem('userToken', legacyToken);
+              sessionStorage.setItem('userInfo', legacyUserInfo);
+              localStorage.removeItem('userToken');
+              localStorage.removeItem('userInfo');
+            } catch {
+              // Jika sessionStorage gagal, tetap pakai data in-memory saja
+            }
+          }
+        } catch {
+          // Abaikan error akses storage
+        }
+      }
 
       if (token && userInfo) {
         try {
@@ -150,9 +195,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             payload: { token, user },
           });
         } catch (error) {
-          // Invalid stored data, clear it
-          localStorage.removeItem('userToken');
-          localStorage.removeItem('userInfo');
+          // Invalid stored data, clear it dari semua storage
+          try {
+            sessionStorage.removeItem('userToken');
+            sessionStorage.removeItem('userInfo');
+          } catch {
+            // ignore
+          }
+          try {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userInfo');
+          } catch {
+            // ignore
+          }
           dispatch({ type: 'SET_LOADING', payload: false });
         }
       } else {
@@ -167,8 +222,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: 'LOGIN_START' });
     try {
       const response = await authService.login(username, password);
-      localStorage.setItem('userToken', response.access_token);
-      localStorage.setItem('userInfo', JSON.stringify(response.user));
+      // Simpan ke sessionStorage agar token tidak bertahan setelah tab/close browser.
+      try {
+        sessionStorage.setItem('userToken', response.access_token);
+        sessionStorage.setItem('userInfo', JSON.stringify(response.user));
+      } catch {
+        // Jika sessionStorage tidak tersedia, tetap lanjut dengan state in-memory saja
+      }
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: { token: response.access_token, user: response.user },
@@ -202,7 +262,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const updateProfile = async (userData: Partial<User>): Promise<void> => {
     try {
       const updatedUser = await authService.updateProfile(userData);
-      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      try {
+        sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      } catch {
+        // Abaikan jika sessionStorage tidak tersedia
+      }
       dispatch({ type: 'UPDATE_USER', payload: updatedUser });
     } catch (error) {
       throw error;

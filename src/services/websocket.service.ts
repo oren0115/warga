@@ -21,7 +21,10 @@ class WebSocketServiceImpl implements WebSocketService {
   private token: string | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
-  private reconnectInterval = 3000; // 3 seconds
+  // Dasar interval untuk exponential backoff reconnect
+  private baseReconnectInterval = 2000; // 2 seconds
+  private heartbeatIntervalMs = 30000; // 30 seconds
+  private heartbeatTimer: number | null = null;
   private notificationCallbacks: ((notification: Notification) => void)[] = [];
   private connectionCallbacks: ((connected: boolean) => void)[] = [];
   private dashboardUpdateCallbacks: ((data: any) => void)[] = [];
@@ -42,14 +45,17 @@ class WebSocketServiceImpl implements WebSocketService {
       apiBaseUrl
         .replace(/^http/, 'ws') // http -> ws, https -> wss
         .replace(/\/$/, '') + // Remove trailing slash
-      `/ws/${userId}?token=${encodeURIComponent(token)}`;
+      `/ws/${userId}`;
 
     try {
-      this.ws = new WebSocket(wsUrl);
+      // Kirim token melalui Sec-WebSocket-Protocol agar tidak muncul di URL dan log query string.
+      // Backend akan mengambil token dari header ini.
+      this.ws = new WebSocket(wsUrl, ['jwt', token]);
 
       this.ws.onopen = () => {
         this.reconnectAttempts = 0;
         this.notifyConnectionChange(true);
+        this.startHeartbeat();
       };
 
       this.ws.onmessage = event => {
@@ -67,6 +73,7 @@ class WebSocketServiceImpl implements WebSocketService {
       };
 
       this.ws.onclose = event => {
+        this.stopHeartbeat();
         this.notifyConnectionChange(false);
 
         // Attempt to reconnect if not a manual close
@@ -80,6 +87,7 @@ class WebSocketServiceImpl implements WebSocketService {
 
       this.ws.onerror = error => {
         console.error('WebSocket error:', error);
+        this.stopHeartbeat();
         this.notifyConnectionChange(false);
       };
     } catch (error) {
@@ -91,11 +99,20 @@ class WebSocketServiceImpl implements WebSocketService {
   private scheduleReconnect() {
     this.reconnectAttempts++;
 
+    // Exponential backoff dengan batas maksimum dan jitter kecil
+    const maxInterval = 30000; // 30 detik
+    const exponent = Math.min(this.reconnectAttempts, 5);
+    let delay = this.baseReconnectInterval * Math.pow(2, exponent - 1);
+    delay = Math.min(delay, maxInterval);
+
+    const jitter = delay * 0.2;
+    const randomizedDelay = delay + (Math.random() * jitter - jitter / 2);
+
     setTimeout(() => {
       if (this.userId && this.token) {
         this.connect(this.userId, this.token);
       }
-    }, this.reconnectInterval);
+    }, randomizedDelay);
   }
 
   disconnect() {
@@ -103,6 +120,7 @@ class WebSocketServiceImpl implements WebSocketService {
       this.ws.close(1000, 'Manual disconnect');
       this.ws = null;
     }
+    this.stopHeartbeat();
     this.userId = null;
     this.token = null;
     this.reconnectAttempts = 0;
@@ -111,6 +129,28 @@ class WebSocketServiceImpl implements WebSocketService {
 
   isConnected(): boolean {
     return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
+  }
+
+  private startHeartbeat() {
+    if (this.heartbeatTimer !== null) {
+      window.clearInterval(this.heartbeatTimer);
+    }
+    this.heartbeatTimer = window.setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send('ping');
+        } catch (error) {
+          console.error('Failed to send WebSocket heartbeat:', error);
+        }
+      }
+    }, this.heartbeatIntervalMs);
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatTimer !== null) {
+      window.clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
   }
 
   onNotification(callback: (notification: Notification) => void) {

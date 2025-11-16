@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/auth.context';
 import { adminService } from '../services/admin.service';
-import type { User } from '../types';
+import type { PaginatedUsers, User } from '../types';
 import { logger } from '../utils/logger.utils';
 import { getServiceDownMessage } from '../utils/network-error.utils';
 
@@ -12,6 +12,8 @@ export function useUserManagement() {
   const isAdmin = authState.user?.is_admin === true;
 
   const [users, setUsers] = useState<User[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +28,7 @@ export function useUserManagement() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>(
@@ -34,43 +36,56 @@ export function useUserManagement() {
   );
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const fetchUsers = useCallback(async () => {
-    if (!isAdmin) {
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const usersData = await adminService.getUsers();
-      setUsers(usersData);
-    } catch (err: any) {
-      logger.error('Error fetching users:', err);
-      const errorMessage =
-        err?.errorMapping?.userMessage ||
-        getServiceDownMessage(err, 'Gagal memuat data pengguna');
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isAdmin]);
+  const fetchUsers = useCallback(
+    async (page: number, pageSize: number) => {
+      if (!isAdmin) {
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        // Server-side pagination penuh: ambil per halaman dari backend
+        const result: PaginatedUsers = await adminService.getUsers(
+          page,
+          pageSize
+        );
+        setUsers(result.items || []);
+        setTotalItems(result.total_items ?? 0);
+        setTotalPages(result.total_pages ?? 1);
+        setCurrentPage(result.page ?? page);
+        setItemsPerPage(result.page_size ?? pageSize);
+      } catch (err: any) {
+        logger.error('Error fetching users:', err);
+        const errorMessage =
+          err?.errorMapping?.userMessage ||
+          getServiceDownMessage(err, 'Gagal memuat data pengguna');
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isAdmin]
+  );
 
   useEffect(() => {
-    if (isAdmin) fetchUsers();
-  }, [isAdmin, fetchUsers]);
+    if (isAdmin) fetchUsers(currentPage, itemsPerPage);
+  }, [isAdmin, currentPage, itemsPerPage, fetchUsers]);
 
   const handleRefresh = useCallback(async () => {
     if (!isAdmin) return;
     setIsRefreshing(true);
     setError(null);
-    await fetchUsers();
+    await fetchUsers(currentPage, itemsPerPage);
     setIsRefreshing(false);
-  }, [fetchUsers, isAdmin]);
+  }, [fetchUsers, isAdmin, currentPage, itemsPerPage]);
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const matchesSearch =
         user.nama?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        user.username?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        user.username
+          ?.toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
         user.nomor_hp?.includes(debouncedSearchTerm) ||
         user.alamat?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
       const matchesRole =
@@ -81,19 +96,11 @@ export function useUserManagement() {
     });
   }, [users, debouncedSearchTerm, filterRole]);
 
-  const totalPages = useMemo(
-    () => Math.ceil(filteredUsers.length / itemsPerPage) || 1,
-    [filteredUsers.length, itemsPerPage]
-  );
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = useMemo(
-    () => filteredUsers.slice(startIndex, startIndex + itemsPerPage),
-    [filteredUsers, startIndex, itemsPerPage]
-  );
+  const paginatedUsers = useMemo(() => filteredUsers, [filteredUsers]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchTerm, filterRole, itemsPerPage]);
+  }, [debouncedSearchTerm, filterRole]);
 
   const adminCount = useMemo(
     () => users.filter(u => u.is_admin).length,
@@ -138,8 +145,8 @@ export function useUserManagement() {
   }, []);
 
   const handleUserUpdated = useCallback(() => {
-    if (isAdmin) fetchUsers();
-  }, [fetchUsers, isAdmin]);
+    if (isAdmin) fetchUsers(currentPage, itemsPerPage);
+  }, [fetchUsers, isAdmin, currentPage, itemsPerPage]);
 
   return {
     // auth
@@ -148,6 +155,7 @@ export function useUserManagement() {
     users,
     filteredUsers,
     paginatedUsers,
+    totalItems,
     adminCount,
     wargaCount,
     // ui state

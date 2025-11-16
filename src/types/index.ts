@@ -156,6 +156,14 @@ export interface UserWithPhone {
   nomor_rumah: string;
 }
 
+export interface PaginatedUsers {
+  items: User[];
+  total_items: number;
+  total_pages: number;
+  page: number;
+  page_size: number;
+}
+
 export interface UsersWithPhoneResponse {
   users: UserWithPhone[];
   total: number;

@@ -42,8 +42,9 @@ export function usePaymentsReview() {
     setIsLoading(true);
     setError(null);
     try {
-      const paymentsData = await adminService.getAdminPaymentsWithDetails();
-      setPayments(paymentsData);
+      // Ambil dari server dengan batasan wajar (server-side pagination)
+      const paymentsData = await adminService.getAdminPaymentsWithDetails(1, 200);
+      setPayments(paymentsData || []);
     } catch (err: any) {
       const message = getServiceDownMessage(
         err,
@@ -190,12 +191,22 @@ export function usePaymentsReview() {
       ) {
         throw new Error('Rentang tanggal tidak valid');
       }
-      const blob = await adminService.exportPaymentsReport(
-        startDate,
-        endDate,
-        format
-      );
-      return blob;
+      try {
+        const blob = await adminService.exportPaymentsReport(
+          startDate,
+          endDate,
+          format
+        );
+        return blob;
+      } catch (err: any) {
+        // Tangani khusus error batas rentang / jumlah data dari backend
+        const backendMessage: string =
+          err?.errorMapping?.userMessage ||
+          err?.message ||
+          'Gagal mengekspor laporan pembayaran';
+        // Bubble up error yang sudah diperkaya supaya caller bisa tampilkan toast/modal
+        throw new Error(backendMessage);
+      }
     },
     []
   );
